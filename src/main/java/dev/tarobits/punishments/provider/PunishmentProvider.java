@@ -7,6 +7,7 @@ import com.google.gson.stream.JsonWriter;
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.util.io.BlockingDiskFile;
+import dev.tarobits.punishments.TPunish;
 import dev.tarobits.punishments.storage.StorageUtils;
 import dev.tarobits.punishments.utils.punishment.Punishment;
 import dev.tarobits.punishments.utils.punishment.PunishmentType;
@@ -35,7 +36,8 @@ public class PunishmentProvider extends BlockingDiskFile {
     private final Map<UUID, Punishment> activeMutes = new Object2ObjectOpenHashMap<>();
     private final Map<UUID, List<Punishment>> warns = new Object2ObjectOpenHashMap<>();
 
-    public PunishmentProvider(Path pluginDir) {
+    public PunishmentProvider() {
+        Path pluginDir = TPunish.getInstance().getDataDirectory();
         super(StorageUtils.createDataFile(pluginDir, "punishments.json").toPath());
         this.syncLoad();
         String loadedString = "Successfully loaded " + this.stats.computeIfAbsent(PunishmentType.BAN, (_) -> 0) + " bans, " +
@@ -47,6 +49,9 @@ public class PunishmentProvider extends BlockingDiskFile {
     }
 
     public static PunishmentProvider get() {
+        if (INSTANCE == null) {
+            INSTANCE = new PunishmentProvider();
+        }
         return INSTANCE;
     }
 
@@ -166,7 +171,7 @@ public class PunishmentProvider extends BlockingDiskFile {
 
             try {
                 Punishment punishment = Punishment.fromJson(jsonObject);
-                this.stats.compute(punishment.getType(), (k,v) -> v == null ? 1 : v++);
+                this.stats.compute(punishment.getType(), (_,v) -> v == null ? 1 : v+1);
                 this.addPunishment(punishment);
             } catch (Exception ex) {
                 throw new RuntimeException("Failed to parse!", ex);

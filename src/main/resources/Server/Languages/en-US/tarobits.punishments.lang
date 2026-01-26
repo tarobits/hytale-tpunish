@@ -1,3 +1,6 @@
+# === Update Message ===
+updatemessage = A new version is available for TPunish. \nNew version: {newVersion}\nYour version: {oldVersion}
+
 # === GUI ===
 
 # === Punish Gui ===

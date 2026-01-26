@@ -3,6 +3,7 @@ package dev.tarobits.punishments;
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.event.events.BootEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerChatEvent;
+import com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerSetupConnectEvent;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
@@ -10,6 +11,8 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.util.Config;
 import dev.tarobits.punishments.commands.*;
 import dev.tarobits.punishments.provider.PunishmentProvider;
+import dev.tarobits.punishments.utils.Permissions;
+import dev.tarobits.punishments.utils.Version;
 import dev.tarobits.punishments.utils.punishment.PunishmentType;
 
 import javax.annotation.Nonnull;
@@ -24,7 +27,10 @@ import java.util.concurrent.CompletableFuture;
 public class TPunish extends JavaPlugin {
     private static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
     private static TPunish INSTANCE;
-    private static PunishmentProvider punishmentProvider;
+    private final PunishmentProvider punishmentProvider;
+    private Boolean isOutdated;
+    private Version newestVersion;
+    private Version currentVersion;
 
     private final Config<TPunishConfig> config;
 
@@ -34,6 +40,7 @@ public class TPunish extends JavaPlugin {
         super(init);
         INSTANCE = this;
         this.config = this.withConfig("config", TPunishConfig.CODEC);
+        punishmentProvider = new PunishmentProvider();
         LOGGER.atInfo().log("TPunish (Version " + this.getManifest().getVersion().toString() + ")");
     }
 
@@ -83,7 +90,20 @@ public class TPunish extends JavaPlugin {
         }
         this.config.load();
         this.config.save();
-        punishmentProvider = new PunishmentProvider(this.getDataDirectory());
+        this.currentVersion = Version.fromVersionString(this.getManifest().getVersion().toString());
+        if (this.config.get().getShowUpdateNotifications()) {
+            try {
+                this.newestVersion = Version.getNewestVersion();
+                this.isOutdated = this.currentVersion.isNewer(newestVersion);
+            } catch (IllegalArgumentException _) {
+                this.newestVersion = this.currentVersion;
+                this.isOutdated = false;
+                LOGGER.atWarning().log("Failed to get version!");
+            }
+        } else {
+            this.newestVersion = this.currentVersion;
+            this.isOutdated = false;
+        }
         this.getEventRegistry().register(BootEvent.class, (_) -> {
             if (!this.commandsRegistered) {
                 this.registerCommands();
@@ -93,6 +113,11 @@ public class TPunish extends JavaPlugin {
             if (punishmentProvider.hasBan(event.getUuid())) {
                 event.setReason(punishmentProvider.getActive(event.getUuid(), PunishmentType.BAN).getReasonMessage().getAnsiMessage());
                 event.setCancelled(true);
+            }
+        });
+        this.getEventRegistry().register(PlayerConnectEvent.class, (event) -> {
+            if (Permissions.playerHas(event.getPlayerRef().getUuid(), Permissions.CONFIG) && this.isOutdated) {
+                event.getPlayerRef().sendMessage(this.newestVersion.getUpdateMessage(this.currentVersion));
             }
         });
         this.getEventRegistry().registerAsyncGlobal(PlayerChatEvent.class, this::handleChat);
