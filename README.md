@@ -25,13 +25,14 @@ This plugin is an advanced punishment management plugin for Hytale.
 
 ```json
 {
-  "presets":[
+  "ShowUpdateNotifications": true,
+  "Presets":[
     {
-      "name": "[NAME THAT IS DISPLAYED]",
-      "type": "[ban|mute|kick|warn]",
-      "subtype": "[temp|perm] only needed for ban and mute",
-      "duration": "[DURATION STRING] only needed for subtype temp",
-      "reason": "[REASON WHY THE ACTION IS BEING PERFORMED]"
+      "Name": "[NAME THAT IS DISPLAYED]",
+      "Type": "[ban|mute|kick|warn]",
+      "SubType": "[temp|perm] only needed for ban and mute",
+      "Duration": "[DURATION STRING] only needed for subtype temp",
+      "Reason": "[REASON WHY THE ACTION IS BEING PERFORMED]"
     }
   ]
 }
@@ -58,7 +59,7 @@ This plugin is an advanced punishment management plugin for Hytale.
 ## Permissions
 
 - `tpunish.gui` Open the punishment gui
-- `tpunish.config` Open the in-game config gui
+- `tpunish.config` Open the in-game config gui and receive update notifications if enabled
 - `tpunish.ban` Access the `/ban` command (Enables access to custom punishments)
 - `tpunish.ban.temp` Create temporary bans
 - `tpunish.ban.perm` Create permanent bans
