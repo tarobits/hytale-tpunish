@@ -1,0 +1,102 @@
+# === GUI ===
+
+# === Punish Gui ===
+gui.punishments.title = Punishments
+gui.punishments.history = History
+gui.punishments.bans = Bans
+gui.punishments.mutes = Mutes
+gui.punishments.kicks = Kicks
+gui.punishments.warns = Warnings
+gui.punishments.actions = Actions
+gui.punishments.buttons.new = New Punishment
+gui.punishments.buttons.newcustom = New Custom Punishment
+gui.punishments.buttons.unban = Unban
+gui.punishments.buttons.unmute = Unmute
+
+# === Edit Presets Gui ===
+gui.editpresets.title = Edit Presets
+
+# === Management Gui ===
+gui.management.title = Management Gui
+gui.management.settings = Settings
+gui.management.editpresets = Edit Presets
+
+# === Header ===
+gui.header.status = Status
+
+gui.header.indefinitely = indefinitely
+gui.header.until = until
+
+gui.header.ban = Ban:
+gui.header.ban.notbanned = Not banned
+
+gui.header.mute = Mute:
+gui.header.mute.notmuted = Not muted
+
+gui.header.historystats = History Stats
+gui.header.historystats.bans = Bans:
+gui.header.historystats.mutes = Mutes:
+gui.header.historystats.kicks = Kicks:
+gui.header.historystats.warns = Warnings:
+
+# === Entry ===
+gui.entry.status = Status
+gui.entry.status.expired = Expired
+gui.entry.status.pardoned = Pardoned
+gui.entry.status.active = Active
+gui.entry.type = Type
+gui.entry.date = Date
+gui.entry.by = By
+gui.entry.duration = Duration
+gui.entry.until = Until
+gui.entry.reason = Reason
+gui.entry.actions = Actions
+gui.entry.buttons.details = Details
+gui.entry.buttons.remove = Remove
+
+# === Misc Gui ===
+gui.backbutton = < Back
+gui.addgui.title = Add Punishment
+gui.error.title = Error
+gui.error.home = Home
+
+# === Editor ===
+edit.error.nonull = Subtype may not be null!
+edit.error.mustnull = Subtype must be null!
+edit.error.onlyactive = You may only edit active punishments!
+edit.error.notfound = Couldn't find the punishment!
+edit.success = Successfully {action} '{player}'!
+edit.actions.unban = unbanned
+edit.actions.unmute = unmuted
+
+# === General ===
+
+# === Errors ===
+error.noperm = You have no permission to perform this action!
+
+# === Bans ===
+ban.reason = You have been Banned!\nType: {type}\nDuration: {duration}\nUntil: {until}\nReason: {reason}
+ban.error.isnt = Player '{name}' is not banned.
+ban.error.already = Player '{name}' is already banned.
+ban.success.temp = Successfully banned '{name}' for {duration} with the reason {reason}!
+ban.success.perm = Successfully banned '{name}' permanently with the reason {reason}!
+
+# === Mutes ===
+mute.reason = You are muted.\nType: {type}\nDuration: {duration}\nUntil: {until}\nReason: {reason}
+mute.error.already = Player '{name}' is already muted.
+mute.error.isnt = Player '{name}' is not muted.
+mute.unmute = You've been unmuted.
+mute.success.temp = Successfully muted '{name}' for {duration} with the reason {reason}!
+mute.success.perm = Successfully muted '{name}' permanently with the reason {reason}!
+
+# === Kicks ===
+kick.reason = You've been kicked with the reason {reason}!
+kick.error.noplayer = The player '{name}' is not online.
+kick.success = Successfully kicked '{name}' with the reason {reason}!
+
+# === Warns ===
+warn.reason = You've been warned with the reason {reason}!
+warn.unwarn = A warning has been removed from your account. Check /punishments
+warn.error.nowarn = The warning for user '{name}' with the id {id} does not exist.
+warn.success.warn = Successfully warned '{name}' with the reason {reason}! (Warn Id: {id})
+warn.success.unwarn = Successfully removed the warning with the id {id} from '{name}'!

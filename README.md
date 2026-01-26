@@ -1,101 +1,113 @@
-# 🛠️ Hytale Plugin Template
+# TPunish
+![License Badge](https://img.shields.io/badge/License-LGPL-orange)
+![CurseForge Version](https://img.shields.io/curseforge/v/1445040?label=Version)
 
-Welcome to the **Hytale Plugin Template**! This project is a pre-configured foundation for building **Java Plugins**. It streamlines the development process by handling classpath setup, server execution, and asset bundling.
+This plugin is an advanced punishment management plugin for Hytale.
 
-> **⚠️ Early Access Warning**
-> Hytale is currently in Early Access. Features, APIs, and this template are subject to frequent changes. Please ensure you are using the latest version of the template for the best experience.
+> [!NOTE]
+> This plugin overrides the vanilla /ban, /kick and /unban commands
 
----
+## Table of contents
+- [Quick Start](#quick-start)
+- [Features](#features)
+  - [Planned features](#planned)
+- [Permissions](#permissions)
+- [Command Syntax](#command-syntax)
 
-## 📋 Prerequisites
+## Quick Start
 
-Before you begin, ensure your environment is ready:
+1. Download the latest release from [Curseforge](https://curseforge.com/hytale/mods/tpunish)
+2. Put it in your servers `mods` folder
+3. Start the server to generate an example config
+4. Edit the config in `mods/Tarobits_Punishments/config.json` (See [Configuration](#configuration) for more details)
 
-* **Hytale Launcher**: Installed and updated.
-* **Java 25 SDK**: Required for modern Hytale development.
-* **IntelliJ IDEA**: (Community or Ultimate) Recommended for full feature support.
+## Configuration
 
----
-
-## 🚀 Quick Start Installation
-
-### 1. Initial Setup (Before Importing)
-
-To avoid IDE caching issues, configure these files **before** you open the project in IntelliJ:
-
-* **`settings.gradle`**: Set your unique project name.
-```gradle
-rootProject.name = 'MyAwesomePlugin'
-
+```json
+{
+  "presets":[
+    {
+      "name": "[NAME THAT IS DISPLAYED]",
+      "type": "[ban|mute|kick|warn]",
+      "subtype": "[temp|perm] only needed for ban and mute",
+      "duration": "[DURATION STRING] only needed for subtype temp",
+      "reason": "[REASON WHY THE ACTION IS BEING PERFORMED]"
+    }
+  ]
+}
 ```
 
+## Features
 
-* **`gradle.properties`**: Set your `maven_group` (e.g., `com.yourname`) and starting version.
-* **`src/main/resources/manifest.json`**: Update your plugin metadata.
-* **CRITICAL:** Ensure the `"Main"` property points exactly to your entry-point class.
+- Punishment UI
+- Punishment presets
+- Many different punishment types
+  - Bans
+  - Mutes
+  - Kicks
+  - Warnings
 
+### Planned
 
+- Localization
+- Reduction of punishments
+- Custom chat / kick messages
+- Appeal process
+- Punishment history log
 
-### 2. Importing the Project
+## Permissions
 
-1. Open IntelliJ IDEA and select **Open**.
-2. Navigate to the template folder and click **OK**.
-3. Wait for the Gradle sync to finish. This will automatically download dependencies, create a `./run` folder, and generate the **HytaleServer** run configuration.
+- `tpunish.gui` Open the punishment gui
+- `tpunish.config` Open the in-game config gui
+- `tpunish.ban` Access the `/ban` command (Enables access to custom punishments)
+- `tpunish.ban.temp` Create temporary bans
+- `tpunish.ban.perm` Create permanent bans
+- `tpunish.unban` Unban users
+- `tpunish.mute` Access the `/mute` command (Enables access to custom punishments)
+- `tpunish.mute.temp` Create temporary mutes
+- `tpunish.mute.perm` Create permanent mutes
+- `tpunish.unmute` Unmute users
+- `tpunish.kick` Kick users
+- `tpunish.kick.custom` Access to the `/kick` command (Enables access to custom punishments)
+- `tpunish.warn` Warn users
+- `tpunish.warn.custom` Access to the `/warn` command (Enables access to custom punishments)
+- `tpunish.custom` Access custom punishments inside the punishment gui (Not implemented)
 
-### 3. Authenticating your Test Server
+## Command Syntax
 
-You **must** authenticate your local server to connect to it:
+`/punish` => Opens the GUI
 
-1. Launch the **HytaleServer** configuration in IDEA.
-2. In the terminal, run: `auth login device`.
-3. Follow the printed URL to log in via your Hytale account.
-4. Once verified, run: `auth persistence Encrypted`.
+`/punish config` => Opens the config GUI
 
----
+`/ban <player> <duration> <reason>` => Ban a player
 
-## 🎮 Developing & Testing
+`/mute <player> <duration> <reason>` => Mute a player
 
-### Running the Server
+`/kick <player> <reason>` => Kick a player
 
-If you do not see the **HytaleServer** run configuration in the top-right dropdown, click "Edit Configurations..." to unhide it. Press the **Green Play Button** to start, or the **Bug Icon** to start in Debug Mode to enable breakpoints.
+`/warn <player> <reason>` => Warn a player
 
-### Verifying the Setup
+`/unban <player>` => Unban a player
 
-1. Launch your standard Hytale Client.
-2. Connect to `Local Server` (127.0.0.1).
-3. Type `/test` in-game. If it returns your plugin version, everything is working!
+`/unmute <player>` => Unmute a player
 
-### Bundling Assets
+`<player>` => If the player is online the start of the username is enough. If the player is offline you must type the full username
 
-You can include models and textures by placing them in `src/main/resources/Common/` or `src/main/resources/Server/`. These are editable in real-time using the in-game **Asset Editor**.
+`<duration>` => A duration string consisting of the following variables with no spaces
+```
+y => year
+m => month
+d => day
+h => hour
+min => minute
 
----
+perm => permanent ban
+```
 
-## 📦 Building your Plugin
+`<reason>` => The reason why the action is being performed
 
-To create a shareable `.jar` file for distribution:
+## End notes
 
-1. Open the **Gradle Tab** on the right side of IDEA.
-2. Navigate to `Tasks` -> `build` -> `build`.
-3. Your compiled plugin will be in: `build/libs/your-plugin-name-1.0.0.jar`.
+If you'd like to support this project or any of my other ones you may do so with this link.
 
-To install it manually, drop the JAR into `%appdata%/Hytale/UserData/Mods/`.
-
----
-
-## 📚 Advanced Documentation
-
-For detailed guides on commands, event listeners, and professional patterns, visit our full documentation:
-👉 **[Hytale Modding Documentation](https://britakee-studios.gitbook.io/hytale-modding-documentation)**
-
----
-
-## 🆘 Troubleshooting
-
-* **Sync Fails**: Check that your Project SDK is set to **Java 25** via `File > Project Structure`.
-* **Cannot Connect**: Ensure you ran the `auth` commands in the server console.
-* **Plugin Not Loading**: Double-check your `manifest.json` for typos in the `"Main"` class path.
-
----
-
-**Need Help?** Visit our full guide here: **[Hytale Modding Documentation](https://britakee-studios.gitbook.io/hytale-modding-documentation)**
+[![Static Badge](https://img.shields.io/badge/Buy%20me%20a%20coffee-Tarobits-brown?style=for-the-badge&logo=buymeacoffee&logoColor=white&labelColor=yellow&color=%236F4E37)](https://buymeacoffee.com/tarobits)

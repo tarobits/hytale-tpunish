@@ -1,0 +1,7 @@
+$C = "Common.ui";
+
+$C.@SecondaryTextButton {
+    Anchor: (Height: 50, Left: 10, Right: 10);
+    FlexWeight: 1;
+    Text: "Error";
+}

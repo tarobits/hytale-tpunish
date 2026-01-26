@@ -1,0 +1,120 @@
+$C = "Common.ui";
+
+Group {
+    LayoutMode: Top;
+    Anchor: (Top: 10);
+
+    Group {
+        LayoutMode: Left;
+        FlexWeight: 1;
+        Padding: 15;
+        Group {
+            FlexWeight: 1;
+        }
+
+        Group {
+            LayoutMode: Top;
+            FlexWeight: 1;
+            Label {
+                Style: (
+                    RenderBold: true,
+                    HorizontalAlignment: Center,
+                    FontSize: 18
+                );
+                Text: "Name";
+            }
+            $C.@TextField #Name {}
+        }
+        Group {
+            FlexWeight: 1;
+        }
+        Group #DurationBox {
+            LayoutMode: Top;
+            FlexWeight: 1;
+            Label {
+                Style: (
+                    RenderBold: true,
+                    HorizontalAlignment: Center,
+                    FontSize: 18
+                );
+                Text: "Duration";
+            }
+            $C.@TextField #Duration {}
+            Label {
+                Style: (
+                    HorizontalAlignment: Center,
+                    FontSize: 12,
+                    TextColor: #808080
+                );
+                Text: "Example: 1y8m5d8h3min";
+            }
+        }
+        Group {
+            FlexWeight: 1;
+        }
+        Group {
+            LayoutMode: Top;
+            FlexWeight: 1;
+            Label {
+                Style: (
+                    RenderBold: true,
+                    HorizontalAlignment: Center,
+                    FontSize: 18
+                );
+                Text: "Reason";
+            }
+            $C.@TextField #Reason {}
+        }
+        Group {
+            FlexWeight: 1;
+        }
+    }
+    Group {
+        LayoutMode: Left;
+        Anchor: (Right: 50);
+        FlexWeight: 1;
+        Padding: 10;
+        Group {
+            LayoutMode: Top;
+            FlexWeight: 1;
+            Label {
+                Style: (
+                    RenderBold: true,
+                    HorizontalAlignment: Center,
+                    FontSize: 18
+                );
+                Text: "Punishment Type";
+            }
+            $C.@DropdownBox #TypeDropdown {}
+        }
+        Group #SubtypeSpacer {
+            FlexWeight: 1;
+            Visible: false;
+        }
+        Group #SubtypeContainer {
+            LayoutMode: Top;
+            FlexWeight: 1;
+            Label {
+                Style: (
+                    RenderBold: true,
+                    HorizontalAlignment: Center,
+                    FontSize: 18
+                );
+                Text: "Punishment Subtype";
+            }
+            $C.@DropdownBox #SubtypeDropdown {}
+        }
+        Group {
+            LayoutMode: Right;
+            Padding: (Right: 10);
+            $C.@CancelTextButton #ResetButton {
+                @Anchor = (Right: 15);
+                Text: "Reset Inputs";
+            }
+            $C.@TextButton #SubmitButton {
+                @Anchor = (Width: 150);
+                Text: "Add";
+            }
+        }
+    }
+}

@@ -1,0 +1,252 @@
+Group {
+    LayoutMode: Left;
+    Anchor: (Top: 10);
+
+    Group {
+        LayoutMode: Top;
+        FlexWeight: 1;
+
+        Label {
+            Text: %tarobits.punishments.gui.header.status;
+            Style: (
+                RenderBold: true,
+                HorizontalAlignment: Center,
+                FontSize: 26
+            );
+        }
+        Group {
+            LayoutMode: Left;
+            Group {
+                FlexWeight: 1;
+            }
+            Label {
+                Style: (
+                    RenderBold: true,
+                    HorizontalAlignment: Center,
+                    FontSize: 18
+                );
+                Anchor: (Right: 5);
+                Text: %tarobits.punishments.gui.header.ban;
+            }
+            Label #BanStatusBan {
+                Style: (
+                    TextColor: #a04040,
+                    VerticalAlignment: Center,
+                    HorizontalAlignment: Center,
+                    FontSize: 18,
+                    RenderBold: true
+                );
+                Text: %tarobits.punishments.gui.header.ban.banned;
+                Visible: false;
+            }
+            Label #BanStatusNot {
+                Style: (
+                    TextColor: #40a040,
+                    VerticalAlignment: Center,
+                    HorizontalAlignment: Center,
+                    FontSize: 18
+                );
+                Text: %tarobits.punishments.gui.header.ban.notbanned;
+                Visible: true;
+            }
+            Group {
+                FlexWeight: 1;
+            }
+        }
+        Group {
+            LayoutMode: Left;
+            Group {
+                FlexWeight: 1;
+            }
+            Label {
+                Style: (
+                    RenderBold: true,
+                    HorizontalAlignment: Center,
+                    FontSize: 18
+                );
+                Anchor: (Right: 5);
+                Text: %tarobits.punishments.gui.header.mute;
+            }
+            Label #MuteStatusMute {
+                Style: (
+                    TextColor: #aa0000,
+                    VerticalAlignment: Center,
+                    HorizontalAlignment: Center,
+                    RenderBold: true,
+                    FontSize: 18
+                );
+                Text: %tarobits.punishments.gui.header.mute.muted;
+                Visible: false;
+            }
+            Label #MuteStatusNot {
+                Style: (
+                    TextColor: #40a040,
+                    VerticalAlignment: Center,
+                    HorizontalAlignment: Center,
+                    FontSize: 18
+                );
+                Text: %tarobits.punishments.gui.header.mute.notmuted;
+                Visible: true;
+            }
+            Group {
+                FlexWeight: 1;
+            }
+        }
+    }
+    Group {
+        LayoutMode: Top;
+        FlexWeight: 1;
+        Label {
+            Text: %tarobits.punishments.gui.header.historystats;
+            Style: (
+                RenderBold: true,
+                HorizontalAlignment: Center,
+                FontSize: 26
+            );
+        }
+        Group {
+            LayoutMode: Left;
+            Group {
+                FlexWeight: 1;
+            }
+            Label {
+                Text: %tarobits.punishments.gui.header.historystats.bans;
+                Anchor: (Right: 5);
+                Style: (
+                    RenderBold: true,
+                    HorizontalAlignment: Center,
+                    FontSize: 18
+                );
+            }
+            Label #BanStatsNone {
+                Style: (
+                    HorizontalAlignment: Center,
+                    FontSize: 18,
+                    TextColor: #40c040
+                );
+                Text: "0";
+                Visible: true;
+            }
+            Label #BanStatsSome {
+                Style: (
+                    HorizontalAlignment: Center,
+                    FontSize: 18,
+                    RenderBold: true,
+                    TextColor: #c04040
+                );
+                Visible: false;
+            }
+            Group {
+                FlexWeight: 1;
+            }
+        }
+        Group {
+            LayoutMode: Left;
+            Group {
+                FlexWeight: 1;
+            }
+            Label {
+                Text: %tarobits.punishments.gui.header.historystats.mutes;
+                Anchor: (Right: 5);
+                Style: (
+                    RenderBold: true,
+                    HorizontalAlignment: Center,
+                    FontSize: 18
+                );
+            }
+            Label #MuteStatsNone {
+                Style: (
+                    HorizontalAlignment: Center,
+                    FontSize: 18,
+                    TextColor: #40c040
+                );
+                Text: "0";
+                Visible: true;
+            }
+            Label #MuteStatsSome {
+                Style: (
+                    HorizontalAlignment: Center,
+                    FontSize: 18,
+                    RenderBold: true,
+                    TextColor: #c04040
+                );
+                Visible: false;
+            }
+            Group {
+                FlexWeight: 1;
+            }
+        }
+        Group {
+            LayoutMode: Left;
+            Group {
+                FlexWeight: 1;
+            }
+            Label {
+                Text: %tarobits.punishments.gui.header.historystats.kicks;
+                Anchor: (Right: 5);
+                Style: (
+                    RenderBold: true,
+                    HorizontalAlignment: Center,
+                    FontSize: 18
+                );
+            }
+            Label #KickStatsNone {
+                Style: (
+                    HorizontalAlignment: Center,
+                    FontSize: 18,
+                    TextColor: #40c040
+                );
+                Text: "0";
+                Visible: true;
+            }
+            Label #KickStatsSome {
+                Style: (
+                    HorizontalAlignment: Center,
+                    FontSize: 18,
+                    RenderBold: true,
+                    TextColor: #c04040
+                );
+                Visible: false;
+            }
+            Group {
+                FlexWeight: 1;
+            }
+        }
+        Group {
+            LayoutMode: Left;
+            Group {
+                FlexWeight: 1;
+            }
+            Label {
+                Text: %tarobits.punishments.gui.header.historystats.warns;
+                Anchor: (Right: 5);
+                Style: (
+                    RenderBold: true,
+                    HorizontalAlignment: Center,
+                    FontSize: 18
+                );
+            }
+            Label #WarnStatsNone {
+                Style: (
+                    HorizontalAlignment: Center,
+                    FontSize: 18,
+                    TextColor: #40c040
+                );
+                Text: "0";
+                Visible: true;
+            }
+            Label #WarnStatsSome {
+                Style: (
+                    HorizontalAlignment: Center,
+                    FontSize: 18,
+                    RenderBold: true,
+                    TextColor: #c04040
+                );
+                Visible: false;
+            }
+            Group {
+                FlexWeight: 1;
+            }
+        }
+    }
+}

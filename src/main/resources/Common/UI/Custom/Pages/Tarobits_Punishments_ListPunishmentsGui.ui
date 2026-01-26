@@ -1,0 +1,83 @@
+$C = "../Common.ui";
+
+$C.@PageOverlay {}
+
+$C.@Container {
+  Anchor: (Width: 1400, Height: 900);
+
+#Title {
+    Group {
+        TextButton #BackButton {
+            Anchor: (
+                Left: 10,
+                Top: 2,
+                Bottom: 2,
+                Width: 70,
+                Height: 30
+            );
+            Style: TextButtonStyle(
+                Default: (
+                    LabelStyle: (FontSize: 12, TextColor: #a0a0a0, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center),
+                    Background: (Color: #505050a0)
+                ),
+                Hovered: (
+                    LabelStyle: (FontSize: 12, TextColor: #a0a0a0, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center),
+                    Background: (Color: #909090a0)
+                ),
+                Pressed: (
+                    LabelStyle: (FontSize: 12, TextColor: #606060, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center),
+                    Background: (Color: #c0c0c0a0)
+                ),
+                Sounds: $C.@ButtonSounds
+            );
+            Padding: (
+                Left: 6,
+                Top: 2
+            );
+            Text: %tarobits.punishments.gui.backbutton;
+        }
+        $C.@Title #HeaderTitle {
+            @Text = "Lorem Ipsum dolor sit amet";
+        }
+    }
+}
+
+  #Content {
+    LayoutMode: Top;
+
+    Label #PageTitle {
+        Style: (
+            HorizontalAlignment: Center,
+            FontSize: 40,
+            RenderBold: true
+        );
+    }
+
+    Group #Header {
+            Background: PatchStyle(TexturePath: "../Common/DropdownBox.png", Border: 20);
+            Padding: (Bottom: 15);
+    }
+
+    Group {
+        Anchor: (Height: 1, Width: 1300, Top: 10, Bottom: 10);
+    }
+
+    Group #TabContainer {
+        FlexWeight: 1;
+        LayoutMode: Top;
+        Group #TabButtons {
+            LayoutMode: Left;
+            Padding: 10;
+            Anchor: (Height: 50);
+        }
+        Group #Tab {
+            LayoutMode: TopScrolling;
+            ScrollbarStyle: $C.@TranslucentScrollbarStyle;
+            FlexWeight: 1;
+            Padding: (Top: 10, Left: 5);
+        }
+    }
+  }
+}
+
+$C.@BackButton {}

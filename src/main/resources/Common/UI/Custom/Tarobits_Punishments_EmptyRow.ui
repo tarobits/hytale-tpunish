@@ -1,0 +1,10 @@
+Label #EmptyText {
+    FlexWeight: 1;
+    Anchor: (Top: 25);
+    Style: (
+        TextColor: #808080,
+        RenderBold: true,
+        FontSize: 20,
+        HorizontalAlignment: Center
+    );
+}

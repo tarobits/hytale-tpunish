@@ -1,0 +1,61 @@
+$C = "Common.ui";
+
+Group {
+    LayoutMode: Top;
+    FlexWeight: 1;
+    Anchor: (Left: 10, Right: 10);
+    Padding: 10;
+    Background: PatchStyle(TexturePath: "Common/ContainerFullPatch.png", Border: 25);
+    Label #Name {
+        Anchor: (
+            Top: 5
+        );
+        Style: (
+            FontSize: 20,
+            RenderBold: true,
+            HorizontalAlignment: Center
+        );
+        Text: "Lorem Ipsum";
+    }
+    Label #Type {
+        Anchor: (
+            Top: 5
+        );
+        Style: (
+            FontSize: 18,
+            TextColor: #a0a0a0,
+            HorizontalAlignment: Center
+        );
+        Text: "dolor sit";
+    }
+    Label #Duration {
+        Anchor: (
+            Top: 10
+        );
+        Style: (
+            FontSize: 18,
+            TextColor: #a0a0a0,
+            HorizontalAlignment: Center
+        );
+        Text: "amet, consetetur";
+    }
+    Group {
+        FlexWeight: 1;
+    }
+    Group {
+        LayoutMode: Left;
+        Anchor: (Top: 20, Right: 10, Left: 10, Bottom: 10, Height: 30);
+        $C.@TextButton #EditButton {
+            FlexWeight: 1;
+            Anchor: (Left: 5, Right: 5);
+            Text: "Edit";
+            Visible: false;
+        }
+        $C.@CancelTextButton #ExecuteButton {
+            FlexWeight: 1;
+            Anchor: (Left: 5, Right: 5);
+            Text: "Punish";
+            Visible: false;
+        }
+    }
+}

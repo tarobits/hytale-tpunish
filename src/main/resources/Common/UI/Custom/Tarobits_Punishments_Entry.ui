@@ -1,0 +1,197 @@
+$C = "Common.ui";
+
+Group {
+    LayoutMode: Left;
+    Background: PatchStyle(TexturePath: "Common/Buttons/Tertiary.png", Border: 20);
+    Padding: 10;
+    Anchor: (Bottom: 5);
+    Group #StatusBox {
+        LayoutMode: Top;
+        FlexWeight: 1;
+        Label {
+            Style: (
+                RenderBold: true,
+                HorizontalAlignment: Center
+            );
+            Text: %tarobits.punishments.gui.entry.status;
+        }
+        Label #StatusExpired {
+            Anchor: (Top: 2, Bottom: 2, Left: 4);
+            Padding: (Left: 6, Right: 6, Top: 1, Bottom: 0);
+            Style: (
+                RenderBold: true,
+                VerticalAlignment: Center,
+                HorizontalAlignment: Center,
+                TextColor: #40c040
+            );
+            Text: %tarobits.punishments.gui.entry.status.expired;
+            Visible: true;
+        }
+        Label #StatusPardoned {
+            Anchor: (Top: 2, Bottom: 2, Left: 4);
+            Padding: (Left: 6, Right: 6, Top: 1, Bottom: 0);
+            Style: (
+                RenderBold: true,
+                VerticalAlignment: Center,
+                HorizontalAlignment: Center,
+                TextColor: #4040c0
+            );
+            Text: %tarobits.punishments.gui.entry.status.pardoned;
+            Visible: false;
+        }
+        Label #StatusActive {
+            Anchor: (Top: 2, Bottom: 2, Left: 4);
+            Padding: (Left: 6, Right: 6, Top: 1, Bottom: 0);
+            Style: (
+                RenderBold: true,
+                VerticalAlignment: Center,
+                HorizontalAlignment: Center,
+                TextColor: #c04040
+            );
+            Text: %tarobits.punishments.gui.entry.status.active;
+            Visible: false;
+        }
+    }
+    Group #TypeBox {
+        LayoutMode: Top;
+        FlexWeight: 1;
+        Visible: false;
+        Label {
+            Style: (
+                RenderBold: true,
+                HorizontalAlignment: Center
+            );
+            Text: %tarobits.punishments.gui.entry.type;
+        }
+        Label #Type {
+            Anchor: (Top: 2);
+            Style: (
+                RenderBold: true,
+                HorizontalAlignment: Center
+            );
+        }
+    }
+
+    Group #DateBox {
+        LayoutMode: Top;
+        FlexWeight: 1;
+        Label {
+            Style: (
+                RenderBold: true,
+                HorizontalAlignment: Center
+            );
+            Text: %tarobits.punishments.gui.entry.date;
+        }
+        Label #Date {
+            Anchor: (Top: 2);
+            Style: (
+                RenderBold: true,
+                HorizontalAlignment: Center
+            );
+        }
+    }
+
+    Group #ByBox {
+        LayoutMode: Top;
+        FlexWeight: 1;
+        Label {
+            Style: (
+                RenderBold: true,
+                HorizontalAlignment: Center
+            );
+            Text: %tarobits.punishments.gui.entry.by;
+        }
+        Label #By {
+            Anchor: (Top: 2);
+            Style: (
+                RenderBold: true,
+                HorizontalAlignment: Center
+            );
+        }
+    }
+    Group #DurationBox {
+        LayoutMode: Top;
+        FlexWeight: 1;
+        Visible: false;
+        Label {
+            Style: (
+                RenderBold: true,
+                HorizontalAlignment: Center
+            );
+            Text: %tarobits.punishments.gui.entry.duration;
+        }
+        Label #Duration {
+            Anchor: (Top: 2);
+            Style: (
+                RenderBold: true,
+                HorizontalAlignment: Center
+            );
+        }
+    }
+    Group #UntilBox {
+        LayoutMode: Top;
+        FlexWeight: 1;
+        Label {
+            Style: (
+                RenderBold: true,
+                HorizontalAlignment: Center
+            );
+            Text: %tarobits.punishments.gui.entry.until;
+        }
+        Label #Until {
+            Anchor: (Top: 2);
+            Style: (
+                RenderBold: true,
+                HorizontalAlignment: Center
+            );
+        }
+    }
+    Group #ReasonBox {
+        LayoutMode: Top;
+        FlexWeight: 1;
+        Label {
+            Style: (
+                RenderBold: true,
+                HorizontalAlignment: Center
+            );
+            Text: %tarobits.punishments.gui.entry.reason;
+        }
+        Label #Reason {
+            Anchor: (Top: 2);
+            Style: (
+                RenderBold: true,
+                HorizontalAlignment: Center
+            );
+        }
+    }
+    Group #ActionBox {
+        LayoutMode: Top;
+        FlexWeight: 1;
+        Visible: true;
+        Label {
+            Style: (
+                RenderBold: true,
+                HorizontalAlignment: Center
+            );
+            Text: %tarobits.punishments.gui.entry.actions;
+        }
+        Group {
+            LayoutMode: Left;
+            FlexWeight: 1;
+            Group {
+                FlexWeight: 1;
+            }
+            $C.@SmallSecondaryTextButton {
+                Text: %tarobits.punishments.gui.entry.buttons.details;
+                Anchor: (Top: 2, Bottom: 2);
+            }
+            $C.@CancelTextButton {
+                Text: %tarobits.punishments.gui.entry.buttons.remove;
+                Visible: false;
+            }
+            Group {
+                FlexWeight: 1;
+            }
+        }
+    }
+}

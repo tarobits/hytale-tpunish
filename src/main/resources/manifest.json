@@ -1,14 +1,14 @@
 {
-    "Group": "Example",
-    "Name": "ExamplePlugin",
-    "Version": "0.0.2",
-    "Description": "An example plugin for HyTale!",
+    "Group": "Tarobits",
+    "Name": "TPunish",
+    "Version": "0.1.0",
+    "Description": "A punishment management plugin for Hytale!",
     "Authors": [
         {
-            "Name": "It's you!"
+            "Name": "Tarobits"
         }
     ],
-    "Website": "example.org",
+    "Website": "nan",
     "ServerVersion": "*",
     "Dependencies": {
         
@@ -17,6 +17,6 @@
         
     },
     "DisabledByDefault": false,
-    "Main": "org.example.plugin.ExamplePlugin",
+    "Main": "dev.tarobits.punishments.TPunish",
     "IncludesAssetPack": true
 }

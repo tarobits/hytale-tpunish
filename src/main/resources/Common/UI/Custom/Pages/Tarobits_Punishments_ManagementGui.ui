@@ -1,0 +1,67 @@
+$C = "../Common.ui";
+
+$C.@PageOverlay {}
+
+$C.@Container {
+  Anchor: (Width: 1400, Height: 900);
+
+  #Title {
+    Group {
+      $C.@Title {
+        @Text = %tarobits.punishments.gui.management.title;
+      }
+    }
+  }
+
+  #Content {
+    LayoutMode: Top;
+
+    Label {
+        Style: (
+            HorizontalAlignment: Center,
+            FontSize: 40,
+            RenderBold: true
+        );
+        Text: %tarobits.punishments.gui.management.title;
+    }
+
+    Group #Header {
+        Background: PatchStyle(TexturePath: "../Common/DropdownBox.png", Border: 20);
+        Anchor: (Top: 10);
+        Padding: (Vertical: 15);
+        Label {
+            Text: "More info here soon!";
+            Style: (
+                HorizontalAlignment: Center,
+                RenderBold: true,
+                FontSize: 20
+            );
+        }
+    }
+
+    Group {
+        Anchor: (Height: 1, Width: 1300, Top: 10, Bottom: 10);
+    }
+    Group {
+        LayoutMode: Top;
+        FlexWeight: 1;
+        Label {
+            Text: %tarobits.punishments.gui.management.settings;
+            Anchor: (Bottom: 10);
+            Style: (
+                RenderBold: true,
+                FontSize: 30,
+                HorizontalAlignment: Center
+            );
+        }
+        Group {
+            LayoutMode: Left;
+            $C.@SecondaryTextButton #EditPresetsButton {
+                Text: %tarobits.punishments.gui.management.editpresets;
+            }
+        }
+    }
+  }
+}
+
+$C.@BackButton {}

@@ -1,0 +1,39 @@
+package dev.tarobits.punishments.utils.punishment;
+
+import java.util.Arrays;
+
+public enum PunishmentType {
+    BAN,
+    MUTE,
+    WARN,
+    KICK;
+
+    public static PunishmentType getFromJson(String id) {
+        return switch (id) {
+            case "ban" -> BAN;
+            case "mute" -> MUTE;
+            case "warn" -> WARN;
+            case "kick" -> KICK;
+            default -> throw new IllegalArgumentException("PunishmentType ID " + id + " does not exist!");
+        };
+    }
+
+    public String toJson() {
+        return switch (this) {
+            case BAN -> "ban";
+            case MUTE -> "mute";
+            case WARN -> "warn";
+            case KICK -> "kick";
+        };
+    }
+
+    public String toDisplayString() {
+        return switch (this) {
+            case BAN -> "Ban";
+            case MUTE -> "Mute";
+            case WARN -> "Warn";
+            case KICK -> "Kick";
+        };
+    }
+}
+

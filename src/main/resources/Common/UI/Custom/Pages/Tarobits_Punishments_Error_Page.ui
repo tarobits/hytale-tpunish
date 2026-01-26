@@ -1,0 +1,50 @@
+$C = "../Common.ui";
+
+$C.@PageOverlay {}
+
+$C.@Container {
+  Anchor: (Width: 1400, Height: 900);
+
+#Title {
+    Group {
+        $C.@Title {
+            @Text = %tarobits.punishments.gui.error.title;
+        }
+    }
+}
+
+#Content {
+    LayoutMode: Top;
+    Label {
+        Style: (
+            FontSize: 50,
+            RenderBold: true,
+            HorizontalAlignment: Center
+        );
+        Text: %tarobits.punishments.gui.error.title;
+    }
+    Label #ErrorText {
+        Anchor: (Top: 40);
+        Style: (
+            FontSize: 30,
+            HorizontalAlignment: Center
+        );
+        Text: "Lorem ipsum dolor sit amet";
+    }
+    Group {
+        FlexWeight: 1;
+    }
+    Group {
+        LayoutMode: Left;
+        Group {
+            FlexWeight: 1;
+        }
+        $C.@TextButton #HomeButton {
+            Text: %tarobits.punishments.gui.error.home;
+        }
+        Group {
+            FlexWeight: 1;
+        }
+    }
+}
+}
