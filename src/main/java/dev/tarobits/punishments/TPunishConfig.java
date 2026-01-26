@@ -1,5 +1,6 @@
 package dev.tarobits.punishments;
 
+import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.codec.codecs.array.ArrayCodec;
@@ -17,6 +18,8 @@ public class TPunishConfig {
             new PresetConfig("Hate speech", PunishmentType.MUTE, PunishmentSubtype.TEMPORARY, TimeFormat.fromDurationString("1d"), "Hate speech")
     );
 
+    private Boolean showUpdateNotifications = true;
+
     public static final BuilderCodec<PresetConfig> PRESET_CONFIG_CODEC =
             BuilderCodec.<PresetConfig>builder(PresetConfig.class, PresetConfig::new)
                     .append(new KeyedCodec<String>("Name", BuilderCodec.STRING), (d, v) -> d.name = v, (d) -> d.name).add()
@@ -33,6 +36,10 @@ public class TPunishConfig {
     public void setPresetConfigs(List<PresetConfig> presetConfigs) {
         this.presetConfigs = presetConfigs;
     }
+
+    public Boolean getShowUpdateNotifications() { return this.showUpdateNotifications; }
+
+    public void setShowUpdateNotifications(Boolean newValue) { this.showUpdateNotifications = newValue; }
 
     public static final ArrayCodec<PresetConfig> PRESET_CONFIG_LIST_CODEC =
             new ArrayCodec<>(
@@ -75,7 +82,8 @@ public class TPunishConfig {
         public String getReason() { return this.reason; }
     }
 
-    public static final BuilderCodec<TPunishConfig> CODEC = BuilderCodec.<TPunishConfig>builder(TPunishConfig.class, TPunishConfig::new).codecVersion(1)
+    public static final BuilderCodec<TPunishConfig> CODEC = BuilderCodec.<TPunishConfig>builder(TPunishConfig.class, TPunishConfig::new).codecVersion(2)
+            .append(new KeyedCodec<>("ShowUpdateNotifications", Codec.BOOLEAN), (d,v) -> d.showUpdateNotifications = v, (d) -> d.showUpdateNotifications).add()
             .append(new KeyedCodec<>("Presets", PRESET_CONFIG_LIST_CODEC), (d, v) -> d.presetConfigs = List.of(v), (d) -> d.presetConfigs.toArray(new PresetConfig[0])).add()
             .build();
 }
