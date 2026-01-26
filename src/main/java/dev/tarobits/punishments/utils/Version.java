@@ -2,26 +2,15 @@ package dev.tarobits.punishments.utils;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.Message;
 
+import javax.annotation.Nonnull;
 import java.awt.*;
 import java.net.URI;
 import java.net.URL;
 import java.util.Scanner;
 
-public class Version {
-    private static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
-
-    public final Integer major;
-    public final Integer minor;
-    public final Integer patch;
-
-    public Version(Integer major, Integer minor, Integer patch) {
-        this.major = major;
-        this.minor = minor;
-        this.patch = patch;
-    }
+public record Version(Integer major, Integer minor, Integer patch) {
 
     public static Version fromVersionString(String versionString) {
         String[] pieces = versionString.split("\\.");
@@ -33,6 +22,7 @@ public class Version {
     }
 
     @Override
+    @Nonnull
     public String toString() {
         return "v" + this.major + "." + this.minor + "." + this.patch;
     }
