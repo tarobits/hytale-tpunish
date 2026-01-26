@@ -171,7 +171,7 @@ public class PunishmentProvider extends BlockingDiskFile {
 
             try {
                 Punishment punishment = Punishment.fromJson(jsonObject);
-                this.stats.compute(punishment.getType(), (k,v) -> v == null ? 1 : v++);
+                this.stats.compute(punishment.getType(), (_,v) -> v == null ? 1 : v+1);
                 this.addPunishment(punishment);
             } catch (Exception ex) {
                 throw new RuntimeException("Failed to parse!", ex);
