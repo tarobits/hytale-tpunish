@@ -1,5 +1,5 @@
 # TPunish
-![License Badge](https://img.shields.io/badge/License-LGPL-orange)
+![License Badge](https://img.shields.io/badge/License-LGPL--3.0--or--later-orange)
 ![CurseForge Version](https://img.shields.io/curseforge/v/1445040?label=Version)
 
 This plugin is an advanced punishment management plugin for Hytale.
