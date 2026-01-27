@@ -146,7 +146,10 @@ public class PunishmentProvider extends BlockingDiskFile {
         if (index == -1) {
             return false;
         }
-        return modifier.apply(this.punishments.get(uuid).get(index));
+        Boolean res = modifier.apply(this.punishments.get(uuid).get(index));
+        this.syncSave();
+        this.updateIndexes();
+        return res;
     }
 
     public Message updatePunishment(Punishment punishment, Integer id) {
