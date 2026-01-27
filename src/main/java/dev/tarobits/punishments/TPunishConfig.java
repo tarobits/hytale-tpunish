@@ -19,6 +19,7 @@ public class TPunishConfig {
     );
 
     private Boolean showUpdateNotifications = true;
+    private Boolean doPunishmentLogs = true;
 
     public static final BuilderCodec<PresetConfig> PRESET_CONFIG_CODEC =
             BuilderCodec.builder(PresetConfig.class, PresetConfig::new)
@@ -40,6 +41,10 @@ public class TPunishConfig {
     public Boolean getShowUpdateNotifications() { return this.showUpdateNotifications; }
 
     public void setShowUpdateNotifications(Boolean newValue) { this.showUpdateNotifications = newValue; }
+
+    public Boolean getDoPunishmentLogs() { return this.doPunishmentLogs; }
+
+    public void setDoPunishmentLogs(Boolean newValue) { this.doPunishmentLogs = newValue; }
 
     public static final ArrayCodec<PresetConfig> PRESET_CONFIG_LIST_CODEC =
             new ArrayCodec<>(
@@ -82,8 +87,9 @@ public class TPunishConfig {
         public String getReason() { return this.reason; }
     }
 
-    public static final BuilderCodec<TPunishConfig> CODEC = BuilderCodec.builder(TPunishConfig.class, TPunishConfig::new).codecVersion(2)
+    public static final BuilderCodec<TPunishConfig> CODEC = BuilderCodec.builder(TPunishConfig.class, TPunishConfig::new).codecVersion(3)
             .append(new KeyedCodec<>("ShowUpdateNotifications", Codec.BOOLEAN), (d,v) -> d.showUpdateNotifications = v, (d) -> d.showUpdateNotifications).add()
+            .append(new KeyedCodec<>("DoPunishmentLogs", Codec.BOOLEAN), (d,v) -> d.doPunishmentLogs = v, (d) -> d.doPunishmentLogs).add()
             .append(new KeyedCodec<>("Presets", PRESET_CONFIG_LIST_CODEC), (d, v) -> d.presetConfigs = List.of(v), (d) -> d.presetConfigs.toArray(new PresetConfig[0])).add()
             .build();
 }
