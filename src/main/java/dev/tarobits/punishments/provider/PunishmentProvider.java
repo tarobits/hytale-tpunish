@@ -9,6 +9,7 @@ import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.util.io.BlockingDiskFile;
 import dev.tarobits.punishments.TPunish;
 import dev.tarobits.punishments.storage.StorageUtils;
+import dev.tarobits.punishments.utils.ProviderState;
 import dev.tarobits.punishments.utils.punishment.Punishment;
 import dev.tarobits.punishments.utils.punishment.PunishmentType;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -28,8 +29,11 @@ public class PunishmentProvider extends BlockingDiskFile {
     private static PunishmentProvider INSTANCE;
     private static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
 
+    private ProviderState STATE = ProviderState.INIT;
+
     private final Map<PunishmentType, Integer> stats = new Object2ObjectOpenHashMap<>();
-    private final Map<UUID, List<Punishment>> punishments = new Object2ObjectOpenHashMap<>();
+    private final Map<UUID, List<Punishment>> userPunishments = new Object2ObjectOpenHashMap<>();
+    private final Map<UUID, Punishment> punishments = new Object2ObjectOpenHashMap<>();
 
     // Indexes
     private final Map<UUID, Punishment> activeBans = new Object2ObjectOpenHashMap<>();
@@ -55,58 +59,98 @@ public class PunishmentProvider extends BlockingDiskFile {
         return INSTANCE;
     }
 
-    public Integer getNewId() {
-        return this.punishments.size();
-    }
-
     @Nullable
-    public String userHasPunishment(UUID uuid, PunishmentType type) {
-        return switch(type) {
-            case BAN -> activeBans.containsKey(uuid) ? "ban" : null;
-            case MUTE -> activeMutes.containsKey(uuid) ? "mute": null;
+    public String userHasPunishment(UUID user, PunishmentType type) {
+        if (!this.isReady()) throw new IllegalArgumentException("Punishment Provider is not ready!");
+        return switch (type) {
+            case BAN -> activeBans.containsKey(user) ? "ban" : null;
+            case MUTE -> activeMutes.containsKey(user) ? "mute" : null;
             case KICK, WARN -> null;
         };
     }
 
+    private Punishment ensureUniqueId(Punishment punishment) {
+        UUID id = punishment.getId();
+        if (!this.punishments.containsKey(id)) {
+            return punishment;
+        }
+
+        LOGGER.atWarning().log(
+                "Punishment id " + punishment.getId() + " already exists! Giving new id!"
+        );
+
+        return punishment.withId(UUID.randomUUID());
+    }
+
+    private Boolean canFileAction() {
+        return this.STATE == ProviderState.INIT || this.STATE == ProviderState.READY;
+    }
+
+    private Boolean isReading() {
+        return this.STATE == ProviderState.READ;
+    }
+    private Boolean isReady() {
+        return this.STATE == ProviderState.READY;
+    }
+
     public void addPunishment(Punishment punishment) {
-        this.punishments.computeIfAbsent(punishment.getTarget(), _ -> new ArrayList<>())
-                .add(punishment);
+        if (!this.isReady()) throw new IllegalArgumentException("Punishment Provider is not ready!");
+        this.punishments.put(punishment.getId(), punishment);
+
+        // ToDo: Add logging
 
         this.updateIndexes();
 
         this.syncSave();
     }
 
+    private void addFilePunishment(Punishment punishment) {
+        if (!this.isReading()) throw new IllegalArgumentException("Punishment Provider cannot add FilePunishment if not reading!");
+        this.punishments.put(punishment.getId(), punishment);
+    }
+
     public void updateIndexes() {
+        if (!this.isReady()) throw new IllegalArgumentException("Punishment Provider is not ready!");
+        this.STATE = ProviderState.INDEX;
         this.activeBans.clear();
         this.activeMutes.clear();
         this.warns.clear();
-        this.punishments.forEach((_,p) -> {
-            for (Punishment punishment : p) {
-                if (punishment.isActive() && !punishment.isPardoned()) {
-                    switch (punishment.getType()) {
-                        case BAN -> this.activeBans.put(punishment.getTarget(), punishment);
-                        case MUTE -> this.activeMutes.put(punishment.getTarget(), punishment);
-                        case WARN -> this.warns.computeIfAbsent(punishment.getTarget(), _ -> new ArrayList<>())
-                                .add(punishment);
-                    }
+        this.userPunishments.clear();
+        this.punishments.forEach((_, punishment) -> {
+            this.userPunishments.compute(punishment.getTarget(), (_, l) -> {
+                List<Punishment> list = l;
+                if (list == null) {
+                    list = new ArrayList<>();
+                }
+                list.add(punishment);
+                return list;
+            });
+            if (punishment.isActive() && !punishment.isPardoned()) {
+                switch (punishment.getType()) {
+                    case BAN -> this.activeBans.put(punishment.getTarget(), punishment);
+                    case MUTE -> this.activeMutes.put(punishment.getTarget(), punishment);
+                    case WARN -> this.warns.computeIfAbsent(punishment.getTarget(), _ -> new ArrayList<>())
+                            .add(punishment);
                 }
             }
         });
+        this.STATE = ProviderState.READY;
     }
 
-    public Punishment getActive(UUID uuid, PunishmentType type) {
+    public Punishment getActive(UUID user, PunishmentType type) {
+        if (!this.isReady()) throw new IllegalArgumentException("Punishment Provider is not ready!");
         return switch (type) {
-            case BAN -> this.activeBans.get(uuid);
-            case MUTE -> this.activeMutes.get(uuid);
+            case BAN -> this.activeBans.get(user);
+            case MUTE -> this.activeMutes.get(user);
             default -> throw new IllegalArgumentException("Type does not have active entries!");
         };
     }
 
-    public List<Punishment> getEntries(UUID uuid, PunishmentType type) {
+    public List<Punishment> getEntries(UUID user, PunishmentType type) {
+        if (!this.isReady()) throw new IllegalArgumentException("Punishment Provider is not ready!");
         List<Punishment> punishmentList = new ArrayList<>();
 
-        for (Punishment p : this.punishments.computeIfAbsent(uuid, _ -> new ArrayList<>())) {
+        for (Punishment p : this.userPunishments.computeIfAbsent(user, _ -> new ArrayList<>())) {
             if (p.getType() == type) {
                 punishmentList.add(p);
             }
@@ -114,26 +158,29 @@ public class PunishmentProvider extends BlockingDiskFile {
         return punishmentList;
     }
 
-    public Boolean hasBan(UUID uuid) {
-        return this.activeBans.get(uuid) != null;
+    public Boolean hasBan(UUID user) {
+        if (!this.isReady()) throw new IllegalArgumentException("Punishment Provider is not ready!");
+        return this.activeBans.get(user) != null;
     }
 
-    public Boolean hasMute(UUID uuid) {
-        return this.activeMutes.get(uuid) != null;
+    public Boolean hasMute(UUID user) {
+        if (!this.isReady()) throw new IllegalArgumentException("Punishment Provider is not ready!");
+        return this.activeMutes.get(user) != null;
     }
 
-    public Integer findPunishment(UUID uuid, PunishmentType type, Integer id) {
+    public Integer findPunishment(UUID user, PunishmentType type, UUID id) {
+        if (!this.isReady()) throw new IllegalArgumentException("Punishment Provider is not ready!");
         if (switch (type) {
-            case BAN -> activeBans.get(uuid).getHistoryId().equals(id) ? true : null;
-            case MUTE -> activeMutes.get(uuid).getHistoryId().equals(id) ? true : null;
-            case WARN -> warns.get(uuid).stream().filter((p) -> p.getHistoryId().equals(id)).findFirst().orElse(null);
-            default -> punishments.get(uuid).stream().filter((p) -> p.getHistoryId().equals(id)).findFirst().orElse(null);
+            case BAN -> activeBans.get(user).getId().equals(id) ? true : null;
+            case MUTE -> activeMutes.get(user).getId().equals(id) ? true : null;
+            case WARN -> warns.get(user).stream().filter((p) -> p.getId().equals(id)).findFirst().orElse(null);
+            default -> userPunishments.get(user).stream().filter((p) -> p.getId().equals(id)).findFirst().orElse(null);
         } == null) {
             return -1;
         }
         int i = 0;
-        for (Punishment p : punishments.computeIfAbsent(uuid, _ -> new ArrayList<>())) {
-            if (p.getHistoryId().equals(id)) {
+        for (Punishment p : userPunishments.computeIfAbsent(user, _ -> new ArrayList<>())) {
+            if (p.getId().equals(id)) {
                 return i;
             }
             i++;
@@ -141,26 +188,28 @@ public class PunishmentProvider extends BlockingDiskFile {
         return -1;
     }
 
-    public Boolean editPunishment(UUID uuid, PunishmentType type, Integer id, Function<Punishment, Boolean> modifier) {
-        Integer index = this.findPunishment(uuid, type, id);
+    public Boolean editPunishment(UUID user, PunishmentType type, UUID id, Function<Punishment, Boolean> modifier) {
+        if (!this.isReady()) throw new IllegalArgumentException("Punishment Provider is not ready!");
+        Integer index = this.findPunishment(user, type, id);
         if (index == -1) {
             return false;
         }
-        Boolean res = modifier.apply(this.punishments.get(uuid).get(index));
+        Boolean res = modifier.apply(this.userPunishments.get(user).get(index));
         this.syncSave();
         this.updateIndexes();
         return res;
     }
 
-    public Message updatePunishment(Punishment punishment, Integer id) {
-        Integer index = this.findPunishment(punishment.getTarget(),punishment.getType(),id);
+    public Message updatePunishment(Punishment punishment, UUID id) {
+        if (!this.isReady()) throw new IllegalArgumentException("Punishment Provider is not ready!");
+        Integer index = this.findPunishment(punishment.getTarget(), punishment.getType(), id);
         if (index == -1) {
             return switch (punishment.getType()) {
                 case BAN, MUTE -> Message.translation("tarobits.punishments.edit.error.onlyactive");
                 default -> Message.translation("tarobits.punishments.edit.error.notfound");
             };
         }
-        this.punishments.get(punishment.getTarget()).set(index, punishment);
+        this.userPunishments.get(punishment.getTarget()).set(index, punishment);
         this.updateIndexes();
         // ToDo: Add Logs
         this.syncSave();
@@ -169,17 +218,21 @@ public class PunishmentProvider extends BlockingDiskFile {
 
     @Override
     protected void read(BufferedReader bufferedReader) {
+        if (!this.canFileAction()) throw new IllegalArgumentException("Punishment provider cannot read!");
+        this.STATE = ProviderState.READ;
         JsonParser.parseReader(bufferedReader).getAsJsonArray().forEach((entry) -> {
             JsonObject jsonObject = entry.getAsJsonObject();
 
             try {
                 Punishment punishment = Punishment.fromJson(jsonObject);
-                this.stats.compute(punishment.getType(), (_,v) -> v == null ? 1 : v+1);
-                this.addPunishment(punishment);
+                this.stats.compute(punishment.getType(), (_, v) -> v == null ? 1 : v + 1);
+                this.addFilePunishment(this.ensureUniqueId(punishment));
             } catch (Exception ex) {
                 throw new RuntimeException("Failed to parse!", ex);
             }
         });
+        this.STATE = ProviderState.READY;
+        this.updateIndexes();
     }
 
     @Override
@@ -191,9 +244,12 @@ public class PunishmentProvider extends BlockingDiskFile {
 
     @Override
     protected void write(BufferedWriter bufferedWriter) throws IOException {
+        if (!this.canFileAction()) throw new IllegalArgumentException("Punishment provider cannot write!");
+        this.STATE = ProviderState.WRITE;
         JsonArray array = new JsonArray();
         this.punishments.forEach((_, value) ->
-                value.forEach((k) -> array.add(k.toJsonObject())));
+                array.add(value.toJsonObject()));
         bufferedWriter.write(array.toString());
+        this.STATE = ProviderState.READY;
     }
 }
