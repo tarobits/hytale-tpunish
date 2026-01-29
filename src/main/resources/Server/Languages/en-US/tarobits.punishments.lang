@@ -101,5 +101,5 @@ kick.success = Successfully kicked '{name}' with the reason {reason}!
 warn.reason = You've been warned with the reason {reason}!
 warn.unwarn = A warning has been removed from your account. Check /punishments
 warn.error.nowarn = The warning for user '{name}' with the id {id} does not exist.
-warn.success.warn = Successfully warned '{name}' with the reason {reason}! (Warn Id: {id})
+warn.success.warn = Successfully warned '{name}' with the reason {reason}!
 warn.success.unwarn = Successfully removed the warning with the id {id} from '{name}'!
