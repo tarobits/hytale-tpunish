@@ -21,15 +21,6 @@ public class TPunishConfig {
     private Boolean showUpdateNotifications = true;
     private Boolean doPunishmentLogs = true;
 
-    public static final BuilderCodec<PresetConfig> PRESET_CONFIG_CODEC =
-            BuilderCodec.builder(PresetConfig.class, PresetConfig::new)
-                    .append(new KeyedCodec<>("Name", BuilderCodec.STRING), (d, v) -> d.name = v, (d) -> d.name).add()
-                    .append(new KeyedCodec<>("Duration", BuilderCodec.STRING), (d, v) -> d.duration = TimeFormat.fromDurationString(v), (d) -> d.duration.toFullDurationString()).add()
-                    .append(new KeyedCodec<>("Type", BuilderCodec.STRING), (d,v) -> d.type = PunishmentType.getFromJson(v), (d) -> d.type.toJson()).add()
-                    .append(new KeyedCodec<>("SubType", BuilderCodec.STRING), (d,v) -> d.subtype = PunishmentSubtype.getFromJson(v), (d) -> d.subtype.toJson()).add()
-                    .append(new KeyedCodec<>("Reason", BuilderCodec.STRING), (d,v) -> d.reason = v, (d) -> d.reason).add()
-                    .build();
-
     public List<PresetConfig> getPresetConfigs() {
         return this.presetConfigs;
     }
@@ -45,12 +36,6 @@ public class TPunishConfig {
     public Boolean getDoPunishmentLogs() { return this.doPunishmentLogs; }
 
     public void setDoPunishmentLogs(Boolean newValue) { this.doPunishmentLogs = newValue; }
-
-    public static final ArrayCodec<PresetConfig> PRESET_CONFIG_LIST_CODEC =
-            new ArrayCodec<>(
-                    PRESET_CONFIG_CODEC,
-                    PresetConfig[]::new
-            );
 
     public static class PresetConfig {
         private String name;
@@ -85,7 +70,22 @@ public class TPunishConfig {
         public PunishmentSubtype getSubtype() { return this.subtype; }
         public TimeFormat getDuration() { return this.duration; }
         public String getReason() { return this.reason; }
+
+        public static final BuilderCodec<PresetConfig> CODEC =
+                BuilderCodec.builder(PresetConfig.class, PresetConfig::new)
+                        .append(new KeyedCodec<>("Name", BuilderCodec.STRING), (d, v) -> d.name = v, (d) -> d.name).add()
+                        .append(new KeyedCodec<>("Duration", BuilderCodec.STRING), (d, v) -> d.duration = TimeFormat.fromDurationString(v), (d) -> d.duration.toFullDurationString()).add()
+                        .append(new KeyedCodec<>("Type", BuilderCodec.STRING), (d,v) -> d.type = PunishmentType.fromJson(v), (d) -> d.type.toJson()).add()
+                        .append(new KeyedCodec<>("SubType", BuilderCodec.STRING), (d,v) -> d.subtype = PunishmentSubtype.fromJson(v), (d) -> d.subtype.toJson()).add()
+                        .append(new KeyedCodec<>("Reason", BuilderCodec.STRING), (d,v) -> d.reason = v, (d) -> d.reason).add()
+                        .build();
     }
+
+    public static final ArrayCodec<PresetConfig> PRESET_CONFIG_LIST_CODEC =
+            new ArrayCodec<>(
+                    PresetConfig.CODEC,
+                    PresetConfig[]::new
+            );
 
     public static final BuilderCodec<TPunishConfig> CODEC = BuilderCodec.builder(TPunishConfig.class, TPunishConfig::new).codecVersion(3)
             .append(new KeyedCodec<>("ShowUpdateNotifications", Codec.BOOLEAN), (d,v) -> d.showUpdateNotifications = v, (d) -> d.showUpdateNotifications).add()
