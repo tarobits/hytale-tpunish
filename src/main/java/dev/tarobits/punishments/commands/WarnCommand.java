@@ -50,7 +50,7 @@ public class WarnCommand extends CommandBase {
             Punishment created = Punishment.createWarn(uuid, ctx.sender().getUuid(), reason);
             punishmentProvider.addPunishment(created);
             PlayerRef playerRef = Universe.get().getPlayer(uuid);
-            ctx.sendMessage(Message.translation("tarobits.punishments.warn.success.warn").param("name", userName).param("reason", reason).param("id", created.getHistoryId()));
+            ctx.sendMessage(Message.translation("tarobits.punishments.warn.success.warn").param("name", userName).param("reason", reason));
             if (playerRef == null) {
                 return;
             }
