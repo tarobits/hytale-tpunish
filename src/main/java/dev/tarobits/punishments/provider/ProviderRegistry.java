@@ -2,7 +2,6 @@ package dev.tarobits.punishments.provider;
 
 import dev.tarobits.punishments.utils.domainobject.DomainObject;
 import dev.tarobits.punishments.utils.domainobject.DomainObjectType;
-import io.netty.util.SuppressForbidden;
 
 import java.util.Map;
 

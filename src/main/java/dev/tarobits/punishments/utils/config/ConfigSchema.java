@@ -3,9 +3,10 @@ package dev.tarobits.punishments.utils.config;
 import dev.tarobits.punishments.utils.TimeFormat;
 import dev.tarobits.punishments.utils.punishment.PunishmentSubtype;
 import dev.tarobits.punishments.utils.punishment.PunishmentType;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public enum ConfigSchema {
     PRESETS("presets", List.of(

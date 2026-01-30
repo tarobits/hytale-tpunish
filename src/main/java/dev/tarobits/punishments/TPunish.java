@@ -8,7 +8,6 @@ import com.hypixel.hytale.server.core.event.events.player.PlayerSetupConnectEven
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
-import com.hypixel.hytale.server.core.util.Config;
 import dev.tarobits.punishments.commands.*;
 import dev.tarobits.punishments.provider.ConfigProvider;
 import dev.tarobits.punishments.provider.PunishmentProvider;

@@ -2,13 +2,8 @@ package dev.tarobits.punishments.utils.config;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import com.hypixel.hytale.logger.HytaleLogger;
-import dev.tarobits.punishments.provider.ConfigProvider;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
-
-import java.util.Collection;
-import java.util.List;
 
 public class ConfigMigrations {
     private static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();

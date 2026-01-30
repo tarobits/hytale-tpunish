@@ -1,7 +1,6 @@
 package dev.tarobits.punishments.utils.punishment;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.server.core.Message;

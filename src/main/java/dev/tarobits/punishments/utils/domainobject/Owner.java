@@ -2,6 +2,7 @@ package dev.tarobits.punishments.utils.domainobject;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+
 import java.util.UUID;
 
 public record Owner(DomainObjectType type, UUID id) {

@@ -15,7 +15,6 @@ import com.hypixel.hytale.server.core.ui.builder.UIEventBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import dev.tarobits.punishments.TPunish;
 import dev.tarobits.punishments.exceptions.NoPermissionException;
 import dev.tarobits.punishments.provider.ConfigProvider;
 import dev.tarobits.punishments.provider.PunishmentProvider;

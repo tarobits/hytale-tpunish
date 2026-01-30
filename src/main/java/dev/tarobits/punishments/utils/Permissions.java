@@ -1,7 +1,5 @@
 package dev.tarobits.punishments.utils;
 
-import com.hypixel.hytale.builtin.path.commands.PrefabPathHelper;
-import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.permissions.PermissionsModule;
 import dev.tarobits.punishments.utils.punishment.PunishmentSubtype;
