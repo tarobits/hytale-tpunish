@@ -1,12 +1,11 @@
 package dev.tarobits.punishments.provider;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonWriter;
-import com.hypixel.hytale.logger.HytaleLogger;
+import com.hypixel.hytale.component.Ref;
+import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.server.core.Message;
-import com.hypixel.hytale.server.core.util.io.BlockingDiskFile;
+import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.universe.PlayerRef;
+import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import dev.tarobits.punishments.TPunish;
 import dev.tarobits.punishments.storage.StorageUtils;
 import dev.tarobits.punishments.utils.ProviderState;
@@ -15,9 +14,6 @@ import dev.tarobits.punishments.utils.punishment.PunishmentType;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import javax.annotation.Nullable;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,25 +21,21 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 
-public class PunishmentProvider extends BlockingDiskFile {
+public class PunishmentProvider extends AbstractProvider<Punishment> {
     private static PunishmentProvider INSTANCE;
-    private static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
-
-    private ProviderState STATE = ProviderState.INIT;
 
     private final Map<PunishmentType, Integer> stats = new Object2ObjectOpenHashMap<>();
     private final Map<UUID, List<Punishment>> userPunishments = new Object2ObjectOpenHashMap<>();
-    private final Map<UUID, Punishment> punishments = new Object2ObjectOpenHashMap<>();
 
     // Indexes
     private final Map<UUID, Punishment> activeBans = new Object2ObjectOpenHashMap<>();
     private final Map<UUID, Punishment> activeMutes = new Object2ObjectOpenHashMap<>();
     private final Map<UUID, List<Punishment>> warns = new Object2ObjectOpenHashMap<>();
 
-    public PunishmentProvider() {
-        Path pluginDir = TPunish.getInstance().getDataDirectory();
-        super(StorageUtils.createDataFile(pluginDir, "punishments.json").toPath());
+    protected PunishmentProvider() {
+        super("punishments.json", Punishment::fromJson);
         this.syncLoad();
+        this.updateIndexes();
         String loadedString = "Successfully loaded " + this.stats.computeIfAbsent(PunishmentType.BAN, (_) -> 0) + " bans, " +
                 this.stats.computeIfAbsent(PunishmentType.MUTE, (_) -> 0) + " mutes, " +
                 this.stats.computeIfAbsent(PunishmentType.KICK, (_) -> 0) + " kicks and " +
@@ -69,33 +61,10 @@ public class PunishmentProvider extends BlockingDiskFile {
         };
     }
 
-    private Punishment ensureUniqueId(Punishment punishment) {
-        UUID id = punishment.getId();
-        if (!this.punishments.containsKey(id)) {
-            return punishment;
-        }
-
-        LOGGER.atWarning().log(
-                "Punishment id " + punishment.getId() + " already exists! Giving new id!"
-        );
-
-        return punishment.withId(UUID.randomUUID());
-    }
-
-    private Boolean canFileAction() {
-        return this.STATE == ProviderState.INIT || this.STATE == ProviderState.READY;
-    }
-
-    private Boolean isReading() {
-        return this.STATE == ProviderState.READ;
-    }
-    private Boolean isReady() {
-        return this.STATE == ProviderState.READY;
-    }
-
-    public void addPunishment(Punishment punishment) {
+    @Override
+    public void addEntry(Punishment punishment) {
         if (!this.isReady()) throw new IllegalArgumentException("Punishment Provider is not ready!");
-        this.punishments.put(punishment.getId(), punishment);
+        this.entries.put(punishment.getId(), punishment);
 
         // ToDo: Add logging
 
@@ -104,9 +73,9 @@ public class PunishmentProvider extends BlockingDiskFile {
         this.syncSave();
     }
 
-    private void addFilePunishment(Punishment punishment) {
+    protected void addFileEntry(Punishment punishment) {
         if (!this.isReading()) throw new IllegalArgumentException("Punishment Provider cannot add FilePunishment if not reading!");
-        this.punishments.put(punishment.getId(), punishment);
+        this.entries.put(punishment.getId(), punishment);
     }
 
     public void updateIndexes() {
@@ -116,7 +85,9 @@ public class PunishmentProvider extends BlockingDiskFile {
         this.activeMutes.clear();
         this.warns.clear();
         this.userPunishments.clear();
-        this.punishments.forEach((_, punishment) -> {
+        this.stats.clear();
+        this.entries.forEach((_, punishment) -> {
+            this.stats.compute(punishment.getType(), (_, v) -> v == null ? 1 : v + 1);
             this.userPunishments.compute(punishment.getTarget(), (_, l) -> {
                 List<Punishment> list = l;
                 if (list == null) {
@@ -200,9 +171,9 @@ public class PunishmentProvider extends BlockingDiskFile {
         return res;
     }
 
-    public Message updatePunishment(Punishment punishment, UUID id) {
+    public Message updatePunishment(Punishment punishment, UUID user) {
         if (!this.isReady()) throw new IllegalArgumentException("Punishment Provider is not ready!");
-        Integer index = this.findPunishment(punishment.getTarget(), punishment.getType(), id);
+        Integer index = this.findPunishment(punishment.getTarget(), punishment.getType(), user);
         if (index == -1) {
             return switch (punishment.getType()) {
                 case BAN, MUTE -> Message.translation("tarobits.punishments.edit.error.onlyactive");
@@ -214,42 +185,5 @@ public class PunishmentProvider extends BlockingDiskFile {
         // ToDo: Add Logs
         this.syncSave();
         return Message.translation("tarobits.punishments.edit.success");
-    }
-
-    @Override
-    protected void read(BufferedReader bufferedReader) {
-        if (!this.canFileAction()) throw new IllegalArgumentException("Punishment provider cannot read!");
-        this.STATE = ProviderState.READ;
-        JsonParser.parseReader(bufferedReader).getAsJsonArray().forEach((entry) -> {
-            JsonObject jsonObject = entry.getAsJsonObject();
-
-            try {
-                Punishment punishment = Punishment.fromJson(jsonObject);
-                this.stats.compute(punishment.getType(), (_, v) -> v == null ? 1 : v + 1);
-                this.addFilePunishment(this.ensureUniqueId(punishment));
-            } catch (Exception ex) {
-                throw new RuntimeException("Failed to parse!", ex);
-            }
-        });
-        this.STATE = ProviderState.READY;
-        this.updateIndexes();
-    }
-
-    @Override
-    protected void create(BufferedWriter bufferedWriter) throws IOException {
-        try (JsonWriter jsonWriter = new JsonWriter(bufferedWriter)) {
-            jsonWriter.beginArray().endArray();
-        }
-    }
-
-    @Override
-    protected void write(BufferedWriter bufferedWriter) throws IOException {
-        if (!this.canFileAction()) throw new IllegalArgumentException("Punishment provider cannot write!");
-        this.STATE = ProviderState.WRITE;
-        JsonArray array = new JsonArray();
-        this.punishments.forEach((_, value) ->
-                array.add(value.toJsonObject()));
-        bufferedWriter.write(array.toString());
-        this.STATE = ProviderState.READY;
     }
 }

@@ -1,14 +1,12 @@
 package dev.tarobits.punishments.utils.punishment;
 
-import java.util.Arrays;
-
 public enum PunishmentType {
     BAN,
     MUTE,
     WARN,
     KICK;
 
-    public static PunishmentType getFromJson(String id) {
+    public static PunishmentType fromJson(String id) {
         return switch (id) {
             case "ban" -> BAN;
             case "mute" -> MUTE;

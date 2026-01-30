@@ -16,8 +16,8 @@ import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.ui.builder.UIEventBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import dev.tarobits.punishments.TPunishConfig;
 import dev.tarobits.punishments.utils.Permissions;
+import dev.tarobits.punishments.utils.config.PresetConfig;
 import dev.tarobits.punishments.utils.punishment.Punishment;
 import dev.tarobits.punishments.utils.punishment.PunishmentSubtype;
 import dev.tarobits.punishments.utils.punishment.PunishmentType;
@@ -37,7 +37,7 @@ public class GuiUtil {
             @Nonnull UICommandBuilder uiCommandBuilder,
             @Nonnull UIEventBuilder uiEventBuilder,
             @Nonnull String headerSelector,
-            @Nullable TPunishConfig.PresetConfig selectedPunishment,
+            @Nullable PresetConfig selectedPunishment,
             @Nonnull TypesSelected typesSelected,
             @Nonnull Boolean reset
     ) {
@@ -73,8 +73,8 @@ public class GuiUtil {
         uiCommandBuilder.set(headerSelector + " #Duration.Value", selectedPunishment.getDuration().toFullDurationString());
         uiCommandBuilder.set(headerSelector + " #Reason.Value", selectedPunishment.getReason());
         uiCommandBuilder.set(headerSelector + " #TypeDropdown.Value", selectedPunishment.getType().toJson());
-        if (selectedPunishment.getSubtype() != PunishmentSubtype.NULL) {
-            uiCommandBuilder.set(headerSelector + " #SubtypeDropdown.Value", selectedPunishment.getSubtype().toJson());
+        if (selectedPunishment.getSubType() != PunishmentSubtype.NULL) {
+            uiCommandBuilder.set(headerSelector + " #SubtypeDropdown.Value", selectedPunishment.getSubType().toJson());
             uiCommandBuilder.set(headerSelector + " #SubtypeContainer.Visible", true);
             uiCommandBuilder.set(headerSelector + " #SubtypeSpacer.Visible", false);
         } else {
@@ -183,7 +183,7 @@ public class GuiUtil {
         EDIT
     }
 
-    protected static void buildTabs(@Nonnull ListTypes type, @Nonnull Map<PunishmentType, Integer> tabButtonMap, @Nonnull PunishmentType selectedTab, @Nonnull List<TPunishConfig.PresetConfig> presetConfigs, @Nonnull Ref<EntityStore> ref, @Nonnull UICommandBuilder uiCommandBuilder, @Nonnull UIEventBuilder uiEventBuilder, @Nonnull Store<EntityStore> store, @Nullable PlayerRef playerRef) {
+    protected static void buildTabs(@Nonnull ListTypes type, @Nonnull Map<PunishmentType, Integer> tabButtonMap, @Nonnull PunishmentType selectedTab, @Nonnull List<PresetConfig> presetConfigs, @Nonnull Ref<EntityStore> ref, @Nonnull UICommandBuilder uiCommandBuilder, @Nonnull UIEventBuilder uiEventBuilder, @Nonnull Store<EntityStore> store, @Nullable PlayerRef playerRef) {
         int i = 0;
         tabButtonMap.clear();
         for (PunishmentType p : PunishmentType.values()) {
@@ -204,7 +204,7 @@ public class GuiUtil {
         buildTab(type, tabButtonMap, selectedTab, presetConfigs, ref, uiCommandBuilder, uiEventBuilder, store, playerRef);
     }
 
-    protected static void buildTab(@Nonnull ListTypes type, @Nonnull Map<PunishmentType, Integer> tabButtonMap, @Nonnull PunishmentType selectedTab, @Nonnull List<TPunishConfig.PresetConfig> presetConfigs, @Nonnull Ref<EntityStore> ref, @Nonnull UICommandBuilder uiCommandBuilder, @Nonnull UIEventBuilder uiEventBuilder, @Nonnull Store<EntityStore> store, @Nullable PlayerRef playerRef) {
+    protected static void buildTab(@Nonnull ListTypes type, @Nonnull Map<PunishmentType, Integer> tabButtonMap, @Nonnull PunishmentType selectedTab, @Nonnull List<PresetConfig> presetConfigs, @Nonnull Ref<EntityStore> ref, @Nonnull UICommandBuilder uiCommandBuilder, @Nonnull UIEventBuilder uiEventBuilder, @Nonnull Store<EntityStore> store, @Nullable PlayerRef playerRef) {
         tabButtonMap.forEach((t, i) -> {
             boolean value = t == selectedTab;
             String selector = "#TabButtons[" + i + "]";
@@ -215,10 +215,10 @@ public class GuiUtil {
         int rowNum = 0;
         int inCurrentRow = 0;
         int totalNumber = 0;
-        for (TPunishConfig.PresetConfig p : presetConfigs) {
+        for (PresetConfig p : presetConfigs) {
             totalNumber++;
             if (playerRef != null) {
-                if (!Permissions.playerHas(playerRef.getUuid(), Permissions.getPermissionFromTypes(p.getType(), p.getSubtype()))) {
+                if (!Permissions.playerHas(playerRef.getUuid(), Permissions.getPermissionFromTypes(p.getType(), p.getSubType()))) {
                     continue;
                 }
             }
@@ -230,12 +230,12 @@ public class GuiUtil {
             String itemSelector = rowSelector + "[" + inCurrentRow + "]";
             uiCommandBuilder.append(rowSelector, "Tarobits_Punishments_PunishmentButton.ui");
             uiCommandBuilder.set(itemSelector + " #Name.Text", p.getName());
-            uiCommandBuilder.set(itemSelector + " #Type.Text", p.getSubtype().toDisplayString());
+            uiCommandBuilder.set(itemSelector + " #Type.Text", p.getSubType().toDisplayString());
             uiCommandBuilder.set(itemSelector + " #Duration.Text", p.getDuration().toFullDurationString(false));
-            if (p.getSubtype() != PunishmentSubtype.TEMPORARY) {
+            if (p.getSubType() != PunishmentSubtype.TEMPORARY) {
                 uiCommandBuilder.set(itemSelector + " #Duration.Visible", false);
             }
-            if (p.getSubtype() == PunishmentSubtype.NULL) {
+            if (p.getSubType() == PunishmentSubtype.NULL) {
                 uiCommandBuilder.set(itemSelector + " #Type.Visible", false);
             }
             if (type == ListTypes.EDIT) {
@@ -278,7 +278,7 @@ public class GuiUtil {
 
         public static final BuilderCodec<ListPunishmentsData> CODEC = BuilderCodec.builder(ListPunishmentsData.class, ListPunishmentsData::new)
                 .append(new KeyedCodec<String>(ACTION_KEY, Codec.STRING), (d, v) -> d.action = v, (d) -> d.action).add()
-                .append(new KeyedCodec<String>(TYPE_KEY, Codec.STRING), (d, v) -> d.type = PunishmentType.getFromJson(v.toLowerCase()), (d) -> d.type.toJson()).add()
+                .append(new KeyedCodec<String>(TYPE_KEY, Codec.STRING), (d, v) -> d.type = PunishmentType.fromJson(v.toLowerCase()), (d) -> d.type.toJson()).add()
                 .append(new KeyedCodec<String>(PUNISHMENT_KEY, Codec.STRING), (d, v) -> d.punishmentId = Integer.parseInt(v), (d) -> String.valueOf(d.punishmentId)).add()
                 .append(new KeyedCodec<String>(NAME_KEY, Codec.STRING), (d,v) -> d.name = v, (d) -> d.name).add()
                 .append(new KeyedCodec<String>(DURATION_KEY, Codec.STRING), (d,v) -> d.duration = v, (d) -> d.duration).add()
@@ -288,13 +288,13 @@ public class GuiUtil {
                         if (v == null) {
                             d.subtype = PunishmentSubtype.NULL;
                         } else {
-                            d.subtype = PunishmentSubtype.getFromJson(v.toLowerCase());
+                            d.subtype = PunishmentSubtype.fromJson(v.toLowerCase());
                         }
                     } catch (IllegalArgumentException _) {
                         d.subtype = PunishmentSubtype.NULL;
                     }
                 }, (d) -> d.subtype.toJson()).add()
-                .append(new KeyedCodec<String>(TYPE_DROP_KEY, Codec.STRING), (d, v) -> d.typeDrop = PunishmentType.getFromJson(v.toLowerCase()), (d) -> d.typeDrop.toJson()).add()
+                .append(new KeyedCodec<String>(TYPE_DROP_KEY, Codec.STRING), (d, v) -> d.typeDrop = PunishmentType.fromJson(v.toLowerCase()), (d) -> d.typeDrop.toJson()).add()
                 .build();
     }
 

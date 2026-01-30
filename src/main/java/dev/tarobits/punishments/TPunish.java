@@ -10,9 +10,11 @@ import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.util.Config;
 import dev.tarobits.punishments.commands.*;
+import dev.tarobits.punishments.provider.ConfigProvider;
 import dev.tarobits.punishments.provider.PunishmentProvider;
 import dev.tarobits.punishments.utils.Permissions;
 import dev.tarobits.punishments.utils.Version;
+import dev.tarobits.punishments.utils.config.ConfigSchema;
 import dev.tarobits.punishments.utils.punishment.PunishmentType;
 
 import javax.annotation.Nonnull;
@@ -27,29 +29,24 @@ import java.util.concurrent.CompletableFuture;
 public class TPunish extends JavaPlugin {
     private static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
     private static TPunish INSTANCE;
+    private final ConfigProvider configProvider;
     private final PunishmentProvider punishmentProvider;
     private Boolean isOutdated;
     private Version newestVersion;
     private Version currentVersion;
-
-    private final Config<TPunishConfig> config;
 
     private Boolean commandsRegistered = false;
 
     public TPunish(@Nonnull JavaPluginInit init) {
         super(init);
         INSTANCE = this;
-        this.config = this.withConfig("config", TPunishConfig.CODEC);
-        punishmentProvider = new PunishmentProvider();
+        configProvider = ConfigProvider.get();
+        punishmentProvider = PunishmentProvider.get();
         LOGGER.atInfo().log("TPunish (Version " + this.getManifest().getVersion().toString() + ")");
     }
 
     public static TPunish getInstance() {
         return INSTANCE;
-    }
-
-    public Config<TPunishConfig> getConfig() {
-        return this.config;
     }
 
     private CompletableFuture<PlayerChatEvent> handleChat(CompletableFuture<PlayerChatEvent> future) {
@@ -88,10 +85,8 @@ public class TPunish extends JavaPlugin {
                 throw new RuntimeException("Failed to create data directory!");
             }
         }
-        this.config.load();
-        this.config.save();
         this.currentVersion = Version.fromVersionString(this.getManifest().getVersion().toString());
-        if (this.config.get().getShowUpdateNotifications()) {
+        if ((boolean) this.configProvider.getFromSchema(ConfigSchema.SHOW_UPDATE_NOTIFICATIONS).getValue()) {
             try {
                 this.newestVersion = Version.getNewestVersion();
                 this.isOutdated = this.currentVersion.isNewer(newestVersion);

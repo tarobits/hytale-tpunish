@@ -5,7 +5,7 @@ public enum PunishmentSubtype {
     TEMPORARY,
     NULL;
 
-    public static PunishmentSubtype getFromJson(String id) {
+    public static PunishmentSubtype fromJson(String id) {
         return switch (id) {
             case "perm", "permanent" -> PERMANENT;
             case "temp", "temporary" -> TEMPORARY;

@@ -2,21 +2,31 @@ package dev.tarobits.punishments.utils.punishment;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.hypixel.hytale.component.Ref;
+import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.server.core.Message;
+import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.permissions.PermissionsModule;
+import com.hypixel.hytale.server.core.universe.PlayerRef;
+import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import dev.tarobits.punishments.exceptions.NoPermissionException;
 import dev.tarobits.punishments.provider.PunishmentProvider;
 import dev.tarobits.punishments.utils.Permissions;
 import dev.tarobits.punishments.utils.TimeFormat;
 import dev.tarobits.punishments.utils.TimeUtils;
+import dev.tarobits.punishments.utils.domainobject.DomainObject;
+import dev.tarobits.punishments.utils.domainobject.DomainObjectType;
+import dev.tarobits.punishments.utils.domainobject.Owner;
+import dev.tarobits.punishments.utils.domainobject.OwnerRole;
 import dev.tarobits.punishments.utils.ui.PunishmentEntryBuilder;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.Instant;
+import java.util.Map;
 import java.util.UUID;
 
-public class Punishment {
+public class Punishment implements DomainObject<Punishment> {
     private static final PunishmentProvider PROVIDER = PunishmentProvider.get();
     @Nonnull
     private final UUID target;
@@ -235,6 +245,11 @@ public class Punishment {
         // ToDo: Implement logging
     }
 
+    @Override
+    public void display(Player player, PlayerRef playerRef, Ref<EntityStore> ref, Store<EntityStore> store) {
+        // ToDo: Add punishment display page
+    }
+
     public Permissions getPermission() {
         Permissions permission = Permissions.getByTranslationKey(this.getTranslationKey(), this.getSubTranslationKey());
         if (permission == null) throw new IllegalArgumentException("No permission found!");
@@ -285,6 +300,11 @@ public class Punishment {
         return subtype;
     }
 
+    @Override
+    public DomainObjectType getDomainObjectType() {
+        return DomainObjectType.PUNISHMENT;
+    }
+
     @Nonnull
     public PunishmentType getType() {
         return type;
@@ -293,6 +313,14 @@ public class Punishment {
     @Nonnull
     public TimeFormat getDuration() {
         return duration;
+    }
+
+    @Override
+    public Map<OwnerRole, Owner> getOwners() {
+        return Map.of(
+                OwnerRole.TARGET, new Owner(DomainObjectType.PLAYER, this.target),
+                OwnerRole.ACTOR, new Owner(DomainObjectType.PLAYER, this.by)
+        );
     }
 
     @Nonnull
@@ -390,15 +418,18 @@ public class Punishment {
                 id = UUID.randomUUID();
             }
             Instant timestamp = Instant.ofEpochMilli(object.get("timestamp").getAsLong());
-            PunishmentType type = PunishmentType.getFromJson(object.get("type").getAsString());
-            PunishmentSubtype subtype = PunishmentSubtype.getFromJson(object.get("subtype").getAsString());
+            PunishmentType type = PunishmentType.fromJson(object.get("type").getAsString());
+            PunishmentSubtype subtype = PunishmentSubtype.fromJson(object.get("subtype").getAsString());
             String reason = object.get("reason").getAsString();
-            Instant expiresOn = Instant.ofEpochMilli(object.get("expiresOn").getAsLong());
+            Instant expiresOn = null;
+            if (object.has("expiresOn")) {
+                expiresOn = Instant.ofEpochMilli(object.get("expiresOn").getAsLong());
+            }
             TimeFormat duration = TimeFormat.fromDurationString(object.get("duration").getAsString());
             Boolean active = object.get("active").getAsBoolean();
             Boolean pardoned = object.get("pardoned").getAsBoolean();
             return new Punishment(target, by, timestamp, type, subtype, reason, expiresOn, duration, id, active, pardoned);
-        } catch (JsonParseException _) {
+        } catch (Exception _) {
             throw new IllegalArgumentException("An error occurred while parsing punishments.");
         }
     }
