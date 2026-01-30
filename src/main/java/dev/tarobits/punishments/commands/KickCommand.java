@@ -45,7 +45,7 @@ public class KickCommand extends CommandBase {
 
         try {
             Punishment created = Punishment.createKick(uuid, ctx.sender().getUuid(), reason);
-            punishmentProvider.addPunishment(created);
+            punishmentProvider.addEntry(created);
             playerRef.getPacketHandler().disconnect(created.getReasonMessage().getAnsiMessage());
             ctx.sendMessage(Message.translation("tarobits.punishments.kick.success").param("name", userName).param("reason", reason));
         } catch (NoPermissionException e) {

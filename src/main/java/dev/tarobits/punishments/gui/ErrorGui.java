@@ -26,12 +26,12 @@ public class ErrorGui extends InteractiveCustomUIPage<ErrorGui.ErrorGuiData> {
     @Nullable
     private final ProfileServiceClient.PublicGameProfile target;
     private final Player player;
-    private final String errorMessageId;
+    private final String errorMessage;
 
     public ErrorGui(@Nonnull PlayerRef playerRef, @Nonnull CustomPageLifetime lifetime, @Nullable ProfileServiceClient.PublicGameProfile target, @Nonnull String errorMessageId, @Nonnull Player player) {
         super(playerRef, lifetime, ErrorGuiData.CODEC);
         this.target = target;
-        this.errorMessageId = errorMessageId;
+        this.errorMessage = errorMessageId;
         this.player = player;
     }
 
@@ -50,7 +50,11 @@ public class ErrorGui extends InteractiveCustomUIPage<ErrorGui.ErrorGuiData> {
     @Override
     public void build(@NonNullDecl Ref<EntityStore> ref, @NonNullDecl UICommandBuilder uiCommandBuilder, @NonNullDecl UIEventBuilder uiEventBuilder, @NonNullDecl Store<EntityStore> store) {
         uiCommandBuilder.append("Pages/Tarobits_Punishments_Error_Page.ui");
-        uiCommandBuilder.set("#ErrorText.Text", Message.translation(errorMessageId));
+        if (errorMessage.startsWith("tarobits.punishments")) {
+            uiCommandBuilder.set("#ErrorText.Text", Message.translation(errorMessage));
+        } else {
+            uiCommandBuilder.set("#ErrorText.Text", errorMessage);
+        }
         uiEventBuilder.addEventBinding(CustomUIEventBindingType.Activating, "#HomeButton", EventData.of(ErrorGuiData.BUTTON_KEY, "Home"));
     }
 
@@ -58,8 +62,8 @@ public class ErrorGui extends InteractiveCustomUIPage<ErrorGui.ErrorGuiData> {
         public static final String BUTTON_KEY = "Button";
         private String button;
 
-        public static final BuilderCodec<ErrorGuiData> CODEC = BuilderCodec.<ErrorGuiData>builder(ErrorGuiData.class, ErrorGuiData::new)
-                .append(new KeyedCodec<String>(BUTTON_KEY, Codec.STRING), (d, v) -> d.button = v, (d) -> d.button).add()
+        public static final BuilderCodec<ErrorGuiData> CODEC = BuilderCodec.builder(ErrorGuiData.class, ErrorGuiData::new)
+                .append(new KeyedCodec<>(BUTTON_KEY, Codec.STRING), (d, v) -> d.button = v, (d) -> d.button).add()
                 .build();
     }
 }

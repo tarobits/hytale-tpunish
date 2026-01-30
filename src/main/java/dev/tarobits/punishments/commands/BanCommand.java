@@ -56,7 +56,7 @@ public class BanCommand extends CommandBase {
         }
         try {
             Punishment created = Punishment.createBan(uuid, ctx.sender().getUuid(), reason, duration);
-            punishmentProvider.addPunishment(created);
+            punishmentProvider.addEntry(created);
 
             PlayerRef playerRef = Universe.get().getPlayer(uuid);
             ctx.sendMessage(created.getSuccessMessage(userName));

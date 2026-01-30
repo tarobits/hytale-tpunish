@@ -56,7 +56,7 @@ public class MuteCommand extends CommandBase {
         }
         try {
             Punishment created = Punishment.createMute(uuid, ctx.sender().getUuid(), reason, duration);
-            punishmentProvider.addPunishment(created);
+            punishmentProvider.addEntry(created);
             PlayerRef playerRef = Universe.get().getPlayer(uuid);
             ctx.sendMessage(created.getSuccessMessage(userName));
             if (playerRef == null) {

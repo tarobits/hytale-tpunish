@@ -13,10 +13,11 @@ import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.ui.builder.UIEventBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import dev.tarobits.punishments.TPunish;
-import dev.tarobits.punishments.TPunishConfig;
+import dev.tarobits.punishments.provider.ConfigProvider;
 import dev.tarobits.punishments.utils.Permissions;
 import dev.tarobits.punishments.utils.TimeFormat;
+import dev.tarobits.punishments.utils.config.ConfigSchema;
+import dev.tarobits.punishments.utils.config.PresetConfig;
 import dev.tarobits.punishments.utils.punishment.PunishmentSubtype;
 import dev.tarobits.punishments.utils.punishment.PunishmentType;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -29,15 +30,18 @@ import java.util.Map;
 
 public class EditPresetsGui extends InteractiveCustomUIPage<GuiUtil.ListPunishmentsData> {
     private static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
-    private final List<TPunishConfig.PresetConfig> presetConfigs;
+    private static ConfigProvider configProvider;
+    private final List<PresetConfig> presetConfigs;
     private final Map<PunishmentType, Integer> tabButtonMap = new Object2ObjectOpenHashMap<>();
     private PunishmentType selectedTab;
-    private TPunishConfig.PresetConfig selectedPunishment = null;
+    private PresetConfig selectedPunishment = null;
     private Integer selectedPunishmentIndex = -1;
     private GuiUtil.TypesSelected typesSelected = new GuiUtil.TypesSelected(PunishmentType.BAN, PunishmentSubtype.PERMANENT);
+    @SuppressWarnings("unchecked")
     public EditPresetsGui(@Nonnull PlayerRef playerRef, @Nonnull CustomPageLifetime lifetime) {
         super(playerRef, lifetime, GuiUtil.ListPunishmentsData.CODEC);
-        this.presetConfigs = new ArrayList<>(TPunish.getInstance().getConfig().get().getPresetConfigs());
+        configProvider = ConfigProvider.get();
+        this.presetConfigs = new ArrayList<>((List<PresetConfig>) configProvider.getFromSchema(ConfigSchema.PRESETS).getValue());
     }
 
     protected void resetHeader(@Nonnull UICommandBuilder uiCommandBuilder, @Nonnull UIEventBuilder uiEventBuilder) {
@@ -70,7 +74,7 @@ public class EditPresetsGui extends InteractiveCustomUIPage<GuiUtil.ListPunishme
             case "Edit":
                 this.selectedPunishment = presetConfigs.get(data.punishmentId);
                 this.selectedPunishmentIndex = data.punishmentId;
-                this.typesSelected = new GuiUtil.TypesSelected(this.selectedPunishment.getType(), this.selectedPunishment.getSubtype());
+                this.typesSelected = new GuiUtil.TypesSelected(this.selectedPunishment.getType(), this.selectedPunishment.getSubType());
                 GuiUtil.buildPunishmentHeader(uiCommandBuilder, uiEventBuilder, "#Header", this.selectedPunishment, this.typesSelected, false);
                 break;
             case "Submit":
@@ -80,12 +84,11 @@ public class EditPresetsGui extends InteractiveCustomUIPage<GuiUtil.ListPunishme
                         case WARN,KICK -> this.typesSelected = new GuiUtil.TypesSelected(this.typesSelected.type, PunishmentSubtype.NULL);
                     }
                     if (this.selectedPunishment != null) {
-                        this.presetConfigs.set(this.selectedPunishmentIndex, new TPunishConfig.PresetConfig(data.name, this.typesSelected.type, this.typesSelected.subtype, tf, data.reason));
+                        this.presetConfigs.set(this.selectedPunishmentIndex, new PresetConfig(data.name, this.typesSelected.type, this.typesSelected.subtype, tf, data.reason));
                     } else {
-                        this.presetConfigs.add(new TPunishConfig.PresetConfig(data.name, data.typeDrop, data.subtype, tf, data.reason));
+                        this.presetConfigs.add(new PresetConfig(data.name, data.typeDrop, data.subtype, tf, data.reason));
                     }
-                    TPunish.getInstance().getConfig().get().setPresetConfigs(this.presetConfigs);
-                    TPunish.getInstance().getConfig().save();
+                    configProvider.updateEntry(ConfigSchema.PRESETS, this.presetConfigs);
                     this.selectedTab = this.typesSelected.type;
                     resetHeader(uiCommandBuilder, uiEventBuilder);
                     GuiUtil.buildTab(GuiUtil.ListTypes.EDIT, this.tabButtonMap, this.typesSelected.type, this.presetConfigs, ref, uiCommandBuilder, uiEventBuilder, store, null);
@@ -96,8 +99,7 @@ public class EditPresetsGui extends InteractiveCustomUIPage<GuiUtil.ListPunishme
                 break;
             case "Delete":
                 this.presetConfigs.remove(data.punishmentId);
-                TPunish.getInstance().getConfig().get().setPresetConfigs(this.presetConfigs);
-                TPunish.getInstance().getConfig().save();
+                configProvider.updateEntry(ConfigSchema.PRESETS, this.presetConfigs);
                 GuiUtil.buildTab(GuiUtil.ListTypes.EDIT, this.tabButtonMap, this.selectedTab, this.presetConfigs, ref, uiCommandBuilder, uiEventBuilder, store, null);
                 break;
             case "Reset":

@@ -15,11 +15,12 @@ import com.hypixel.hytale.server.core.ui.builder.UIEventBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
-import dev.tarobits.punishments.TPunish;
-import dev.tarobits.punishments.TPunishConfig;
 import dev.tarobits.punishments.exceptions.NoPermissionException;
+import dev.tarobits.punishments.provider.ConfigProvider;
 import dev.tarobits.punishments.provider.PunishmentProvider;
 import dev.tarobits.punishments.utils.Permissions;
+import dev.tarobits.punishments.utils.config.ConfigSchema;
+import dev.tarobits.punishments.utils.config.PresetConfig;
 import dev.tarobits.punishments.utils.punishment.Punishment;
 import dev.tarobits.punishments.utils.punishment.PunishmentType;
 import dev.tarobits.punishments.utils.ui.HistoryStat;
@@ -27,6 +28,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -37,15 +39,16 @@ public class AddPunishmentGui extends InteractiveCustomUIPage<GuiUtil.ListPunish
     private static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
     private static final PunishmentProvider pp = PunishmentProvider.get();
     private final ProfileServiceClient.PublicGameProfile target;
-    private final List<TPunishConfig.PresetConfig> presetConfigs;
+    private final List<PresetConfig> presetConfigs;
     private final Map<PunishmentType, Integer> tabButtonMap = new Object2ObjectOpenHashMap<>();
     private final Map<PunishmentType, HistoryStat> historyStats;
     private PunishmentType selectedTab;
 
+    @SuppressWarnings("unchecked")
     public AddPunishmentGui(@Nonnull PlayerRef playerRef, @Nonnull CustomPageLifetime lifetime, @Nonnull ProfileServiceClient.PublicGameProfile target, @Nonnull Map<PunishmentType, HistoryStat> historyStats) {
         super(playerRef, lifetime, GuiUtil.ListPunishmentsData.CODEC);
         this.target = target;
-        this.presetConfigs = TPunish.getInstance().getConfig().get().getPresetConfigs();
+        this.presetConfigs = new ArrayList<>((List<PresetConfig>) ConfigProvider.get().getFromSchema(ConfigSchema.PRESETS).getValue());
         this.historyStats = historyStats;
     }
 
@@ -66,7 +69,7 @@ public class AddPunishmentGui extends InteractiveCustomUIPage<GuiUtil.ListPunish
                 break;
             case "Execute":
                 try {
-                    TPunishConfig.PresetConfig pc = presetConfigs.get(data.punishmentId);
+                    PresetConfig pc = presetConfigs.get(data.punishmentId);
                     Punishment created = null;
                     String hasPunishment = pp.userHasPunishment(target.getUuid(), pc.getType());
                     if (hasPunishment != null) {
@@ -75,13 +78,13 @@ public class AddPunishmentGui extends InteractiveCustomUIPage<GuiUtil.ListPunish
                     }
                     switch (pc.getType()) {
                         case BAN ->
-                                pp.addPunishment(created = Punishment.createBan(target.getUuid(), playerRef.getUuid(), pc.getReason(), pc.getDuration()));
+                                pp.addEntry(created = Punishment.createBan(target.getUuid(), playerRef.getUuid(), pc.getReason(), pc.getDuration()));
                         case MUTE ->
-                                pp.addPunishment(created = Punishment.createMute(target.getUuid(), playerRef.getUuid(), pc.getReason(), pc.getDuration()));
+                                pp.addEntry(created = Punishment.createMute(target.getUuid(), playerRef.getUuid(), pc.getReason(), pc.getDuration()));
                         case KICK ->
-                                pp.addPunishment(created = Punishment.createKick(target.getUuid(), playerRef.getUuid(), pc.getReason()));
+                                pp.addEntry(created = Punishment.createKick(target.getUuid(), playerRef.getUuid(), pc.getReason()));
                         case WARN ->
-                                pp.addPunishment(created = Punishment.createWarn(target.getUuid(), playerRef.getUuid(), pc.getReason()));
+                                pp.addEntry(created = Punishment.createWarn(target.getUuid(), playerRef.getUuid(), pc.getReason()));
                     }
                     if (created == null) {
                         throw new IllegalArgumentException("Something went wrong while creating punishment!");
