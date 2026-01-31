@@ -3,7 +3,10 @@ package dev.tarobits.punishments.utils.config;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.hypixel.hytale.logger.HytaleLogger;
+import dev.tarobits.punishments.provider.ConfigProvider;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
+
+import java.util.logging.Level;
 
 public class ConfigMigrations {
     private static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
@@ -12,38 +15,61 @@ public class ConfigMigrations {
         LOGGER.atInfo().log(msg);
     }
 
-    public static JsonObject performMigrations(JsonObject jsonObject, Integer currentVersion) {
+    public static JsonObject performMigrations(JsonObject currentConfig, Integer currentVersion) {
         log("-=-=-= Running config migrations =-=-=-");
-        if (currentVersion == 0) {
-            log("Running migration to config version 1");
-            jsonObject = zeroToOne(jsonObject);
-            currentVersion = 1;
+        JsonObject result = new JsonObject();
+        while (currentVersion < ConfigProvider.getConfigVersion()) {
+            migrate(currentVersion, currentConfig, result);
+            currentVersion++;
         }
 
-        // Add more version migrations here
+        normalizeConfig(currentConfig, result);
 
         log("-=-=-= Config migrations END =-=-=-");
-        return jsonObject;
+        return result;
     }
 
-    private static JsonObject zeroToOne(JsonObject jsonObject) {
-        JsonObject result = new JsonObject();
+    private static void migrate(Integer currentVersion, JsonObject currentConfig, JsonObject result) {
+        switch (currentVersion) {
+            case 0:
+                zeroToOne(currentConfig,result);
+                break;
+                // Add more migrations here
+        }
+    }
 
+    // Clean config and add missing settings
+    private static void normalizeConfig(JsonObject currentConfig, JsonObject result) {
+        for (ConfigSchema s : ConfigSchema.values()) {
+            if (!result.has(s.getKey())) {
+                ConfigEntry entry = s.getEntry();
+                try {
+                    entry.parseValueFromJson(currentConfig.get(s.getKey()));
+                } catch (Exception _) {
+                    LOGGER.at(Level.FINE).log("Failed to find config key " + s.getKey() + " using default.");
+                }
+                entry.parseValueToJson(result);
+            }
+        }
+    }
+
+    private static void zeroToOne(JsonObject currentConfig, JsonObject result) {
+        log("Running migration to config version 1");
         try {
-            result.addProperty("doPunishmentNotifications", jsonObject.get("DoPunishmentNotifications").getAsBoolean());
+            result.addProperty("doPunishmentNotifications", currentConfig.get("DoPunishmentNotifications").getAsBoolean());
         } catch (Exception _) {
             result.addProperty("doPunishmentNotifications", true);
         }
 
         try {
-            result.addProperty("showUpdateNotifications", jsonObject.get("ShowUpdateNotifications").getAsBoolean());
+            result.addProperty("showUpdateNotifications", currentConfig.get("ShowUpdateNotifications").getAsBoolean());
         } catch (Exception _) {
             result.addProperty("showUpdateNotifications", true);
         }
 
         try {
             JsonArray newPresets = new JsonArray();
-            jsonObject.get("Presets").getAsJsonArray().forEach((e) -> {
+            currentConfig.get("Presets").getAsJsonArray().forEach((e) -> {
                 JsonObject obj = e.getAsJsonObject();
                 JsonObject newObj = new JsonObject();
 
@@ -61,8 +87,6 @@ public class ConfigMigrations {
             JsonArray presetArray = getDefaultPresetsV1();
             result.add("presets", presetArray);
         }
-
-        return result;
     }
 
     @NonNullDecl

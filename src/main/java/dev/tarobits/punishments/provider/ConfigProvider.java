@@ -135,7 +135,7 @@ public class ConfigProvider extends AbstractProvider<ConfigEntry> {
 
         obj.add("_meta", meta);
         for (ConfigEntry entry : this.entries.values()) {
-            obj = entry.parseValueToJson(obj);
+            entry.parseValueToJson(obj);
         }
         StringBuilder jsonString = new StringBuilder();
         JsonWriter jsonWriter = new JsonWriter(Streams.writerForAppendable(jsonString));

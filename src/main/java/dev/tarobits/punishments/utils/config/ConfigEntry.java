@@ -13,6 +13,8 @@ import dev.tarobits.punishments.utils.domainobject.DomainObject;
 import dev.tarobits.punishments.utils.domainobject.DomainObjectType;
 import dev.tarobits.punishments.utils.domainobject.Owner;
 import dev.tarobits.punishments.utils.domainobject.OwnerRole;
+import dev.tarobits.punishments.utils.log.LogActionEnum;
+import dev.tarobits.punishments.utils.log.LogEntry;
 
 import javax.annotation.Nonnull;
 import java.math.BigDecimal;
@@ -29,6 +31,15 @@ public class ConfigEntry implements DomainObject<ConfigEntry> {
     private Object value;
     private final ConfigEntryType type;
     private final Integer versionAdded;
+
+    public enum LogActions implements LogActionEnum {
+        MODIFY;
+
+        @Override
+        public String getLogActionText() {
+            return "tarobits.punishments.config.log.actions.modify";
+        }
+    }
 
 
     public ConfigEntry(@Nonnull String key, @Nonnull Object defaultValue, @Nonnull ConfigEntryType type, @Nonnull Integer versionAdded) {
@@ -86,6 +97,11 @@ public class ConfigEntry implements DomainObject<ConfigEntry> {
     }
 
     @Override
+    public String getLogActionText(String logAction) {
+        return LogActions.valueOf(logAction).getLogActionText();
+    }
+
+    @Override
     public UUID getId() {
         return id;
     }
@@ -106,7 +122,7 @@ public class ConfigEntry implements DomainObject<ConfigEntry> {
     }
 
     @SuppressWarnings("unchecked")
-    public JsonObject parseValueToJson(JsonObject obj) {
+    public void parseValueToJson(JsonObject obj) {
         switch (type) {
             case BOOLEAN -> obj.addProperty(this.key, (Boolean) this.value);
             case INTEGER -> obj.addProperty(this.key, (Integer) this.value);
@@ -119,7 +135,6 @@ public class ConfigEntry implements DomainObject<ConfigEntry> {
                 obj.add(this.key, presetList);
             }
         }
-        return obj;
     }
 
     @Override
