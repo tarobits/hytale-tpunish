@@ -10,7 +10,10 @@ public class HistoryStat {
     @Nullable
     public Punishment latestPunishment;
 
-    public HistoryStat(@Nonnull Integer numberOfPunishments, @Nullable Punishment latestPunishment) {
+    public HistoryStat(
+            @Nonnull Integer numberOfPunishments,
+            @Nullable Punishment latestPunishment
+    ) {
         this.numberOfPunishments = numberOfPunishments;
         this.latestPunishment = latestPunishment;
     }

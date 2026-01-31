@@ -5,12 +5,18 @@ import com.hypixel.hytale.server.core.command.system.arguments.types.SingleArgum
 import dev.tarobits.punishments.utils.TimeFormat;
 
 public class DurationArgType extends SingleArgumentType<TimeFormat> {
-    public DurationArgType() {
-        super("Duration", "A duration of time\ny: years\nm: months\nd: days\nh: hours\nmin: minutes", "1h", "5d1h", "7m1d8h", "1y2m30d8h", "4h30min");
-    }
+	public DurationArgType() {
+		super(
+				"Duration", "A duration of time\ny: years\nm: months\nd: days\nh: hours\nmin: minutes", "1h", "5d1h",
+				"7m1d8h", "1y2m30d8h", "4h30min"
+		);
+	}
 
-    @Override
-    public TimeFormat parse(String input, ParseResult result) {
+	@Override
+	public TimeFormat parse(
+			String input,
+			ParseResult result
+	) {
         return TimeFormat.fromDurationString(input);
-    }
+	}
 }

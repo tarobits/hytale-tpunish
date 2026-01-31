@@ -12,7 +12,10 @@ public class ReasonArgType extends SingleArgumentType<String> {
     }
 
     @Override
-    public String parse(@Nonnull String str, @Nonnull ParseResult parseResult) {
+    public String parse(
+            @Nonnull String str,
+            @Nonnull ParseResult parseResult
+    ) {
         return str;
     }
 }

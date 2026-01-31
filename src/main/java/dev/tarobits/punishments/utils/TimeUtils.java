@@ -31,11 +31,13 @@ public class TimeUtils {
         return StringUtil.humanizeTime(duration);
     }
 
-    public static String instantAsRelativeAndAbsoluteDuration(Instant inst, Duration duration) {
-        return TimeUtils.instantAsRelativeDuration(inst).replaceAll("( \\d+m)", "") +
-                " (" +
-                TimeUtils.durationAsAbsoluteDuration(duration).replaceAll("( \\d+m)", "") +
-                ")";
+    public static String instantAsRelativeAndAbsoluteDuration(
+            Instant inst,
+            Duration duration
+    ) {
+        return TimeUtils.instantAsRelativeDuration(inst)
+                .replaceAll("( \\d+m)", "") + " (" + TimeUtils.durationAsAbsoluteDuration(duration)
+                .replaceAll("( \\d+m)", "") + ")";
     }
 }
 

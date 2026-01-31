@@ -1,16 +1,18 @@
 package dev.tarobits.punishments.utils.punishment;
 
+import dev.tarobits.punishments.exceptions.UserException;
+
 public enum PunishmentSubtype {
     PERMANENT,
     TEMPORARY,
     NULL;
 
-    public static PunishmentSubtype fromJson(String id) {
+    public static PunishmentSubtype fromJson(String id) throws UserException {
         return switch (id) {
             case "perm", "permanent" -> PERMANENT;
             case "temp", "temporary" -> TEMPORARY;
             case "null" -> NULL;
-            default -> throw new IllegalArgumentException("PunishmentSubtype ID " + id + " does not exist!");
+            default -> throw new UserException("PunishmentSubtype ID " + id + " does not exist!");
         };
     }
 

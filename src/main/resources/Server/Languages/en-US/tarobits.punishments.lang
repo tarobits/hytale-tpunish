@@ -68,6 +68,7 @@ edit.error.nonull = Subtype may not be null!
 edit.error.mustnull = Subtype must be null!
 edit.error.onlyactive = You may only edit active punishments!
 edit.error.notfound = Couldn't find the punishment!
+edit.error.alreadypardon = This punishment is already pardoned!
 edit.success = Successfully {action} '{player}'!
 edit.actions.unban = unbanned
 edit.actions.unmute = unmuted

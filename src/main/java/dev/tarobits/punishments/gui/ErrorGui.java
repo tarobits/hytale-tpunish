@@ -28,7 +28,13 @@ public class ErrorGui extends InteractiveCustomUIPage<ErrorGui.ErrorGuiData> {
     private final Player player;
     private final String errorMessage;
 
-    public ErrorGui(@Nonnull PlayerRef playerRef, @Nonnull CustomPageLifetime lifetime, @Nullable ProfileServiceClient.PublicGameProfile target, @Nonnull String errorMessageId, @Nonnull Player player) {
+    public ErrorGui(
+            @Nonnull PlayerRef playerRef,
+            @Nonnull CustomPageLifetime lifetime,
+            @Nullable ProfileServiceClient.PublicGameProfile target,
+            @Nonnull String errorMessageId,
+            @Nonnull Player player
+    ) {
         super(playerRef, lifetime, ErrorGuiData.CODEC);
         this.target = target;
         this.errorMessage = errorMessageId;
@@ -36,34 +42,54 @@ public class ErrorGui extends InteractiveCustomUIPage<ErrorGui.ErrorGuiData> {
     }
 
     @Override
-    public void handleDataEvent(@NonNullDecl Ref<EntityStore> ref, @NonNullDecl Store<EntityStore> store, @NonNullDecl ErrorGuiData data) {
+    public void handleDataEvent(
+            @NonNullDecl Ref<EntityStore> ref,
+            @NonNullDecl Store<EntityStore> store,
+            @NonNullDecl ErrorGuiData data
+    ) {
         super.handleDataEvent(ref, store, data);
         if (Objects.equals(data.button, "Home")) {
             if (target != null) {
-                player.getPageManager().openCustomPage(ref, store, new PunishmentsGui(this.playerRef, CustomPageLifetime.CanDismiss, target));
+                player.getPageManager()
+                        .openCustomPage(
+                                ref, store,
+                                new PunishmentsGui(this.playerRef, CustomPageLifetime.CanDismiss, target)
+                        );
             } else {
-                player.getPageManager().openCustomPage(ref, store, new ManagementGui(playerRef, CustomPageLifetime.CanDismiss));
+                player.getPageManager()
+                        .openCustomPage(ref, store, new ManagementGui(playerRef, CustomPageLifetime.CanDismiss));
             }
         }
     }
 
     @Override
-    public void build(@NonNullDecl Ref<EntityStore> ref, @NonNullDecl UICommandBuilder uiCommandBuilder, @NonNullDecl UIEventBuilder uiEventBuilder, @NonNullDecl Store<EntityStore> store) {
+    public void build(
+            @NonNullDecl Ref<EntityStore> ref,
+            @NonNullDecl UICommandBuilder uiCommandBuilder,
+            @NonNullDecl UIEventBuilder uiEventBuilder,
+            @NonNullDecl Store<EntityStore> store
+    ) {
         uiCommandBuilder.append("Pages/Tarobits_Punishments_Error_Page.ui");
         if (errorMessage.startsWith("tarobits.punishments")) {
             uiCommandBuilder.set("#ErrorText.Text", Message.translation(errorMessage));
         } else {
             uiCommandBuilder.set("#ErrorText.Text", errorMessage);
         }
-        uiEventBuilder.addEventBinding(CustomUIEventBindingType.Activating, "#HomeButton", EventData.of(ErrorGuiData.BUTTON_KEY, "Home"));
+        uiEventBuilder.addEventBinding(
+                CustomUIEventBindingType.Activating, "#HomeButton",
+                EventData.of(ErrorGuiData.BUTTON_KEY, "Home")
+        );
     }
 
     public static class ErrorGuiData {
         public static final String BUTTON_KEY = "Button";
-        private String button;
-
-        public static final BuilderCodec<ErrorGuiData> CODEC = BuilderCodec.builder(ErrorGuiData.class, ErrorGuiData::new)
-                .append(new KeyedCodec<>(BUTTON_KEY, Codec.STRING), (d, v) -> d.button = v, (d) -> d.button).add()
+        public static final BuilderCodec<ErrorGuiData> CODEC = BuilderCodec.builder(
+                        ErrorGuiData.class,
+                        ErrorGuiData::new
+                )
+                .append(new KeyedCodec<>(BUTTON_KEY, Codec.STRING), (d, v) -> d.button = v, (d) -> d.button)
+                .add()
                 .build();
+        private String button;
     }
 }

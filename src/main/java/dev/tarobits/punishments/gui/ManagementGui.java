@@ -20,12 +20,19 @@ import javax.annotation.Nonnull;
 
 public class ManagementGui extends InteractiveCustomUIPage<ManagementGui.ManagementGuiData> {
 
-    public ManagementGui(@Nonnull PlayerRef playerRef, @Nonnull CustomPageLifetime lifetime) {
+    public ManagementGui(
+            @Nonnull PlayerRef playerRef,
+            @Nonnull CustomPageLifetime lifetime
+    ) {
         super(playerRef, lifetime, ManagementGuiData.CODEC);
     }
 
     @Override
-    public void handleDataEvent(@NonNullDecl Ref<EntityStore> ref, @NonNullDecl Store<EntityStore> store, @NonNullDecl ManagementGuiData data) {
+    public void handleDataEvent(
+            @NonNullDecl Ref<EntityStore> ref,
+            @NonNullDecl Store<EntityStore> store,
+            @NonNullDecl ManagementGuiData data
+    ) {
         super.handleDataEvent(ref, store, data);
 
         Player player = store.getComponent(ref, Player.getComponentType());
@@ -35,27 +42,39 @@ public class ManagementGui extends InteractiveCustomUIPage<ManagementGui.Managem
             throw new IllegalArgumentException("Player not found!");
         }
 
-        if (data.action == null) return;
-        if (data.action.equals("EditPresets")) {
-            player.getPageManager().openCustomPage(ref, store, new EditPresetsGui(playerRef, CustomPageLifetime.CanDismiss));
+        if (data.action == null) {
             return;
+        }
+        if (data.action.equals("EditPresets")) {
+            player.getPageManager()
+                    .openCustomPage(ref, store, new EditPresetsGui(playerRef, CustomPageLifetime.CanDismiss));
         }
     }
 
     @Override
-    public void build(@Nonnull Ref<EntityStore> ref, @Nonnull UICommandBuilder uiCommandBuilder, @Nonnull UIEventBuilder uiEventBuilder, @Nonnull Store<EntityStore> store) {
+    public void build(
+            @Nonnull Ref<EntityStore> ref,
+            @Nonnull UICommandBuilder uiCommandBuilder,
+            @Nonnull UIEventBuilder uiEventBuilder,
+            @Nonnull Store<EntityStore> store
+    ) {
         uiCommandBuilder.append("Pages/Tarobits_Punishments_ManagementGui.ui");
 
-        uiEventBuilder.addEventBinding(CustomUIEventBindingType.Activating, "#EditPresetsButton", EventData.of(ManagementGuiData.ACTION_KEY, "EditPresets"));
+        uiEventBuilder.addEventBinding(
+                CustomUIEventBindingType.Activating, "#EditPresetsButton",
+                EventData.of(ManagementGuiData.ACTION_KEY, "EditPresets")
+        );
     }
 
     public static class ManagementGuiData {
         private static final String ACTION_KEY = "Action";
-
-        private String action;
-
-        public static final BuilderCodec<ManagementGuiData> CODEC = BuilderCodec.<ManagementGuiData>builder(ManagementGuiData.class, ManagementGuiData::new)
-                .append(new KeyedCodec<String>(ACTION_KEY, Codec.STRING), (d,v) -> d.action = v, (d) -> d.action).add()
+        public static final BuilderCodec<ManagementGuiData> CODEC = BuilderCodec.builder(
+                        ManagementGuiData.class,
+                        ManagementGuiData::new
+                )
+                .append(new KeyedCodec<String>(ACTION_KEY, Codec.STRING), (d, v) -> d.action = v, (d) -> d.action)
+                .add()
                 .build();
+        private String action;
     }
 }
