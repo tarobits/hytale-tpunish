@@ -1,7 +1,6 @@
 package dev.tarobits.punishments.utils;
 
 import com.hypixel.hytale.common.util.StringUtil;
-import com.hypixel.hytale.logger.HytaleLogger;
 
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -9,8 +8,6 @@ import java.time.Instant;
 import java.util.Date;
 
 public class TimeUtils {
-    private static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
-
     public static String instantAsDate(Instant inst) {
         return new SimpleDateFormat("d.MM.y").format(Date.from(inst));
     }
