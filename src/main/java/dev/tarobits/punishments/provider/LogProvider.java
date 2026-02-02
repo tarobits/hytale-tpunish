@@ -15,6 +15,7 @@ public class LogProvider extends AbstractProvider<LogEntry> {
 	protected LogProvider() {
 		super("logs.json", LogEntry::fromJson);
 		this.syncLoad();
+		this.syncSave();
 	}
 
 	public static LogProvider get() {
@@ -43,6 +44,14 @@ public class LogProvider extends AbstractProvider<LogEntry> {
 			UUID id
 	) {
 		return sortLogs(super.getAllActorIs(ownerType, id));
+	}
+
+	@Override
+	public List<LogEntry> getAllRelatedIs(
+			DomainObjectType ownerType,
+			UUID id
+	) {
+		return sortLogs(super.getAllRelatedIs(ownerType, id));
 	}
 
 	@Override

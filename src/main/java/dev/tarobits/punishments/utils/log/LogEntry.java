@@ -2,24 +2,37 @@ package dev.tarobits.punishments.utils.log;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.hypixel.hytale.component.Ref;
-import com.hypixel.hytale.component.Store;
-import com.hypixel.hytale.server.core.entity.entities.Player;
-import com.hypixel.hytale.server.core.universe.PlayerRef;
-import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.hypixel.hytale.server.core.Message;
 import dev.tarobits.punishments.exceptions.DeveloperErrorException;
 import dev.tarobits.punishments.exceptions.InvalidActionException;
 import dev.tarobits.punishments.provider.LogProvider;
+import dev.tarobits.punishments.utils.PlayerUtils;
 import dev.tarobits.punishments.utils.domainobject.DomainObject;
 import dev.tarobits.punishments.utils.domainobject.DomainObjectType;
 import dev.tarobits.punishments.utils.domainobject.Owner;
 import dev.tarobits.punishments.utils.domainobject.OwnerRole;
+import dev.tarobits.punishments.utils.ui.HeaderBuilder;
+import dev.tarobits.punishments.utils.ui.UIText;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+/*
+ *
+ * Standardized placeholders:
+ * target: target of the action
+ * actor: actor always a player
+ * prevValue: previous value (e.g. settings change)
+ * newValue: new value (e.g. settings change)
+ * diff: difference (e.g. punishment extension or reduction)
+ * arg1: argument 1 (variable use)
+ * arg2: argument 2 (variable use)
+ * arg3: argument 3 (variable use)
+ */
 
 public class LogEntry implements DomainObject<LogEntry> {
 	private static final LogProvider PROVIDER = LogProvider.get();
@@ -28,8 +41,7 @@ public class LogEntry implements DomainObject<LogEntry> {
 	private final String action;
 	private final UUID actor;
 	private final Instant timestamp;
-	@Nullable
-	private final String extraInfo;
+	private final Map<ExtraInfoType, String> extraInfo;
 
 	private LogEntry(
 			@Nonnull UUID id,
@@ -37,7 +49,7 @@ public class LogEntry implements DomainObject<LogEntry> {
 			@Nonnull String action,
 			@Nonnull UUID actor,
 			@Nonnull Instant timestamp,
-			@Nullable String extraInfo
+			@Nonnull Map<ExtraInfoType, String> extraInfo
 	) {
 		this.id = id;
 		this.owner = owner;
@@ -52,7 +64,7 @@ public class LogEntry implements DomainObject<LogEntry> {
 			@Nonnull String action,
 			@Nonnull UUID actor,
 			@Nonnull Instant timestamp,
-			@Nullable String extraInfo
+			@Nonnull Map<ExtraInfoType, String> extraInfo
 	) {
 		return new LogEntry(UUID.randomUUID(), owner, action, actor, timestamp, extraInfo);
 	}
@@ -63,7 +75,7 @@ public class LogEntry implements DomainObject<LogEntry> {
 			@Nonnull UUID actor,
 			@Nonnull Instant timestamp
 	) {
-		return getNew(owner, action, actor, timestamp, null);
+		return getNew(owner, action, actor, timestamp, new Object2ObjectOpenHashMap<>());
 	}
 
 	public static LogEntry fromJson(@Nonnull JsonObject obj) {
@@ -78,10 +90,16 @@ public class LogEntry implements DomainObject<LogEntry> {
 					                             .getAsString());
 			Instant timestamp = Instant.ofEpochMilli(obj.get("timestamp")
 					                                         .getAsLong());
-			String extraInfo = null;
+			Map<ExtraInfoType, String> extraInfo = new Object2ObjectOpenHashMap<>();
 			if (obj.has("extra_info")) {
-				extraInfo = obj.get("extra_info")
-						.getAsString();
+				JsonObject infoObj = obj.getAsJsonObject("extra_info");
+				for (ExtraInfoType extraInfoType : ExtraInfoType.values()) {
+					if (infoObj.has(extraInfoType.name())) {
+						extraInfo.put(extraInfoType, infoObj.get(extraInfoType.name())
+								.getAsString()
+						);
+					}
+				}
 			}
 			return new LogEntry(id, owner, action, actor, timestamp, extraInfo);
 		} catch (JsonParseException _) {
@@ -109,9 +127,13 @@ public class LogEntry implements DomainObject<LogEntry> {
 		obj.addProperty("action", this.action);
 		obj.addProperty("actor", this.actor.toString());
 		obj.addProperty("timestamp", this.timestamp.toEpochMilli());
-		if (this.extraInfo != null) {
-			obj.addProperty("extra_info", this.extraInfo);
+		JsonObject extraInfoObject = new JsonObject();
+		for (ExtraInfoType extraInfoType : ExtraInfoType.values()) {
+			if (extraInfo.containsKey(extraInfoType)) {
+				extraInfoObject.addProperty(extraInfoType.name(), extraInfo.get(extraInfoType));
+			}
 		}
+		obj.add("extra_info", extraInfoObject);
 		return obj;
 	}
 
@@ -121,18 +143,40 @@ public class LogEntry implements DomainObject<LogEntry> {
 	}
 
 	@Override
-	public String getLogActionText(String logAction) {
+	public Message getLogActionText(
+			String logAction,
+			LogEntry logEntry
+	) {
 		throw new DeveloperErrorException("LogEntries cannot have log action text!");
 	}
 
 	@Override
-	public void display(
-			Player player,
-			PlayerRef playerRef,
-			Ref<EntityStore> ref,
-			Store<EntityStore> store
-	) {
+	public UIText getLogActionUIText(String logAction) {
+		throw new DeveloperErrorException("LogEntries cannot have log action text!");
+	}
+
+	@Override
+	public List<HeaderBuilder.HeaderGroup> getHeader() {
 		throw new DeveloperErrorException("Log Entry cannot be displayed!");
+	}
+
+	public Message getTargetLogActionText() {
+		Owner target = this.getOwners()
+				.get(OwnerRole.TARGET);
+		DomainObject<?> item = target.type()
+				.getProvider()
+				.getFromId(target.id());
+		return item.getLogActionText(this.action, this)
+				.param("actor", PlayerUtils.getUsername(this.actor));
+	}
+
+	public UIText getTargetLogActionUIText() {
+		Owner target = this.getOwners()
+				.get(OwnerRole.TARGET);
+		DomainObject<?> item = target.type()
+				.getProvider()
+				.getFromId(target.id());
+		return item.getLogActionUIText(this.action);
 	}
 
 	public String getAction() {
@@ -143,8 +187,7 @@ public class LogEntry implements DomainObject<LogEntry> {
 		return this.timestamp;
 	}
 
-	@Nullable
-	public String getExtraInfo() {
+	public Map<ExtraInfoType, String> getExtraInfo() {
 		return this.extraInfo;
 	}
 }

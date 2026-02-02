@@ -19,18 +19,21 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import dev.tarobits.punishments.exceptions.DeveloperErrorException;
 import dev.tarobits.punishments.exceptions.UserException;
 import dev.tarobits.punishments.utils.Permissions;
+import dev.tarobits.punishments.utils.PlayerUtils;
 import dev.tarobits.punishments.utils.config.PresetConfig;
 import dev.tarobits.punishments.utils.punishment.Punishment;
 import dev.tarobits.punishments.utils.punishment.PunishmentSubtype;
 import dev.tarobits.punishments.utils.punishment.PunishmentType;
 import dev.tarobits.punishments.utils.ui.HistoryStat;
 import dev.tarobits.punishments.utils.ui.PunishmentEntryBuilder;
+import dev.tarobits.punishments.utils.ui.UIText;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class GuiUtil {
@@ -138,16 +141,16 @@ public class GuiUtil {
 		uiCommandBuilder.append(headerSelector, "Tarobits_Punishments_Header.ui");
 
 		for (Map.Entry<PunishmentType, HistoryStat> entry : historyStats.entrySet()) {
+			PunishmentType punishmentType = entry.getKey();
 			String typeString = entry.getKey()
 					.toDisplayString();
-			String statusText = PunishmentEntryBuilder.buildStatusText(
+			UIText statusText = PunishmentEntryBuilder.buildStatusText(
 					entry.getValue().latestPunishment, entry.getKey()
 							.toDisplayString()
 			);
-			if (!statusText.isEmpty()) {
-				uiCommandBuilder.set("#" + typeString + "Status" + typeString + ".Text", statusText);
-				uiCommandBuilder.set("#" + typeString + "Status" + typeString + ".Visible", true);
-				uiCommandBuilder.set("#" + typeString + "StatusNot" + ".Visible", false);
+			if (punishmentType == PunishmentType.MUTE || punishmentType == PunishmentType.BAN) {
+				uiCommandBuilder.set("#" + typeString + "Status.Text", statusText.text());
+				uiCommandBuilder.set("#" + typeString + "Status.Style", statusText.style());
 			}
 			uiCommandBuilder.set(
 					"#" + typeString + "Stats" + (entry.getValue().numberOfPunishments == 0 ? "None" : "Some") + ".Visible",
@@ -163,12 +166,10 @@ public class GuiUtil {
 
 	protected static void buildPunishmentList(
 			@Nonnull UICommandBuilder uiCommandBuilder,
+			@Nonnull UIEventBuilder uiEventBuilder,
 			@Nonnull List<Punishment> punishments,
 			@Nonnull String listSelector,
-			@Nonnull String typeString,
-			boolean showDuration,
-			boolean showUntil,
-			boolean showType
+			@Nonnull String typeString
 	) {
 		if (punishments.isEmpty()) {
 			uiCommandBuilder.append(listSelector, "Tarobits_Punishments_EmptyRow.ui");
@@ -185,31 +186,42 @@ public class GuiUtil {
 			String selector = listSelector + "[" + i++ + "]";
 			uiCommandBuilder.append(listSelector, "Tarobits_Punishments_Entry.ui");
 
-			setCommonFields(uiCommandBuilder, selector, punishment, showDuration, showUntil, showType);
+			setPunishmentEvents(uiEventBuilder, selector, punishment.getId());
+
+			setCommonFields(uiCommandBuilder, selector, punishment);
 
 			setStatusFields(uiCommandBuilder, selector, punishment);
 		}
 	}
 
+	private static void setPunishmentEvents(
+			@Nonnull UIEventBuilder uiEventBuilder,
+			@Nonnull String selector,
+			@Nonnull UUID id
+	) {
+		uiEventBuilder.addEventBinding(
+				CustomUIEventBindingType.Activating, selector + " #DetailsButton",
+				EventData.of(PunishmentsGui.PunishGuiData.BUTTON_KEY, "DetailsButton")
+						.append(PunishmentsGui.PunishGuiData.ID_KEY, id.toString())
+		);
+	}
+
 	private static void setCommonFields(
 			UICommandBuilder uiCommandBuilder,
 			String selector,
-			Punishment punishment,
-			boolean showDuration,
-			boolean showUntil,
-			boolean showType
+			Punishment punishment
 	) {
 		uiCommandBuilder.set(selector + " #Type.Text", punishment.getDisplaySubType());
 		uiCommandBuilder.set(selector + " #Date.Text", punishment.getDate());
-		uiCommandBuilder.set(selector + " #By.Text", PunishmentEntryBuilder.getActorName(punishment.getBy()));
+		uiCommandBuilder.set(selector + " #By.Text", PlayerUtils.getUsername(punishment.getBy()));
 		uiCommandBuilder.set(selector + " #Reason.Text", punishment.getReason());
 		uiCommandBuilder.set(selector + " #Duration.Text", punishment.getRelativeDuration());
 		uiCommandBuilder.set(selector + " #Until.Text", punishment.getUntil());
 		uiCommandBuilder.set(selector + " #Type.Text", punishment.getDisplaySubType());
 
-		uiCommandBuilder.set(selector + " #DurationBox.Visible", showDuration);
-		uiCommandBuilder.set(selector + " #UntilBox.Visible", showUntil);
-		uiCommandBuilder.set(selector + " #TypeBox.Visible", showType);
+		uiCommandBuilder.set(selector + " #DurationBox.Visible", false);
+		uiCommandBuilder.set(selector + " #UntilBox.Visible", punishment.canExpire());
+		uiCommandBuilder.set(selector + " #TypeBox.Visible", punishment.getSubtype() != PunishmentSubtype.NULL);
 	}
 
 	private static void setStatusFields(

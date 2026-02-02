@@ -5,6 +5,7 @@ import dev.tarobits.punishments.exceptions.DeveloperErrorException;
 import dev.tarobits.punishments.exceptions.InvalidActionException;
 import dev.tarobits.punishments.utils.ProviderState;
 import dev.tarobits.punishments.utils.punishment.Punishment;
+import dev.tarobits.punishments.utils.punishment.PunishmentStatus;
 import dev.tarobits.punishments.utils.punishment.PunishmentType;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
@@ -30,6 +31,7 @@ public class PunishmentProvider extends AbstractProvider<Punishment> {
 		super("punishments.json", Punishment::fromJson);
 		this.syncLoad();
 		this.updateIndexes();
+		this.syncSave();
 		String loadedString = "Successfully loaded " + this.stats.computeIfAbsent(
 				PunishmentType.BAN,
 				(_) -> 0
@@ -103,7 +105,7 @@ public class PunishmentProvider extends AbstractProvider<Punishment> {
 						return list;
 					}
 			);
-			if (punishment.isActive() && !punishment.isPardoned()) {
+			if (punishment.getStatus() == PunishmentStatus.ACTIVE) {
 				switch (punishment.getType()) {
 					case BAN -> this.activeBans.put(punishment.getTarget(), punishment);
 					case MUTE -> this.activeMutes.put(punishment.getTarget(), punishment);
@@ -166,7 +168,9 @@ public class PunishmentProvider extends AbstractProvider<Punishment> {
 	) {
 		return entries.values()
 				.stream()
-				.anyMatch((p) -> p.getId() == id && p.getTarget() == user);
+				.anyMatch((p) -> p.getId()
+						.equals(id) && p.getTarget()
+						.equals(user));
 	}
 
 	public Boolean editPunishment(
@@ -187,13 +191,12 @@ public class PunishmentProvider extends AbstractProvider<Punishment> {
 	}
 
 	public Message updatePunishment(
-			Punishment punishment,
-			UUID user
+			Punishment punishment
 	) throws InvalidActionException {
 		if (!this.isReady()) {
 			throw new DeveloperErrorException("Punishment Provider is not ready!");
 		}
-		if (!this.punishmentExists(user, punishment.getId())) {
+		if (!this.punishmentExists(punishment.getTarget(), punishment.getId())) {
 			throw new InvalidActionException("tarobits.punishments.edit.error.doesntexist");
 		}
 		this.entries.put(punishment.getId(), punishment);

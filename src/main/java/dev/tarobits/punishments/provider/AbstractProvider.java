@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -80,7 +81,8 @@ abstract public class AbstractProvider<T extends DomainObject<T>> extends Blocki
 						.get(OwnerRole.TARGET)
 						.type() == ownerType && e.getOwners()
 						.get(OwnerRole.TARGET)
-						.id() == id)
+						.id()
+						.equals(id))
 				.toList();
 	}
 
@@ -95,8 +97,18 @@ abstract public class AbstractProvider<T extends DomainObject<T>> extends Blocki
 						.get(OwnerRole.ACTOR)
 						.type() == ownerType && e.getOwners()
 						.get(OwnerRole.ACTOR)
-						.id() == id)
+						.id()
+						.equals(id))
 				.toList();
+	}
+
+	public List<T> getAllRelatedIs(
+			DomainObjectType ownerType,
+			UUID id
+	) {
+		List<T> list = new ArrayList<>(getAllTargetIs(ownerType, id));
+		list.addAll(getAllActorIs(ownerType, id));
+		return list;
 	}
 
 	public T getFromId(UUID id) {

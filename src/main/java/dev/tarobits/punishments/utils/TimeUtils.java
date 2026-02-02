@@ -9,7 +9,7 @@ import java.util.Date;
 
 public class TimeUtils {
     public static String instantAsDate(Instant inst) {
-        return new SimpleDateFormat("d.MM.y").format(Date.from(inst));
+        return new SimpleDateFormat("dd.MM.y").format(Date.from(inst));
     }
 
     public static String instantAsMinimalDateTime(Instant inst) {
@@ -17,7 +17,7 @@ public class TimeUtils {
     }
 
     public static String instantAsDateTime(Instant inst) {
-        return new SimpleDateFormat("d.MM.y HH:mm").format(Date.from(inst));
+        return new SimpleDateFormat("dd.MM.y HH:mm").format(Date.from(inst));
     }
 
     public static String instantAsRelativeDuration(Instant inst) {

@@ -3,21 +3,25 @@ package dev.tarobits.punishments.utils.config;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.hypixel.hytale.component.Ref;
-import com.hypixel.hytale.component.Store;
-import com.hypixel.hytale.server.core.entity.entities.Player;
-import com.hypixel.hytale.server.core.universe.PlayerRef;
-import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.hypixel.hytale.server.core.Message;
+import com.hypixel.hytale.server.core.ui.Value;
 import dev.tarobits.punishments.exceptions.DeveloperErrorException;
 import dev.tarobits.punishments.exceptions.InvalidActionException;
 import dev.tarobits.punishments.exceptions.UserException;
+import dev.tarobits.punishments.utils.StringUtils;
 import dev.tarobits.punishments.utils.domainobject.DomainObject;
 import dev.tarobits.punishments.utils.domainobject.DomainObjectType;
 import dev.tarobits.punishments.utils.domainobject.Owner;
 import dev.tarobits.punishments.utils.domainobject.OwnerRole;
+import dev.tarobits.punishments.utils.log.ExtraInfoType;
 import dev.tarobits.punishments.utils.log.LogActionEnum;
+import dev.tarobits.punishments.utils.log.LogEntry;
+import dev.tarobits.punishments.utils.log.LogUtils;
+import dev.tarobits.punishments.utils.ui.HeaderBuilder;
+import dev.tarobits.punishments.utils.ui.UIText;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -130,19 +134,24 @@ public class ConfigEntry implements DomainObject<ConfigEntry> {
 	}
 
 	@Override
-	public String getLogActionText(String logAction) {
+	public Message getLogActionText(
+			String logAction,
+			LogEntry logEntry
+	) {
 		return LogActions.valueOf(logAction)
-				.getLogActionText();
+				.getLogActionText(this, logEntry);
 	}
 
 	@Override
-	public void display(
-			Player player,
-			PlayerRef playerRef,
-			Ref<EntityStore> ref,
-			Store<EntityStore> store
-	) {
+	public UIText getLogActionUIText(String logAction) {
+		return LogActions.valueOf(logAction)
+				.getUIText();
+	}
 
+	@Override
+	public List<HeaderBuilder.HeaderGroup> getHeader() {
+		// ToDo: Add header
+		throw new DeveloperErrorException("Not implemented yet!");
 	}
 
 	public void parseValueFromJson(JsonElement el) throws UserException {
@@ -176,12 +185,37 @@ public class ConfigEntry implements DomainObject<ConfigEntry> {
 		}
 	}
 
-	public enum LogActions implements LogActionEnum {
+	public enum LogActions implements LogActionEnum<ConfigEntry> {
 		MODIFY;
 
+		@Nullable
+		private final String displayColor;
+
+		LogActions(@Nullable String displayColor) {
+			this.displayColor = displayColor;
+		}
+
+		LogActions() {
+			this.displayColor = null;
+		}
 		@Override
-		public String getLogActionText() {
-			return "tarobits.punishments.config.log.actions.modify";
+		public Message getLogActionText(
+				ConfigEntry item,
+				LogEntry logEntry
+		) {
+			Map<ExtraInfoType, String> extraInfo = logEntry.getExtraInfo();
+			return LogUtils.prepareMessage(
+					"tarobits.punishments.config.log.actions.modify", "", extraInfo.get(ExtraInfoType.PREVIOUS_VALUE),
+					extraInfo.get(ExtraInfoType.NEW_VALUE), extraInfo.get(ExtraInfoType.DIFFERENCE)
+			);
+		}
+
+		@Override
+		public UIText getUIText() {
+			return new UIText(
+					StringUtils.toTitleCase(this.name()),
+					Value.ref("TPunish_Styles/LogActions/ConfigEntry.ui", StringUtils.toTitleCase(this.name()))
+			);
 		}
 	}
 }

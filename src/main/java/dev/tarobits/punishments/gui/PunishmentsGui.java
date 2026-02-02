@@ -20,6 +20,8 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import dev.tarobits.punishments.exceptions.InvalidActionException;
 import dev.tarobits.punishments.provider.PunishmentProvider;
 import dev.tarobits.punishments.utils.Permissions;
+import dev.tarobits.punishments.utils.domainobject.DomainObjectType;
+import dev.tarobits.punishments.utils.domainobject.Owner;
 import dev.tarobits.punishments.utils.punishment.Punishment;
 import dev.tarobits.punishments.utils.punishment.PunishmentType;
 import dev.tarobits.punishments.utils.ui.HistoryStat;
@@ -134,6 +136,15 @@ public class PunishmentsGui extends InteractiveCustomUIPage<PunishmentsGui.Punis
 								new AddPunishmentGui(playerRef, CustomPageLifetime.CanDismiss, target, historyStats)
 						);
 				return;
+			case "DetailsButton":
+				player.getPageManager()
+						.openCustomPage(
+								ref, store, new DetailsGui(
+										playerRef, CustomPageLifetime.CanDismiss, target,
+										new Owner(DomainObjectType.PUNISHMENT, data.id)
+								)
+						);
+				return;
 			default:
 				LOGGER.atWarning()
 						.log(data.button + " is not a valid button!");
@@ -178,13 +189,13 @@ public class PunishmentsGui extends InteractiveCustomUIPage<PunishmentsGui.Punis
 
 		GuiUtil.buildPlayerHeader(uiCommandBuilder, historyStats, "#Header");
 
-		GuiUtil.buildPunishmentList(uiCommandBuilder, banList, "#BanList", "Ban", false, true, false);
+		GuiUtil.buildPunishmentList(uiCommandBuilder, uiEventBuilder, banList, "#BanList", "Ban");
 
-		GuiUtil.buildPunishmentList(uiCommandBuilder, muteList, "#MuteList", "Mute", false, true, false);
+		GuiUtil.buildPunishmentList(uiCommandBuilder, uiEventBuilder, muteList, "#MuteList", "Mute");
 
-		GuiUtil.buildPunishmentList(uiCommandBuilder, warnList, "#WarnList", "Warn", false, false, false);
+		GuiUtil.buildPunishmentList(uiCommandBuilder, uiEventBuilder, warnList, "#WarnList", "Warn");
 
-		GuiUtil.buildPunishmentList(uiCommandBuilder, kickList, "#KickList", "Kick", false, false, false);
+		GuiUtil.buildPunishmentList(uiCommandBuilder, uiEventBuilder, kickList, "#KickList", "Kick");
 
 		checkIfNecessary(uiCommandBuilder);
 		checkPermissions(ref, uiCommandBuilder, store);
@@ -258,13 +269,13 @@ public class PunishmentsGui extends InteractiveCustomUIPage<PunishmentsGui.Punis
 				.append(new KeyedCodec<>(TYPE_KEY, Codec.STRING), (data, u) -> data.type = u, (data) -> data.type)
 				.add()
 				.append(
-						new KeyedCodec<>(ID_KEY, Codec.STRING), (data, u) -> data.id = Integer.parseInt(u),
-						String::valueOf
+						new KeyedCodec<>(ID_KEY, Codec.STRING), (data, u) -> data.id = UUID.fromString(u),
+						(data) -> data.id.toString()
 				)
 				.add()
 				.build();
 		private String button;
 		private String type;
-		private int id;
+		private UUID id;
 	}
 }

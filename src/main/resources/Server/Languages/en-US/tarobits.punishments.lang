@@ -24,6 +24,15 @@ gui.management.title = Management Gui
 gui.management.settings = Settings
 gui.management.editpresets = Edit Presets
 
+# === Details Gui ===
+gui.details.logs = Logs
+gui.details.actions = Actions
+gui.details.buttons.pardon = Pardon
+gui.details.buttons.reinstate = Reinstate
+gui.details.buttons.extend = Extend
+gui.details.buttons.reduce = Reduce
+gui.details.buttons.viewappeal = View Appeal
+
 # === Header ===
 gui.header.status = Status
 
@@ -31,10 +40,10 @@ gui.header.indefinitely = indefinitely
 gui.header.until = until
 
 gui.header.ban = Ban:
-gui.header.ban.notbanned = Not banned
+gui.header.ban.notban = Not banned
 
 gui.header.mute = Mute:
-gui.header.mute.notmuted = Not muted
+gui.header.mute.notmute = Not muted
 
 gui.header.historystats = History Stats
 gui.header.historystats.bans = Bans:
@@ -69,6 +78,9 @@ edit.error.mustnull = Subtype must be null!
 edit.error.onlyactive = You may only edit active punishments!
 edit.error.notfound = Couldn't find the punishment!
 edit.error.alreadypardon = This punishment is already pardoned!
+edit.error.notpardonable = This punishment cannot be pardoned!
+edit.error.notextendable = This punishment cannot be extended!
+edit.error.notreduceable = This punishment cannot be reduced!
 edit.success = Successfully {action} '{player}'!
 edit.actions.unban = unbanned
 edit.actions.unmute = unmuted
@@ -85,6 +97,9 @@ ban.error.already = Player '{name}' is already banned.
 ban.success.temp = Successfully banned '{name}' for {duration} with the reason {reason}!
 ban.success.perm = Successfully banned '{name}' permanently with the reason {reason}!
 
+ban.log.action.create = {actor} banned {target}
+ban.log.action.pardon = {actor} unbanned {target}
+
 # === Mutes ===
 mute.reason = You are muted.\nType: {type}\nDuration: {duration}\nUntil: {until}\nReason: {reason}
 mute.error.already = Player '{name}' is already muted.
@@ -93,10 +108,15 @@ mute.unmute = You've been unmuted.
 mute.success.temp = Successfully muted '{name}' for {duration} with the reason {reason}!
 mute.success.perm = Successfully muted '{name}' permanently with the reason {reason}!
 
+mute.log.action.create = {actor} muted {target}
+mute.log.action.pardon = {actor} unmuted {target}
+
 # === Kicks ===
 kick.reason = You've been kicked with the reason {reason}!
 kick.error.noplayer = The player '{name}' is not online.
 kick.success = Successfully kicked '{name}' with the reason {reason}!
+
+kick.log.action.create = {actor} kicked {target}
 
 # === Warns ===
 warn.reason = You've been warned with the reason {reason}!
@@ -104,3 +124,5 @@ warn.unwarn = A warning has been removed from your account. Check /punishments
 warn.error.nowarn = The warning for user '{name}' with the id {id} does not exist.
 warn.success.warn = Successfully warned '{name}' with the reason {reason}!
 warn.success.unwarn = Successfully removed the warning with the id {id} from '{name}'!
+
+warn.log.action.create = {actor} warned {target}

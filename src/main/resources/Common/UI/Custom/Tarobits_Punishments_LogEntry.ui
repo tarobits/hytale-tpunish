@@ -1,0 +1,51 @@
+Group {
+    LayoutMode: Left;
+    Padding: 10;
+    Background: PatchStyle(TexturePath: "Common/Buttons/Tertiary.png", Border: 20);
+    Label #Action {
+        FlexWeight: 2;
+        Padding: (Vertical: 5, Horizontal: 10);
+        Style: (
+            RenderBold: true,
+            TextColor: #ffffff,
+            FontSize: 16,
+            HorizontalAlignment: Center,
+            VerticalAlignment: Center
+        );
+        Background: PatchStyle(TexturePath: "Common/Dropdown.png", Border: 20);
+        Text: "Text unset! FIX!";
+    }
+    Group {
+        FlexWeight: 1;
+    }
+    Group {
+        LayoutMode: Left;
+        FlexWeight: 4;
+        Label #Timestamp {
+            Padding: (Vertical: 5, Horizontal: 10);
+            Style: (
+                TextColor: #ffffff,
+                FontSize: 16,
+                HorizontalAlignment: Center,
+                VerticalAlignment: Center
+            );
+            Background: PatchStyle(TexturePath: "Common/InputBox.png", Border: 20);
+            Text: "Text unset! FIX!";
+        }
+    }
+    Group {
+        LayoutMode: Left;
+        FlexWeight: 12;
+        Background: PatchStyle(TexturePath: "Common/InputBox.png", Border: 20);
+        Label #ActionText {
+            Padding: (Vertical: 5, Horizontal: 10);
+            Style: (
+                TextColor: #eeeeee,
+                FontSize: 16,
+                Wrap: true,
+                VerticalAlignment: Center
+            );
+            Text: "Text unset! FIX!";
+        }
+    }
+}

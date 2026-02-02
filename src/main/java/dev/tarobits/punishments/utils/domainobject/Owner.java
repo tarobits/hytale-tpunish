@@ -21,7 +21,7 @@ public record Owner(DomainObjectType type, UUID id) {
 
 	public JsonObject toJsonObject() {
 		JsonObject obj = new JsonObject();
-		obj.addProperty("type", type.toString());
+		obj.addProperty("type", type.name());
 		obj.addProperty("id", id.toString());
 		return obj;
 	}

@@ -28,7 +28,7 @@ Group {
                 Anchor: (Right: 5);
                 Text: %tarobits.punishments.gui.header.ban;
             }
-            Label #BanStatusBan {
+            Label #BanStatus {
                 Style: (
                     TextColor: #a04040,
                     VerticalAlignment: Center,
@@ -36,18 +36,7 @@ Group {
                     FontSize: 18,
                     RenderBold: true
                 );
-                Text: %tarobits.punishments.gui.header.ban.banned;
-                Visible: false;
-            }
-            Label #BanStatusNot {
-                Style: (
-                    TextColor: #40a040,
-                    VerticalAlignment: Center,
-                    HorizontalAlignment: Center,
-                    FontSize: 18
-                );
-                Text: %tarobits.punishments.gui.header.ban.notbanned;
-                Visible: true;
+                Text: "Text unset! FIX!";
             }
             Group {
                 FlexWeight: 1;
@@ -67,7 +56,7 @@ Group {
                 Anchor: (Right: 5);
                 Text: %tarobits.punishments.gui.header.mute;
             }
-            Label #MuteStatusMute {
+            Label #MuteStatus {
                 Style: (
                     TextColor: #aa0000,
                     VerticalAlignment: Center,
@@ -75,18 +64,7 @@ Group {
                     RenderBold: true,
                     FontSize: 18
                 );
-                Text: %tarobits.punishments.gui.header.mute.muted;
-                Visible: false;
-            }
-            Label #MuteStatusNot {
-                Style: (
-                    TextColor: #40a040,
-                    VerticalAlignment: Center,
-                    HorizontalAlignment: Center,
-                    FontSize: 18
-                );
-                Text: %tarobits.punishments.gui.header.mute.notmuted;
-                Visible: true;
+                Text: "Text unset! FIX!";
             }
             Group {
                 FlexWeight: 1;

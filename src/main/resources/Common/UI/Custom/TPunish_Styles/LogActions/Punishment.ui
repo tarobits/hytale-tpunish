@@ -1,0 +1,26 @@
+$B = "Base.ui";
+
+@Create = PatchStyle(
+    ...$B.@Base,
+    Color: #ff4040
+);
+
+@Reduce = PatchStyle(
+    ...$B.@Base,
+    Color: #80f080
+);
+
+@Extend = PatchStyle(
+    ...$B.@Base,
+    Color: #f08080
+);
+
+@Pardon = PatchStyle(
+    ...$B.@Base,
+    Color: #4040ff
+);
+
+@Expire = PatchStyle(
+    ...$B.@Base,
+    Color: #40ff40
+);

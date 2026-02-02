@@ -3,10 +3,16 @@ package dev.tarobits.punishments.utils.punishment;
 import dev.tarobits.punishments.exceptions.UserException;
 
 public enum PunishmentType {
-    BAN,
-    MUTE,
-    WARN,
-    KICK;
+    BAN(true),
+    MUTE(true),
+    WARN(false),
+    KICK(false);
+
+    public final boolean canPardon;
+
+    PunishmentType(boolean canPardon) {
+        this.canPardon = canPardon;
+    }
 
     public static PunishmentType fromJson(String id) throws UserException {
         return switch (id) {

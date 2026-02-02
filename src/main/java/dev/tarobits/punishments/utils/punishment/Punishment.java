@@ -1,32 +1,33 @@
 package dev.tarobits.punishments.utils.punishment;
 
 import com.google.gson.JsonObject;
-import com.hypixel.hytale.component.Ref;
-import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.server.core.Message;
-import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.permissions.PermissionsModule;
+import com.hypixel.hytale.server.core.ui.Value;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
-import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.hypixel.hytale.server.core.universe.Universe;
+import dev.tarobits.punishments.TPunish;
 import dev.tarobits.punishments.exceptions.DeveloperErrorException;
 import dev.tarobits.punishments.exceptions.InvalidActionException;
 import dev.tarobits.punishments.exceptions.NoPermissionException;
 import dev.tarobits.punishments.provider.LogProvider;
 import dev.tarobits.punishments.provider.PunishmentProvider;
-import dev.tarobits.punishments.utils.Permissions;
-import dev.tarobits.punishments.utils.TimeFormat;
-import dev.tarobits.punishments.utils.TimeUtils;
+import dev.tarobits.punishments.utils.*;
 import dev.tarobits.punishments.utils.domainobject.DomainObject;
 import dev.tarobits.punishments.utils.domainobject.DomainObjectType;
 import dev.tarobits.punishments.utils.domainobject.Owner;
 import dev.tarobits.punishments.utils.domainobject.OwnerRole;
+import dev.tarobits.punishments.utils.log.ExtraInfoType;
 import dev.tarobits.punishments.utils.log.LogActionEnum;
 import dev.tarobits.punishments.utils.log.LogEntry;
-import dev.tarobits.punishments.utils.ui.PunishmentEntryBuilder;
+import dev.tarobits.punishments.utils.log.LogUtils;
+import dev.tarobits.punishments.utils.ui.HeaderBuilder;
+import dev.tarobits.punishments.utils.ui.UIText;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -50,9 +51,7 @@ public class Punishment implements DomainObject<Punishment> {
 	@Nonnull
 	private final UUID id;
 	@Nonnull
-	private Boolean active;
-	@Nonnull
-	private Boolean pardoned;
+	private PunishmentStatus status;
 	@Nullable
 	private Instant pardonTimestamp;
 
@@ -74,11 +73,11 @@ public class Punishment implements DomainObject<Punishment> {
 		this.subtype = subtype;
 		this.reason = reason;
 		this.expiresOn = expiresOn;
+		this.pardonTimestamp = null;
 		this.duration = duration;
 		this.id = id;
-		this.active = true;
-		this.pardoned = false;
-		this.createLogEntry(LogActions.CREATE, this.by);
+		this.status = PunishmentStatus.ACTIVE;
+		this.createLogEntry(PunishmentAction.CREATE, this.by);
 	}
 
 	protected Punishment(
@@ -89,10 +88,10 @@ public class Punishment implements DomainObject<Punishment> {
 			@Nonnull PunishmentSubtype subtype,
 			@Nonnull String reason,
 			@Nullable Instant expiresOn,
+			@Nullable Instant pardonTimestamp,
 			@Nonnull TimeFormat duration,
 			@Nonnull UUID id,
-			@Nonnull Boolean active,
-			@Nonnull Boolean pardoned
+			@Nonnull PunishmentStatus status
 	) {
 		this.target = target;
 		this.by = by;
@@ -101,10 +100,10 @@ public class Punishment implements DomainObject<Punishment> {
 		this.subtype = subtype;
 		this.reason = reason;
 		this.expiresOn = expiresOn;
+		this.pardonTimestamp = pardonTimestamp;
 		this.duration = duration;
 		this.id = id;
-		this.active = active;
-		this.pardoned = pardoned;
+		this.status = status;
 	}
 
 	public static Punishment createBan(
@@ -262,15 +261,42 @@ public class Punishment implements DomainObject<Punishment> {
 				expiresOn = Instant.ofEpochMilli(object.get("expiresOn")
 						                                 .getAsLong());
 			}
+			Instant pardonedOn = null;
+			if (object.has("pardonedOn")) {
+				pardonedOn = Instant.ofEpochMilli(object.get("pardonedOn")
+						                                  .getAsLong());
+			}
 			TimeFormat duration = TimeFormat.fromDurationString(object.get("duration")
 					                                                    .getAsString());
-			Boolean active = object.get("active")
-					.getAsBoolean();
-			Boolean pardoned = object.get("pardoned")
-					.getAsBoolean();
+
+			PunishmentStatus status;
+			try {
+				status = PunishmentStatus.valueOf(object.get("status")
+						                                  .getAsString());
+			} catch (Exception _) {
+				// Migrate from old status
+				try {
+					boolean active = object.get("active")
+							.getAsBoolean();
+					boolean pardoned = object.get("pardoned")
+							.getAsBoolean();
+					if (active) {
+						status = PunishmentStatus.ACTIVE;
+					} else if (pardoned) {
+						status = PunishmentStatus.PARDONED;
+					} else {
+						status = PunishmentStatus.EXPIRED;
+					}
+				} catch (Exception _) {
+					TPunish.getLogger("Punishment")
+							.atSevere()
+							.log("Failed to migrate Punishment status. Defaulting to expired!");
+					status = PunishmentStatus.EXPIRED;
+				}
+			}
+
 			return new Punishment(
-					target, by, timestamp, type, subtype, reason, expiresOn, duration, id, active,
-			                      pardoned
+					target, by, timestamp, type, subtype, reason, expiresOn, pardonedOn, duration, id, status
 			);
 		} catch (Exception _) {
 			throw new DeveloperErrorException("An error occurred while parsing punishments.");
@@ -282,15 +308,24 @@ public class Punishment implements DomainObject<Punishment> {
 	}
 
 	public Message pardon(UUID actor) throws InvalidActionException {
-		if (this.pardoned) {
+		if (this.isPardoned()) {
 			throw new InvalidActionException("tarobits.punishments.edit.error.alreadypardon");
 		}
-		this.pardoned = true;
-		this.active = false;
-		this.createLogEntry(LogActions.PARDON, actor);
-		return getProvider().updatePunishment(this, this.target)
+		if (!this.canPardon()) {
+			throw new InvalidActionException("tarobits.punishments.edit.error.notpardonable");
+		}
+		this.status = PunishmentStatus.PARDONED;
+		this.pardonTimestamp = Instant.now();
+		this.createLogEntry(PunishmentAction.PARDON, actor);
+		PlayerRef target = Universe.get()
+				.getPlayer(this.target);
+		if (target != null) {
+			target.sendMessage(
+					Message.translation("tarobits.punishments." + getTranslationKey() + ".un" + getTranslationKey()));
+		}
+		return getProvider().updatePunishment(this)
 				.param("action", Message.translation("tarobits.punishments.edit.actions.un" + this.getTranslationKey()))
-				.param("player", PunishmentEntryBuilder.getActorName(this.target));
+				.param("player", PlayerUtils.getUsername(this.target));
 	}
 
 	public Permissions getPermission() {
@@ -381,12 +416,20 @@ public class Punishment implements DomainObject<Punishment> {
 							.toEpochMilli()
 			);
 		}
+		if (this.getPardonTimestamp() != null) {
+			object.addProperty(
+					"pardonedOn", this.getPardonTimestamp()
+							.toEpochMilli()
+			);
+		}
 		object.addProperty(
 				"duration", this.getDuration()
 						.toFullDurationString()
 		);
-		object.addProperty("active", this.isActive());
-		object.addProperty("pardoned", this.isPardoned());
+		object.addProperty(
+				"status", this.getStatus()
+						.name()
+		);
 		return object;
 	}
 
@@ -399,19 +442,18 @@ public class Punishment implements DomainObject<Punishment> {
 	}
 
 	@Override
-	public String getLogActionText(String logAction) {
-		return LogActions.valueOf(logAction)
-				.getLogActionText();
+	public Message getLogActionText(
+			String logAction,
+			LogEntry logEntry
+	) {
+		return PunishmentAction.valueOf(logAction)
+				.getLogActionText(this, logEntry);
 	}
 
 	@Override
-	public void display(
-			Player player,
-			PlayerRef playerRef,
-			Ref<EntityStore> ref,
-			Store<EntityStore> store
-	) {
-		// ToDo: Add punishment display page
+	public UIText getLogActionUIText(String logAction) {
+		return PunishmentAction.valueOf(logAction)
+				.getUIText();
 	}
 
 	@Nonnull
@@ -419,8 +461,47 @@ public class Punishment implements DomainObject<Punishment> {
 		return subtype;
 	}
 
+	@Override
+	public List<HeaderBuilder.HeaderGroup> getHeader() {
+		return List.of(
+				new HeaderBuilder.HeaderGroup(
+						"Information", List.of(
+						new HeaderBuilder.HeaderElement("Status:", this.getHeaderStatus()),
+						new HeaderBuilder.HeaderElement("Type:", this.type.toDisplayString()),
+						new HeaderBuilder.HeaderElement("Sub-Type:", this.getDisplaySubType()),
+						new HeaderBuilder.HeaderElement("Duration:", this.getAbsoluteDuration()),
+						new HeaderBuilder.HeaderElement("Reason:", this.getReason())
+				)
+				), new HeaderBuilder.HeaderGroup(
+						"", List.of(
+						new HeaderBuilder.HeaderElement(
+								"Target: ", PlayerUtils.getUsername(this.getOwners()
+										                                    .get(OwnerRole.TARGET)
+										                                    .id())
+						), new HeaderBuilder.HeaderElement(
+								"Moderator: ", PlayerUtils.getUsername(this.getOwners()
+										                                       .get(OwnerRole.ACTOR)
+										                                       .id())
+						), new HeaderBuilder.HeaderElement("Date:", this.getDate()),
+						new HeaderBuilder.HeaderElement("Until:", this.getUntil()),
+						new HeaderBuilder.HeaderElement("Pardoned On:", this.getPardonedDate())
+				)
+				)
+		);
+	}
+
+	@Nonnull
+	public PunishmentType getType() {
+		return type;
+	}
+
+	@Nonnull
+	public TimeFormat getDuration() {
+		return duration;
+	}
+
 	public void createLogEntry(
-			LogActions action,
+			PunishmentAction action,
 			UUID actor
 	) throws InvalidActionException {
 		if (action.unique && LogProvider.get()
@@ -434,13 +515,16 @@ public class Punishment implements DomainObject<Punishment> {
 	}
 
 	@Nonnull
-	public PunishmentType getType() {
-		return type;
+	public PunishmentStatus getStatus() {
+		return status;
 	}
 
 	@Nonnull
-	public TimeFormat getDuration() {
-		return duration;
+	public String getPardonedDate() {
+		if (this.status != PunishmentStatus.PARDONED || this.pardonTimestamp == null) {
+			return "Never";
+		}
+		return TimeUtils.instantAsDateTime(this.pardonTimestamp);
 	}
 
 	@Nonnull
@@ -449,8 +533,20 @@ public class Punishment implements DomainObject<Punishment> {
 			case PERMANENT -> "Forever";
 			case TEMPORARY -> TimeFormat.fromNowToInstant(this.expiresOn)
 					.toFullDurationString();
-			case NULL -> "ERROR!";
+			case NULL -> "None";
 		};
+	}
+
+	@Nonnull
+	public String getRemainingDuration() {
+		if (this.status == PunishmentStatus.PARDONED && this.pardonTimestamp != null && this.expiresOn != null) {
+			return TimeFormat.fromInstantToInstant(this.pardonTimestamp, this.expiresOn)
+					.toFullDurationString();
+		} else if (this.status == PunishmentStatus.PARDONED) {
+			return "Pardoned";
+		} else {
+			return this.getRelativeDuration();
+		}
 	}
 
 	@Nonnull
@@ -458,7 +554,7 @@ public class Punishment implements DomainObject<Punishment> {
 		return switch (this.subtype) {
 			case PERMANENT -> "Forever";
 			case TEMPORARY -> duration.toFullDurationString(false);
-			case NULL -> "ERROR!";
+			case NULL -> "None";
 		};
 	}
 
@@ -467,16 +563,7 @@ public class Punishment implements DomainObject<Punishment> {
 		return switch (this.subtype) {
 			case PERMANENT -> "Forever";
 			case TEMPORARY -> TimeUtils.instantAsDateTime(this.expiresOn);
-			case NULL -> "ERROR!";
-		};
-	}
-
-	@Nonnull
-	public String getDisplaySubType() {
-		return switch (this.subtype) {
-			case PERMANENT -> "Permanent";
-			case TEMPORARY -> "Temporary";
-			case NULL -> "ERROR!";
+			case NULL -> "None";
 		};
 	}
 
@@ -486,13 +573,42 @@ public class Punishment implements DomainObject<Punishment> {
 	}
 
 	@Nonnull
+	public String getDisplaySubType() {
+		return switch (this.subtype) {
+			case PERMANENT -> "Permanent";
+			case TEMPORARY -> "Temporary";
+			case NULL -> "None";
+		};
+	}
+
+	@Nonnull
 	public Boolean isActive() {
 		this.checkIfActive();
-		return this.active;
+		return this.status == PunishmentStatus.ACTIVE;
 	}
 
 	public Boolean isPardoned() {
-		return this.pardoned;
+		return this.status == PunishmentStatus.PARDONED;
+	}
+
+	public Boolean canExpire() {
+		return this.subtype.canExpire && this.status == PunishmentStatus.ACTIVE;
+	}
+
+	public Boolean canReduce() {
+		return false;
+		// ToDo: Add reducing
+		//return this.subtype.canReduce && this.status == PunishmentStatus.ACTIVE;
+	}
+
+	public Boolean canExtend() {
+		return false;
+		// ToDo: Add extending
+		//return this.subtype.canExtend && this.status == PunishmentStatus.ACTIVE;
+	}
+
+	public Boolean canPardon() {
+		return this.type.canPardon && this.status == PunishmentStatus.ACTIVE;
 	}
 
 	@Nonnull
@@ -513,7 +629,13 @@ public class Punishment implements DomainObject<Punishment> {
 				.param("reason", this.getReason());
 	}
 
-	protected String getTranslationKey() {
+	public Boolean canReinstate() {
+		return false;
+		// ToDo: Add reinstating
+		//return this.status == PunishmentStatus.PARDONED;
+	}
+
+	public String getTranslationKey() {
 		return switch (this.type) {
 			case BAN -> "ban";
 			case MUTE -> "mute";
@@ -522,7 +644,7 @@ public class Punishment implements DomainObject<Punishment> {
 		};
 	}
 
-	protected String getSubTranslationKey() {
+	public String getSubTranslationKey() {
 		return switch (this.subtype) {
 			case PERMANENT -> "perm";
 			case TEMPORARY -> "temp";
@@ -531,33 +653,84 @@ public class Punishment implements DomainObject<Punishment> {
 	}
 
 	protected void checkIfActive() {
-		this.active = !this.pardoned && (this.expiresOn == null || this.expiresOn.isAfter(Instant.now()));
+		if (this.status == PunishmentStatus.ACTIVE && this.expiresOn != null && this.expiresOn.isBefore(
+				Instant.now())) {
+			this.status = PunishmentStatus.EXPIRED;
+		}
 	}
 
-	public enum LogActions implements LogActionEnum {
+	private UIText getHeaderStatus() {
+		if (this.status == PunishmentStatus.PARDONED) {
+			return new UIText("Pardoned", Value.ref("Tarobits_Punishments_Styles.ui", "PardonedStyle"));
+		}
+		if (this.status == PunishmentStatus.ACTIVE) {
+			return new UIText("Active", Value.ref("Tarobits_Punishments_Styles.ui", "ActiveStyle"));
+		}
+		return new UIText("Expired", Value.ref("Tarobits_Punishments_Styles.ui", "ExpiredStyle"));
+	}
+
+
+	public enum PunishmentAction implements LogActionEnum<Punishment> {
 		CREATE(true),
 		REDUCE,
 		EXTEND,
-		PARDON;
+		PARDON,
+		EXPIRE;
 
 		public final Boolean unique;
 
-		LogActions(Boolean unique) {
+		PunishmentAction(Boolean unique) {
 			this.unique = unique;
 		}
 
-		LogActions() {
+		PunishmentAction() {
 			this.unique = false;
 		}
 
 		@Override
-		public String getLogActionText() {
+		public Message getLogActionText(
+				Punishment item,
+				LogEntry logEntry
+		) {
+			Map<ExtraInfoType, String> extraInfo = logEntry.getExtraInfo();
 			return switch (this) {
-				case CREATE -> "tarobits.punishments.ban.log.action.create";
-				case REDUCE -> "tarobits.punishments.ban.log.action.reduce";
-				case EXTEND -> "tarobits.punishments.ban.log.action.extend";
-				case PARDON -> "tarobits.punishments.ban.log.action.pardon";
+				case CREATE -> LogUtils.prepareMessage(
+						"tarobits.punishments." + item.getTranslationKey() + ".log.action.create",
+						PlayerUtils.getUsername(item.getOwners()
+								                        .get(OwnerRole.TARGET)
+								                        .id()), "", "", ""
+				);
+				case REDUCE -> LogUtils.prepareMessage(
+						"tarobits.punishments." + item.getTranslationKey() + ".log.action.reduce",
+						PlayerUtils.getUsername(item.getOwners()
+								                        .get(OwnerRole.TARGET)
+								                        .id()), extraInfo.get(ExtraInfoType.PREVIOUS_VALUE),
+						extraInfo.get(ExtraInfoType.NEW_VALUE), extraInfo.get(ExtraInfoType.DIFFERENCE)
+				);
+				case EXTEND -> LogUtils.prepareMessage(
+						"tarobits.punishments." + item.getTranslationKey() + ".log.action.extend",
+						PlayerUtils.getUsername(item.getOwners()
+								                        .get(OwnerRole.TARGET)
+								                        .id()), extraInfo.get(ExtraInfoType.PREVIOUS_VALUE),
+						extraInfo.get(ExtraInfoType.NEW_VALUE), extraInfo.get(ExtraInfoType.DIFFERENCE)
+				);
+				case PARDON -> LogUtils.prepareMessage(
+						"tarobits.punishments." + item.getTranslationKey() + ".log.action.pardon",
+						PlayerUtils.getUsername(item.getOwners()
+								                        .get(OwnerRole.TARGET)
+								                        .id()), "", "", ""
+				);
+				case EXPIRE -> LogUtils.prepareMessage(
+						"tarobits.punishments." + item.getTranslationKey() + ".log.action.expire", "", "", "", "");
 			};
+		}
+
+		@Override
+		public UIText getUIText() {
+			return new UIText(
+					StringUtils.toTitleCase(this.name()),
+			                  Value.ref("TPunish_Styles/LogActions/Punishment.ui", StringUtils.toTitleCase(this.name()))
+			);
 		}
 	}
 }

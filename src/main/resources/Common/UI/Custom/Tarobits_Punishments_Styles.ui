@@ -1,0 +1,17 @@
+@DefaultHeaderGroupTitleStyle = (
+    RenderBold: true,
+    TextColor: #ffffff,
+    FontSize: 20,
+    HorizontalAlignment: Center
+);
+
+@DefaultHeaderKeyStyle = (
+    RenderBold: true,
+    TextColor: #ffffff,
+    FontSize: 16
+);
+
+@DefaultHeaderValueStyle = (
+    TextColor: #ffffff,
+    FontSize: 16
+);

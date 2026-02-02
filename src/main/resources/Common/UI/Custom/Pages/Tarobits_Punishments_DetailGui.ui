@@ -1,0 +1,161 @@
+$C = "../Common.ui";
+
+@DefaultHeaderGroupTitleStyle = (
+    RenderBold: true,
+    TextColor: #ffffff,
+    FontSize: 20,
+    HorizontalAlignment: Center
+);
+
+@HeaderGroup = Group {
+    LayoutMode: Top;
+    FlexWeight: 2;
+    Padding: 5;
+    Label #Title {
+        Anchor: (Bottom: 10);
+        Style: @DefaultHeaderGroupTitleStyle;
+        Text: "Text unset! FIX!";
+    }
+    Group #Elements {
+        LayoutMode: Top;
+        FlexWeight: 1;
+    }
+};
+
+$C.@PageOverlay {}
+
+$C.@Container {
+  Anchor: (Width: 1400, Height: 900);
+
+#Title {
+    Group {
+        TextButton #BackButton {
+            Anchor: (
+                Left: 10,
+                Top: 2,
+                Bottom: 2,
+                Width: 70,
+                Height: 30
+            );
+            Style: TextButtonStyle(
+                Default: (
+                    LabelStyle: (FontSize: 12, TextColor: #a0a0a0, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center),
+                    Background: (Color: #505050a0)
+                ),
+                Hovered: (
+                    LabelStyle: (FontSize: 12, TextColor: #a0a0a0, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center),
+                    Background: (Color: #909090a0)
+                ),
+                Pressed: (
+                    LabelStyle: (FontSize: 12, TextColor: #606060, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center),
+                    Background: (Color: #c0c0c0a0)
+                ),
+                Sounds: $C.@ButtonSounds
+            );
+            Padding: (
+                Left: 6,
+                Top: 2
+            );
+            Text: %tarobits.punishments.gui.backbutton;
+        }
+        $C.@Title #HeaderTitle {
+            @Text = "Lorem Ipsum dolor sit amet";
+        }
+    }
+}
+
+  #Content {
+    LayoutMode: Top;
+
+    Label #PageTitle {
+        Style: (
+            HorizontalAlignment: Center,
+            FontSize: 40,
+            RenderBold: true
+        );
+    }
+
+    Group #Header {
+        LayoutMode: Left;
+        Background: PatchStyle(TexturePath: "../Common/DropdownBox.png", Border: 20);
+        Padding: 15;
+        Group {
+            FlexWeight: 1;
+        }
+        @HeaderGroup #G1 {}
+        Group #S2 {
+            FlexWeight: 1;
+        }
+        @HeaderGroup #G2 {}
+        Group #S3 {
+            FlexWeight: 1;
+        }
+        @HeaderGroup #G3 {}
+        Group {
+            FlexWeight: 1;
+        }
+    }
+
+    Group {
+        Anchor: (Height: 1, Width: 1300, Top: 10, Bottom: 10);
+    }
+
+    Group {
+        LayoutMode: Left;
+        FlexWeight: 1;
+        Group {
+            LayoutMode: Top;
+            FlexWeight: 6;
+            Label {
+                Text: %tarobits.punishments.gui.details.logs;
+                Style: (
+                    RenderBold: true,
+                    HorizontalAlignment: Center,
+                    FontSize: 26
+                );
+            }
+            Group #LogBox {
+                Anchor: (Top: 5);
+                FlexWeight: 1;
+                LayoutMode: TopScrolling;
+                ScrollbarStyle: $C.@TranslucentScrollbarStyle;
+            }
+        }
+        Group {
+            Anchor: (Width: 3, Left: 10, Right: 10);
+        }
+        Group {
+            LayoutMode: Top;
+            FlexWeight: 2;
+            Padding: 20;
+            Background: PatchStyle(TexturePath: "../Common/ContainerFullPatch.png", Border: 20);
+            Label {
+                Anchor: (Bottom: 15);
+                Style: (
+                    FontSize: 26,
+                    RenderBold: true,
+                    HorizontalAlignment: Center
+                );
+                Text: %tarobits.punishments.gui.details.actions;
+            }
+            $C.@SecondaryTextButton #Button1 {
+                Text: "Unset! FIX!";
+            }
+            $C.@SecondaryTextButton #Button2 {
+                @Anchor = (Top: 10);
+                Text: "Unset! FIX!";
+            }
+            $C.@SecondaryTextButton #Button3 {
+                @Anchor = (Top: 10);
+                Text: "Unset! FIX!";
+            }
+            $C.@SecondaryTextButton #Button4 {
+                @Anchor = (Top: 10);
+                Text: "Unset! FIX!";
+            }
+        }
+    }
+  }
+}
+
+$C.@BackButton {}

@@ -11,6 +11,7 @@ import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import dev.tarobits.punishments.commands.*;
 import dev.tarobits.punishments.provider.ConfigProvider;
+import dev.tarobits.punishments.provider.LogProvider;
 import dev.tarobits.punishments.provider.PunishmentProvider;
 import dev.tarobits.punishments.utils.Permissions;
 import dev.tarobits.punishments.utils.VersionUtils;
@@ -84,10 +85,18 @@ public class TPunish extends JavaPlugin {
 		this.commandsRegistered = true;
 	}
 
+	protected void initializeProviders() {
+		Object _ = ConfigProvider.get();
+		Object _ = PunishmentProvider.get();
+		Object _ = LogProvider.get();
+	}
+
 	@Override
 	protected void setup() {
 		LOGGER.atInfo()
 				.log("Setting up plugin " + this.getName());
+		initializeProviders();
+
 		ConfigProvider configProvider = ConfigProvider.get();
 		punishmentProvider = PunishmentProvider.get();
 
