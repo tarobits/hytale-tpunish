@@ -181,13 +181,9 @@ Group {
             Group {
                 FlexWeight: 1;
             }
-            $C.@SmallSecondaryTextButton {
+            $C.@SmallSecondaryTextButton #DetailsButton {
                 Text: %tarobits.punishments.gui.entry.buttons.details;
                 Anchor: (Top: 2, Bottom: 2);
-            }
-            $C.@CancelTextButton {
-                Text: %tarobits.punishments.gui.entry.buttons.remove;
-                Visible: false;
             }
             Group {
                 FlexWeight: 1;

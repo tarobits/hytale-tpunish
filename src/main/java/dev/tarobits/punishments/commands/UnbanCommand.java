@@ -6,6 +6,7 @@ import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.command.system.arguments.system.RequiredArg;
 import com.hypixel.hytale.server.core.command.system.arguments.types.ArgTypes;
 import com.hypixel.hytale.server.core.command.system.basecommands.CommandBase;
+import dev.tarobits.punishments.exceptions.InvalidActionException;
 import dev.tarobits.punishments.provider.PunishmentProvider;
 import dev.tarobits.punishments.utils.Permissions;
 import dev.tarobits.punishments.utils.punishment.PunishmentType;
@@ -38,6 +39,14 @@ public class UnbanCommand extends CommandBase {
             ctx.sendMessage(Message.translation("tarobits.punishments.ban.error.isnt").param("name", userName));
             return;
         }
-        ctx.sendMessage(punishmentProvider.getActive(uuid, PunishmentType.BAN).pardon().param("action", "tarobits.punishments.edit.actions.unban").param("player", userName));
+	    try {
+		    ctx.sendMessage(punishmentProvider.getActive(uuid, PunishmentType.BAN)
+				                    .pardon(ctx.sender()
+						                            .getUuid())
+				                    .param("action", "tarobits.punishments.edit.actions.unban")
+				                    .param("player", userName));
+	    } catch (InvalidActionException e) {
+		    ctx.sendMessage(e.getChatMessage());
+	    }
     }
 }

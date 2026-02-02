@@ -40,7 +40,8 @@ public class PunishCommand extends CommandBase {
         ProfileServiceClient.PublicGameProfile profile = this.playerArg.get(ctx);
         if (profile == null) {
             ctx.sendMessage(Message.raw("Failed to get user profile!"));
-            LOGGER.atWarning().log("Failed to get user profile!");
+            LOGGER.atWarning()
+                    .log("Failed to get user profile!");
             return;
         }
         Ref<EntityStore> ref = ctx.senderAsPlayerRef();
@@ -49,13 +50,16 @@ public class PunishCommand extends CommandBase {
             return;
         }
         Store<EntityStore> store = ref.getStore();
-        PlayerRef playerRef = Universe.get().getPlayer(ctx.sender().getUuid());
+        PlayerRef playerRef = Universe.get()
+                .getPlayer(ctx.sender()
+                                   .getUuid());
         Player player = ctx.senderAs(Player.class);
         if (playerRef == null) {
             ctx.sendMessage(Message.raw("Failed to get player!"));
             return;
         }
-        player.getPageManager().openCustomPage(ref, store, new PunishmentsGui(playerRef, CustomPageLifetime.CanDismiss, profile));
+        player.getPageManager()
+                .openCustomPage(ref, store, new PunishmentsGui(playerRef, CustomPageLifetime.CanDismiss, profile));
     }
 
     public static class PunishConfigCommand extends CommandBase {
@@ -78,13 +82,16 @@ public class PunishCommand extends CommandBase {
                 return;
             }
             Store<EntityStore> store = ref.getStore();
-            PlayerRef playerRef = Universe.get().getPlayer(ctx.sender().getUuid());
+            PlayerRef playerRef = Universe.get()
+                    .getPlayer(ctx.sender()
+                                       .getUuid());
             Player player = ctx.senderAs(Player.class);
             if (playerRef == null) {
                 ctx.sendMessage(Message.raw("Failed to get player!"));
                 return;
             }
-            player.getPageManager().openCustomPage(ref, store, new ManagementGui(playerRef, CustomPageLifetime.CanDismiss));
+            player.getPageManager()
+                    .openCustomPage(ref, store, new ManagementGui(playerRef, CustomPageLifetime.CanDismiss));
         }
     }
 }

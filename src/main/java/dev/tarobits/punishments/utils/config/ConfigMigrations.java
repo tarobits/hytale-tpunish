@@ -3,85 +3,148 @@ package dev.tarobits.punishments.utils.config;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.hypixel.hytale.logger.HytaleLogger;
+import dev.tarobits.punishments.TPunish;
+import dev.tarobits.punishments.provider.ConfigProvider;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 
+import java.util.logging.Level;
+
 public class ConfigMigrations {
-    private static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
+	private static final HytaleLogger LOGGER = TPunish.getLogger("ConfigMigrations");
 
-    private static void log(String msg) {
-        LOGGER.atInfo().log(msg);
-    }
+	private static void log(String msg) {
+		LOGGER.atInfo()
+				.log(msg);
+	}
 
-    public static JsonObject performMigrations(JsonObject jsonObject, Integer currentVersion) {
-        log("-=-=-= Running config migrations =-=-=-");
-        if (currentVersion == 0) {
-            log("Running migration to config version 1");
-            jsonObject = zeroToOne(jsonObject);
-            currentVersion = 1;
-        }
+	public static JsonObject performMigrations(
+			JsonObject currentConfig,
+			Integer currentVersion
+	) {
+		log("-=-=-= Running config migrations =-=-=-");
+		JsonObject result = new JsonObject();
+		while (currentVersion < ConfigProvider.getConfigVersion()) {
+			migrate(currentVersion, currentConfig, result);
+			currentVersion++;
+		}
 
-        // Add more version migrations here
+		normalizeConfig(currentConfig, result);
 
-        log("-=-=-= Config migrations END =-=-=-");
-        return jsonObject;
-    }
+		log("-=-=-= Config migrations END =-=-=-");
+		return result;
+	}
 
-    private static JsonObject zeroToOne(JsonObject jsonObject) {
-        JsonObject result = new JsonObject();
+	private static void migrate(
+			Integer currentVersion,
+			JsonObject currentConfig,
+			JsonObject result
+	) {
+		switch (currentVersion) {
+			case 0:
+				zeroToOne(currentConfig, result);
+				break;
+			// Add more migrations here
+		}
+	}
 
-        try {
-            result.addProperty("doPunishmentNotifications", jsonObject.get("DoPunishmentNotifications").getAsBoolean());
-        } catch (Exception _) {
-            result.addProperty("doPunishmentNotifications", true);
-        }
+	// Clean config and add missing settings
+	private static void normalizeConfig(
+			JsonObject currentConfig,
+			JsonObject result
+	) {
+		for (ConfigSchema s : ConfigSchema.values()) {
+			if (!result.has(s.getKey())) {
+				ConfigEntry entry = s.getEntry();
+				try {
+					entry.parseValueFromJson(currentConfig.get(s.getKey()));
+				} catch (Exception _) {
+					LOGGER.at(Level.FINE)
+							.log("Failed to find config key " + s.getKey() + " using default.");
+				}
+				entry.parseValueToJson(result);
+			}
+		}
+	}
 
-        try {
-            result.addProperty("showUpdateNotifications", jsonObject.get("ShowUpdateNotifications").getAsBoolean());
-        } catch (Exception _) {
-            result.addProperty("showUpdateNotifications", true);
-        }
+	private static void zeroToOne(
+			JsonObject currentConfig,
+			JsonObject result
+	) {
+		log("Running migration to config version 1");
+		try {
+			result.addProperty(
+					"doPunishmentNotifications", currentConfig.get("DoPunishmentNotifications")
+							.getAsBoolean()
+			);
+		} catch (Exception _) {
+			result.addProperty("doPunishmentNotifications", true);
+		}
 
-        try {
-            JsonArray newPresets = new JsonArray();
-            jsonObject.get("Presets").getAsJsonArray().forEach((e) -> {
-                JsonObject obj = e.getAsJsonObject();
-                JsonObject newObj = new JsonObject();
+		try {
+			result.addProperty(
+					"showUpdateNotifications", currentConfig.get("ShowUpdateNotifications")
+							.getAsBoolean()
+			);
+		} catch (Exception _) {
+			result.addProperty("showUpdateNotifications", true);
+		}
 
-                newObj.addProperty("name", obj.get("Name").getAsString());
-                newObj.addProperty("duration", obj.get("Duration").getAsString());
-                newObj.addProperty("type", obj.get("Type").getAsString());
-                newObj.addProperty("sub_type", obj.get("SubType").getAsString());
-                newObj.addProperty("reason", obj.get("Reason").getAsString());
+		try {
+			JsonArray newPresets = new JsonArray();
+			currentConfig.get("Presets")
+					.getAsJsonArray()
+					.forEach((e) -> {
+						JsonObject obj = e.getAsJsonObject();
+						JsonObject newObj = new JsonObject();
 
-                newPresets.add(newObj);
-            });
+						newObj.addProperty(
+								"name", obj.get("Name")
+										.getAsString()
+						);
+						newObj.addProperty(
+								"duration", obj.get("Duration")
+										.getAsString()
+						);
+						newObj.addProperty(
+								"type", obj.get("Type")
+										.getAsString()
+						);
+						newObj.addProperty(
+								"sub_type", obj.get("SubType")
+										.getAsString()
+						);
+						newObj.addProperty(
+								"reason", obj.get("Reason")
+										.getAsString()
+						);
 
-            result.add("presets", newPresets);
-        } catch (Exception _) {
-            JsonArray presetArray = getDefaultPresetsV1();
-            result.add("presets", presetArray);
-        }
+						newPresets.add(newObj);
+					});
 
-        return result;
-    }
+			result.add("presets", newPresets);
+		} catch (Exception _) {
+			JsonArray presetArray = getDefaultPresetsV1();
+			result.add("presets", presetArray);
+		}
+	}
 
-    @NonNullDecl
-    private static JsonArray getDefaultPresetsV1() {
-        JsonArray presetArray = new JsonArray();
-        JsonObject pre1 = new JsonObject();
-        pre1.addProperty("name", "Hacking");
-        pre1.addProperty("duration", "30d");
-        pre1.addProperty("type", "ban");
-        pre1.addProperty("sub_type", "temp");
-        pre1.addProperty("reason", "Hacking");
-        JsonObject pre2 = new JsonObject();
-        pre2.addProperty("name", "Hacking 2nd Offense");
-        pre2.addProperty("duration", "3m");
-        pre2.addProperty("type", "ban");
-        pre2.addProperty("sub_type", "temp");
-        pre2.addProperty("reason", "Hacking");
-        presetArray.add(pre1);
-        presetArray.add(pre2);
-        return presetArray;
-    }
+	@NonNullDecl
+	private static JsonArray getDefaultPresetsV1() {
+		JsonArray presetArray = new JsonArray();
+		JsonObject pre1 = new JsonObject();
+		pre1.addProperty("name", "Hacking");
+		pre1.addProperty("duration", "30d");
+		pre1.addProperty("type", "ban");
+		pre1.addProperty("sub_type", "temp");
+		pre1.addProperty("reason", "Hacking");
+		JsonObject pre2 = new JsonObject();
+		pre2.addProperty("name", "Hacking 2nd Offense");
+		pre2.addProperty("duration", "3m");
+		pre2.addProperty("type", "ban");
+		pre2.addProperty("sub_type", "temp");
+		pre2.addProperty("reason", "Hacking");
+		presetArray.add(pre1);
+		presetArray.add(pre2);
+		return presetArray;
+	}
 }

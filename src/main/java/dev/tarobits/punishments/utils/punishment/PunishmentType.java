@@ -1,18 +1,26 @@
 package dev.tarobits.punishments.utils.punishment;
 
-public enum PunishmentType {
-    BAN,
-    MUTE,
-    WARN,
-    KICK;
+import dev.tarobits.punishments.exceptions.UserException;
 
-    public static PunishmentType fromJson(String id) {
+public enum PunishmentType {
+    BAN(true),
+    MUTE(true),
+    WARN(false),
+    KICK(false);
+
+    public final boolean canPardon;
+
+    PunishmentType(boolean canPardon) {
+        this.canPardon = canPardon;
+    }
+
+    public static PunishmentType fromJson(String id) throws UserException {
         return switch (id) {
             case "ban" -> BAN;
             case "mute" -> MUTE;
             case "warn" -> WARN;
             case "kick" -> KICK;
-            default -> throw new IllegalArgumentException("PunishmentType ID " + id + " does not exist!");
+            default -> throw new UserException("PunishmentType ID " + id + " does not exist!");
         };
     }
 
