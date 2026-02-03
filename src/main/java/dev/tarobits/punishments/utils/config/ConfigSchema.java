@@ -11,6 +11,11 @@ import java.util.Collection;
 import java.util.List;
 
 public enum ConfigSchema {
+	DO_UPDATE_CHECKS("doUpdateChecks", true, ConfigEntryType.BOOLEAN, 2),
+	UPDATE_CHECK_FREQUENCY("updateCheckFrequency", TimeFormat.fromDurationString("2h"), ConfigEntryType.FREQUENCY, 2),
+	DO_LOGGING("doLogging", true, ConfigEntryType.BOOLEAN, 2),
+	DO_METRICS("doMetrics", true, ConfigEntryType.BOOLEAN, 1),
+	DEVELOPMENT_RELEASE("developmentRelease", false, ConfigEntryType.BOOLEAN, 1),
 	PRESETS(
 			"presets", new Object() {
 		List<PresetConfig> evaluate() {
@@ -33,8 +38,7 @@ public enum ConfigSchema {
 		}
 	}.evaluate(), ConfigEntryType.PRESETS, 1
 	),
-	DO_PUNISHMENT_LOGS("doPunishmentLogs", true, ConfigEntryType.BOOLEAN, 1),
-	SHOW_UPDATE_NOTIFICATIONS("showUpdateNotifications", true, ConfigEntryType.BOOLEAN, 1);
+	;
 
 	private final String key;
 	private final ConfigEntry entry;
@@ -64,6 +68,15 @@ public enum ConfigSchema {
 			collection.add(s.entry);
 		}
 		return collection;
+	}
+
+	public static ConfigSchema getByKey(String key) {
+		for (ConfigSchema s : values()) {
+			if (s.key.equals(key)) {
+				return s;
+			}
+		}
+		throw new DeveloperErrorException("Config entry with key " + key + " does not exist!");
 	}
 
 	public String getKey() {

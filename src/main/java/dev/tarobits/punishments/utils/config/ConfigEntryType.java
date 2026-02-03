@@ -4,5 +4,6 @@ public enum ConfigEntryType {
 	BOOLEAN,
 	INTEGER,
 	DECIMAL,
+	FREQUENCY,
 	PRESETS
 }

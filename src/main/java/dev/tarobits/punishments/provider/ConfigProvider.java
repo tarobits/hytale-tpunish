@@ -16,13 +16,15 @@ import dev.tarobits.punishments.utils.config.ConfigSchema;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.logging.Level;
 
 public class ConfigProvider extends AbstractProvider<ConfigEntry> {
 	private static final ConfigProvider INSTANCE = new ConfigProvider();
 
-	private static final int VERSION = 1;
+	private static final int VERSION = 2;
 
 	protected ConfigProvider() {
 		super("config.json", ConfigEntry::fromJson, false);
@@ -128,7 +130,14 @@ public class ConfigProvider extends AbstractProvider<ConfigEntry> {
 		meta.addProperty("version", VERSION);
 
 		obj.add("_meta", meta);
+		List<ConfigEntry> sortedEntries = new ArrayList<>(this.entries.values());
 		for (ConfigEntry entry : this.entries.values()) {
+			sortedEntries.set(
+					ConfigSchema.getByKey(entry.getKey())
+							.ordinal(), entry
+			);
+		}
+		for (ConfigEntry entry : sortedEntries) {
 			entry.parseValueToJson(obj);
 		}
 		StringBuilder jsonString = new StringBuilder();

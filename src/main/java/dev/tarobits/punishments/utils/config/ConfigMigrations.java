@@ -43,6 +43,9 @@ public class ConfigMigrations {
 			case 0:
 				zeroToOne(currentConfig, result);
 				break;
+			case 1:
+				oneToTwo(currentConfig, result);
+				break;
 			// Add more migrations here
 		}
 	}
@@ -63,6 +66,29 @@ public class ConfigMigrations {
 				}
 				entry.parseValueToJson(result);
 			}
+		}
+	}
+
+	private static void oneToTwo(
+			JsonObject currentConfig,
+			JsonObject result
+	) {
+		log("Running migration to config version 2");
+
+		try {
+			result.addProperty("doUpdateChecks", currentConfig.get("showUpdateNotifications")
+					.getAsBoolean()
+			);
+		} catch (Exception _) {
+			result.addProperty("doUpdateChecks", true);
+		}
+
+		try {
+			result.addProperty("doLogging", currentConfig.get("doPunishmentLogs")
+					.getAsBoolean()
+			);
+		} catch (Exception _) {
+			result.addProperty("doPunishmentLogs", true);
 		}
 	}
 
