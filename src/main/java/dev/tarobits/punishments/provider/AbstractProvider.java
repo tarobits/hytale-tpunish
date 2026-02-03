@@ -11,6 +11,7 @@ import dev.tarobits.punishments.exceptions.InvalidActionException;
 import dev.tarobits.punishments.storage.StorageUtils;
 import dev.tarobits.punishments.utils.ProviderState;
 import dev.tarobits.punishments.utils.domainobject.DomainObject;
+import dev.tarobits.punishments.utils.domainobject.DomainObjectProvider;
 import dev.tarobits.punishments.utils.domainobject.DomainObjectType;
 import dev.tarobits.punishments.utils.domainobject.OwnerRole;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -25,7 +26,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 
-abstract public class AbstractProvider<T extends DomainObject<T>> extends BlockingDiskFile {
+abstract public class AbstractProvider<T extends DomainObject<T>> extends BlockingDiskFile
+		implements DomainObjectProvider<T>
+{
 	protected static HytaleLogger LOGGER;
 	protected final Function<JsonObject, T> loader;
 	protected final Map<UUID, T> entries = new Object2ObjectOpenHashMap<>();

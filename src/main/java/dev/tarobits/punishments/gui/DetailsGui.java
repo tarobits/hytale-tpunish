@@ -18,12 +18,12 @@ import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import dev.tarobits.punishments.exceptions.DeveloperErrorException;
 import dev.tarobits.punishments.exceptions.InvalidActionException;
-import dev.tarobits.punishments.provider.AbstractProvider;
 import dev.tarobits.punishments.provider.LogProvider;
 import dev.tarobits.punishments.provider.PunishmentProvider;
 import dev.tarobits.punishments.utils.StringUtils;
 import dev.tarobits.punishments.utils.TimeUtils;
 import dev.tarobits.punishments.utils.domainobject.DomainObject;
+import dev.tarobits.punishments.utils.domainobject.DomainObjectProvider;
 import dev.tarobits.punishments.utils.domainobject.Owner;
 import dev.tarobits.punishments.utils.log.LogEntry;
 import dev.tarobits.punishments.utils.punishment.Punishment;
@@ -38,7 +38,7 @@ public class DetailsGui extends InteractiveCustomUIPage<DetailsGui.DetailsData> 
 	@Nullable
 	private final ProfileServiceClient.PublicGameProfile target;
 	private final Owner object;
-	private final AbstractProvider<?> provider;
+	private final DomainObjectProvider<?> provider;
 
 	public DetailsGui(
 			PlayerRef playerRef,

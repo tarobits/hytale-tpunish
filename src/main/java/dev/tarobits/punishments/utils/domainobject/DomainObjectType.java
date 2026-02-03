@@ -1,7 +1,6 @@
 package dev.tarobits.punishments.utils.domainobject;
 
 import dev.tarobits.punishments.exceptions.DeveloperErrorException;
-import dev.tarobits.punishments.provider.AbstractProvider;
 import dev.tarobits.punishments.provider.ConfigProvider;
 import dev.tarobits.punishments.provider.LogProvider;
 import dev.tarobits.punishments.provider.PunishmentProvider;
@@ -12,7 +11,7 @@ public enum DomainObjectType {
 	CONFIG_ENTRY,
 	PLAYER;
 
-	public AbstractProvider<?> getProvider() {
+	public DomainObjectProvider<?> getProvider() {
 		return switch (this) {
 			case LOG_ENTRY -> LogProvider.get();
 			case PUNISHMENT -> PunishmentProvider.get();
