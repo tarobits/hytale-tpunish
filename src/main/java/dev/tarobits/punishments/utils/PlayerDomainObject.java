@@ -17,8 +17,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public record PlayerDomainObject(UUID id, String name) implements DomainObject<PlayerDomainObject> {
+public class PlayerDomainObject implements DomainObject<PlayerDomainObject> {
+	private final UUID id;
+	private final String name;
 
+	public PlayerDomainObject(
+			UUID id,
+			String name
+	) {
+		this.id = id;
+		this.name = name;
+	}
+
+	@Override
+	public UUID getId() {
+		return id;
+	}
 
 	@Override
 	public PlayerDomainObject withId(UUID id) throws InvalidActionException {
