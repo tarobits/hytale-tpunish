@@ -119,6 +119,9 @@ public enum Permissions {
 			@Nonnull UUID uuid,
 			@Nonnull Permissions permission
 	) {
+		if (uuid.equals(PlayerUtils.consoleId)) {
+			return true;
+		}
 		return PermissionsModule.get()
 				.hasPermission(uuid, permission.getPermission());
 	}
@@ -127,6 +130,9 @@ public enum Permissions {
 			@Nonnull UUID uuid,
 			@Nonnull List<Permissions> permissions
 	) {
+		if (uuid.equals(PlayerUtils.consoleId)) {
+			return true;
+		}
 		return permissions.stream()
 				.anyMatch((p) -> PermissionsModule.get()
 						.hasPermission(uuid, p.getPermission()));
