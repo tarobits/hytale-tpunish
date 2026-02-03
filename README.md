@@ -1,11 +1,25 @@
 # TPunish
 ![License Badge](https://img.shields.io/badge/License-LGPL--3.0--or--later-orange)
-![CurseForge Version](https://img.shields.io/curseforge/v/1445040?label=Version)
+![Plugin Version](https://img.shields.io/endpoint?url=https%3A%2F%2Fpluginver.tarobits.workers.dev%2F%3Fbadge%3Db)
+![Beta Version](https://img.shields.io/endpoint?url=https%3A%2F%2Fpluginver.tarobits.workers.dev%2F%3Fbadge%3Dh%26releaseChannel%3Dbeta)
 
 This plugin is an advanced punishment management plugin for Hytale.
 
 > [!NOTE]
 > This plugin overrides the vanilla /ban, /kick and /unban commands
+
+> [!NOTE]
+> This plugin collects anonymized usage metrics when searching for updates by default.
+>
+> These metrics consist of installed plugin version and selected release channel.
+>
+> They are immediately aggregated per version and per release channel.
+>
+> The raw data is never saved.
+>
+> Your ip address, any sort of identifier, etc. are never processed, stored or evaluated.
+>
+> To disable this set `doMetrics` to false in the `config.json`
 
 ## Table of contents
 - [Quick Start](#quick-start)
@@ -26,21 +40,24 @@ This plugin is an advanced punishment management plugin for Hytale.
 
 ## Configuration
 
-| Key | Value | Function | Default |
-| :--: | :--: | :--: | :--: |
-| showUpdateNotifications | boolean (true/false) | Enable checking of a new version (On startup checks current version by getting the GitHub Manifest) | true |
-| doLogging | boolean (true/false) | Enable logging of actions | true |
-| presets | array of [Presets](#preset-value) | Presets for the punishments | predefined punishments |
+|         Key          |                     Value                      |                                          Function                                          |        Default         |
+|:--------------------:|:----------------------------------------------:|:------------------------------------------------------------------------------------------:|:----------------------:|
+|    doUpdateChecks    |              boolean (true/false)              |                               Enable automatic update checks                               |          true          |
+| updateCheckFrequency | [Duration string](#duration-string) or "never" |         How often update checks are performed (in addition to the one on start up)         |           2h           |
+|      doLogging       |              boolean (true/false)              |                                 Enable logging of actions                                  |          true          |
+|      doMetrics       |              boolean (true/false)              | Enable anonymized metric collection while fetching updates (pluginVersion, releaseChannel) |          true          |
+|  developmentRelease  |              boolean (true/false)              |                     Change update notifications to development channel                     |         false          |
+|       presets        |       array of [Presets](#preset-value)        |                                Presets for the punishments                                 | predefined punishments |
 
 ### Preset value
 
-| Key | Value | Function | Required |
-| :--: | :--: | :--: | :--: |
-| name | string | Name that is displayed to the moderators | always |
-| type | enum(ban,mute,kick,warn) | Type of the punishment | always |
-| sub_type | enum(temp,perm) or omitted | SubType of the punishment | only when type is ban or mute |
-| duration | [Duration string](#duration-string) | The duration of the punishment | only when sub_type is temp |
-| reason | string | Reason displayed to the player when this punishment is given to them | always |
+|   Key    |                Value                |                               Function                               |           Required            |
+|:--------:|:-----------------------------------:|:--------------------------------------------------------------------:|:-----------------------------:|
+|   name   |               string                |               Name that is displayed to the moderators               |            always             |
+|   type   |      enum(ban,mute,kick,warn)       |                        Type of the punishment                        |            always             |
+| sub_type |     enum(temp,perm) or omitted      |                      SubType of the punishment                       | only when type is ban or mute |
+| duration | [Duration string](#duration-string) |                    The duration of the punishment                    |  only when sub_type is temp   |
+|  reason  |               string                | Reason displayed to the player when this punishment is given to them |            always             |
 
 ### Duration string
 
@@ -50,12 +67,12 @@ This plugin is an advanced punishment management plugin for Hytale.
 - 5m
 
 | Key | Function |
-| :--: | :--: |
-| y | years |
-| m | months |
-| d | days |
-| h | hours |
-| min | minutes |
+|:---:|:--------:|
+|  y  |  years   |
+|  m  |  months  |
+|  d  |   days   |
+|  h  |  hours   |
+| min | minutes  |
 
 > [!WARNING]
 > m is for months not minutes
@@ -114,7 +131,13 @@ This plugin is an advanced punishment management plugin for Hytale.
 
 `/punish` => Opens the GUI
 
-`/punish config` => Opens the config GUI
+`/tpconfig` or `/tpc` => Opens the config GUI
+
+`/tpconfig reload` => Reloads config.json
+
+`/tpconfig version` => Displays current version
+
+`/tpconfig checkversion` => Checks for updates manually
 
 `/ban [player] [duration] [reason]` => Ban a player
 
