@@ -661,12 +661,12 @@ public class Punishment implements DomainObject<Punishment> {
 
 	private UIText getHeaderStatus() {
 		if (this.status == PunishmentStatus.PARDONED) {
-			return new UIText("Pardoned", Value.ref("Tarobits_Punishments_Styles.ui", "PardonedStyle"));
+			return new UIText("Pardoned", Value.ref("TPunish_Styles/Punishment.ui", "PardonedStyle"));
 		}
 		if (this.status == PunishmentStatus.ACTIVE) {
-			return new UIText("Active", Value.ref("Tarobits_Punishments_Styles.ui", "ActiveStyle"));
+			return new UIText("Active", Value.ref("TPunish_Styles/Punishment.ui", "ActiveStyle"));
 		}
-		return new UIText("Expired", Value.ref("Tarobits_Punishments_Styles.ui", "ExpiredStyle"));
+		return new UIText("Expired", Value.ref("TPunish_Styles/Punishment.ui", "ExpiredStyle"));
 	}
 
 

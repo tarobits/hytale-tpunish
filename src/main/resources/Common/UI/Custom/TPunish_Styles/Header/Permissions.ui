@@ -1,0 +1,6 @@
+$B = "General.ui";
+
+@NoPermissionValue = (
+    ...$B.@BaseHeaderValueStyle,
+    TextColor: #c04040
+);

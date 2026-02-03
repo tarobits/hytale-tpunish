@@ -9,11 +9,11 @@ import java.util.List;
 public class HeaderBuilder {
 
 	private static final Value<String> defaultGroupStyle = Value.ref(
-			"Tarobits_Punishments_Styles.ui", "DefaultHeaderGroupTitleStyle");
+			"TPunish_Styles/Header/General.ui", "DefaultHeaderGroupTitleStyle");
 	private static final Value<String> defaultKeyStyle = Value.ref(
-			"Tarobits_Punishments_Styles.ui", "DefaultHeaderKeyStyle");
+			"TPunish_Styles/Header/General.ui", "DefaultHeaderKeyStyle");
 	private static final Value<String> defaultValueStyle = Value.ref(
-			"Tarobits_Punishments_Styles.ui", "DefaultHeaderValueStyle");
+			"TPunish_Styles/Header/General.ui", "DefaultHeaderValueStyle");
 
 	public static void buildHeader(
 			List<HeaderGroup> headerConfig,
@@ -88,5 +88,4 @@ public class HeaderBuilder {
 			this(new UIText(key, defaultKeyStyle), new UIText(value, defaultValueStyle));
 		}
 	}
-
 }
