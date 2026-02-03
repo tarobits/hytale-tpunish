@@ -30,6 +30,7 @@ import java.util.concurrent.CompletableFuture;
 public class TPunish extends JavaPlugin {
 	private static final HytaleLogger LOGGER = HytaleLogger.forEnclosingClass();
 	private static TPunish INSTANCE;
+	private static ConfigProvider configProvider;
 	private static PunishmentProvider punishmentProvider;
 	private Message versionMessage;
 
@@ -66,8 +67,6 @@ public class TPunish extends JavaPlugin {
 	}
 
 	protected void registerCommands() {
-		LOGGER.atInfo()
-				.log("Registering override commands.");
 		this.getCommandRegistry()
 				.registerCommand(new BanCommand());
 		this.getCommandRegistry()
@@ -82,23 +81,69 @@ public class TPunish extends JavaPlugin {
 				.registerCommand(new PunishCommand());
 		this.getCommandRegistry()
 				.registerCommand(new KickCommand());
+		LOGGER.atInfo()
+				.log("Successfully registered commands!");
 		this.commandsRegistered = true;
 	}
 
+	protected void registerEvents() {
+		// On boot register commands and check version if enabled
+		this.getEventRegistry()
+				.register(
+						BootEvent.class, (_) -> {
+							if (!this.commandsRegistered) {
+								this.registerCommands();
+							}
+							if (this.versionMessage == null && (boolean) configProvider.getFromSchema(
+											ConfigSchema.SHOW_UPDATE_NOTIFICATIONS)
+									.getValue()) {
+								this.versionMessage = VersionUtils.checkVersions(this.getManifest()
+										                                                 .getVersion());
+							}
+						}
+				);
+		// When player attempts to connect check if ban is active
+		this.getEventRegistry()
+				.register(
+						PlayerSetupConnectEvent.class, (event) -> {
+							if (punishmentProvider.hasBan(event.getUuid())) {
+								event.setReason(punishmentProvider.getActive(event.getUuid(), PunishmentType.BAN)
+										                .getReasonMessage()
+										                .getAnsiMessage());
+								event.setCancelled(true);
+							}
+						}
+				);
+		// When player connects and has config permission send update notification if necessary
+		this.getEventRegistry()
+				.register(
+						PlayerConnectEvent.class, (event) -> {
+							if (Permissions.playerHas(
+									event.getPlayerRef()
+											.getUuid(), Permissions.CONFIG
+							) && this.versionMessage != null) {
+								event.getPlayerRef()
+										.sendMessage(this.versionMessage);
+							}
+						}
+				);
+		// When player chats check if mute is active
+		this.getEventRegistry()
+				.registerAsyncGlobal(PlayerChatEvent.class, this::handleChat);
+	}
+
 	protected void initializeProviders() {
-		Object _ = ConfigProvider.get();
-		Object _ = PunishmentProvider.get();
+		configProvider = ConfigProvider.get();
+		punishmentProvider = PunishmentProvider.get();
 		Object _ = LogProvider.get();
+		LOGGER.atInfo()
+				.log("Successfully initialized providers!");
 	}
 
 	@Override
 	protected void setup() {
 		LOGGER.atInfo()
 				.log("Setting up plugin " + this.getName());
-		initializeProviders();
-
-		ConfigProvider configProvider = ConfigProvider.get();
-		punishmentProvider = PunishmentProvider.get();
 
 		File dataDir = this.getDataDirectory()
 				.toFile();
@@ -112,45 +157,8 @@ public class TPunish extends JavaPlugin {
 				throw new RuntimeException("Failed to create data directory!");
 			}
 		}
-		if ((boolean) configProvider.getFromSchema(ConfigSchema.SHOW_UPDATE_NOTIFICATIONS)
-				.getValue()) {
-			this.versionMessage = VersionUtils.checkVersions(this.getManifest()
-					                                                 .getVersion());
-		} else {
-			this.versionMessage = null;
-		}
-		this.getEventRegistry()
-				.register(
-						BootEvent.class, (_) -> {
-							if (!this.commandsRegistered) {
-								this.registerCommands();
-							}
-						}
-				);
-		this.getEventRegistry()
-				.register(
-						PlayerSetupConnectEvent.class, (event) -> {
-							if (punishmentProvider.hasBan(event.getUuid())) {
-								event.setReason(punishmentProvider.getActive(event.getUuid(), PunishmentType.BAN)
-										                .getReasonMessage()
-										                .getAnsiMessage());
-								event.setCancelled(true);
-							}
-						}
-				);
-		this.getEventRegistry()
-				.register(
-						PlayerConnectEvent.class, (event) -> {
-							if (Permissions.playerHas(
-									event.getPlayerRef()
-											.getUuid(), Permissions.CONFIG
-							) && this.versionMessage != null) {
-								event.getPlayerRef()
-										.sendMessage(this.versionMessage);
-							}
-						}
-				);
-		this.getEventRegistry()
-				.registerAsyncGlobal(PlayerChatEvent.class, this::handleChat);
+
+		initializeProviders();
+		registerEvents();
 	}
 }
