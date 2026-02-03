@@ -15,7 +15,7 @@ import dev.tarobits.punishments.provider.ConfigProvider;
 import dev.tarobits.punishments.provider.LogProvider;
 import dev.tarobits.punishments.provider.PunishmentProvider;
 import dev.tarobits.punishments.utils.Permissions;
-import dev.tarobits.punishments.utils.VersionUtils;
+import dev.tarobits.punishments.utils.VersionChecker;
 import dev.tarobits.punishments.utils.config.ConfigSchema;
 import dev.tarobits.punishments.utils.punishment.PunishmentType;
 
@@ -41,7 +41,7 @@ public class TPunish extends JavaPlugin {
 		super(init);
 		INSTANCE = this;
 		LOGGER.atInfo()
-				.log("TPunish (VersionUtils " + this.getManifest()
+				.log("TPunish (Version " + this.getManifest()
 						.getVersion()
 						.toString() + ")");
 	}
@@ -103,9 +103,9 @@ public class TPunish extends JavaPlugin {
 								this.registerCommands();
 							}
 							if (this.versionMessage == null && (boolean) configProvider.getFromSchema(
-											ConfigSchema.SHOW_UPDATE_NOTIFICATIONS)
+											ConfigSchema.DO_UPDATE_CHECKS)
 									.getValue()) {
-								this.versionMessage = VersionUtils.checkVersions(this.getManifest()
+								this.versionMessage = VersionChecker.checkVersions(this.getManifest()
 										                                                 .getVersion());
 							}
 						}

@@ -14,7 +14,7 @@ import dev.tarobits.punishments.TPunish;
 import dev.tarobits.punishments.gui.ManagementGui;
 import dev.tarobits.punishments.provider.ConfigProvider;
 import dev.tarobits.punishments.utils.Permissions;
-import dev.tarobits.punishments.utils.VersionUtils;
+import dev.tarobits.punishments.utils.VersionChecker;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 
 import javax.annotation.Nonnull;
@@ -97,7 +97,7 @@ public class TPConfigCommand extends CommandBase {
 
 		@Override
 		protected void executeSync(@NonNullDecl CommandContext ctx) {
-			Message msg = VersionUtils.checkVersions(TPunish.get()
+			Message msg = VersionChecker.checkVersions(TPunish.get()
 					                                         .getVersion());
 			if (msg == null) {
 				ctx.sendMessage(Message.translation("tarobits.punishments.no_update"));
