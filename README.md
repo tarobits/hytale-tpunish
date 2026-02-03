@@ -40,14 +40,14 @@ This plugin is an advanced punishment management plugin for Hytale.
 
 ## Configuration
 
-|         Key          |                     Value                      |                                          Function                                          |        Default         |
-|:--------------------:|:----------------------------------------------:|:------------------------------------------------------------------------------------------:|:----------------------:|
-|    doUpdateChecks    |              boolean (true/false)              |                               Enable automatic update checks                               |          true          |
-| updateCheckFrequency | [Duration string](#duration-string) or "never" |         How often update checks are performed (in addition to the one on start up)         |           2h           |
-|      doLogging       |              boolean (true/false)              |                                 Enable logging of actions                                  |          true          |
-|      doMetrics       |              boolean (true/false)              | Enable anonymized metric collection while fetching updates (pluginVersion, releaseChannel) |          true          |
-|  developmentRelease  |              boolean (true/false)              |                     Change update notifications to development channel                     |         false          |
-|       presets        |       array of [Presets](#preset-value)        |                                Presets for the punishments                                 | predefined punishments |
+|         Key          |               Value               |                                          Function                                          |        Default         |
+|:--------------------:|:---------------------------------:|:------------------------------------------------------------------------------------------:|:----------------------:|
+|    doUpdateChecks    |       boolean (true/false)        |                               Enable automatic update checks                               |          true          |
+| updateCheckFrequency |              integer              |         How often update checks are performed (in hours) <br/>Set to 0 to disable          |           2            |
+|      doLogging       |       boolean (true/false)        |                                 Enable logging of actions                                  |          true          |
+|      doMetrics       |       boolean (true/false)        | Enable anonymized metric collection while fetching updates (pluginVersion, releaseChannel) |          true          |
+|  developmentRelease  |       boolean (true/false)        |                     Change update notifications to development channel                     |         false          |
+|       presets        | array of [Presets](#preset-value) |                                Presets for the punishments                                 | predefined punishments |
 
 ### Preset value
 
