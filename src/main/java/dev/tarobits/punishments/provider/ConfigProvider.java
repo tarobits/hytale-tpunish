@@ -30,6 +30,8 @@ public class ConfigProvider extends AbstractProvider<ConfigEntry> {
 		this.syncLoad();
 
 		this.syncSave();
+		LOGGER.atInfo()
+				.log("Successfully loaded config!");
 	}
 
 	public static ConfigProvider get() {

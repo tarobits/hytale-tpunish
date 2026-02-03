@@ -16,6 +16,8 @@ public class LogProvider extends AbstractProvider<LogEntry> {
 		super("logs.json", LogEntry::fromJson);
 		this.syncLoad();
 		this.syncSave();
+		LOGGER.atInfo()
+				.log("Successfully loaded " + this.entries.size() + " log entries!");
 	}
 
 	public static LogProvider get() {
