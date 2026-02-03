@@ -35,7 +35,7 @@ abstract public class AbstractProvider<T extends DomainObject<T>> extends Blocki
 			String fileName,
 			Function<JsonObject, T> loader
 	) {
-		Path pluginDir = TPunish.getInstance()
+		Path pluginDir = TPunish.get()
 				.getDataDirectory();
 		super(StorageUtils.createDataFile(pluginDir, fileName)
 				      .toPath());
@@ -49,7 +49,7 @@ abstract public class AbstractProvider<T extends DomainObject<T>> extends Blocki
 			Function<JsonObject, T> loader,
 			Boolean storage
 	) {
-		Path pluginDir = TPunish.getInstance()
+		Path pluginDir = TPunish.get()
 				.getDataDirectory();
 		super(StorageUtils.createDataFile(pluginDir, fileName, storage)
 				      .toPath());

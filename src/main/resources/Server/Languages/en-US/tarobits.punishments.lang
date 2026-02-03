@@ -1,9 +1,13 @@
-# === Update Message ===
+# === Version ===
 updatemessage = A new version is available for TPunish. \nNew version: {newVersion}\nYour version: {oldVersion}
+no_update = You are on the newest version of TPunish.
+version = TPunish version: {version}
 
 # === Commands ===
 command.tpconfig = Open the config GUI
 command.tpconfig.reload = Reload config.json
+command.tpconfig.version = Display current version
+command.tpconfig.checkversion = Check for update
 command.punish = Open the punishment GUI for <player>
 command.kick = Kick <player> for <reason>
 command.mute = Mute <player> for <duration> for <reason>

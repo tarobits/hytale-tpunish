@@ -1,5 +1,6 @@
 package dev.tarobits.punishments;
 
+import com.hypixel.hytale.common.semver.Semver;
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.event.events.BootEvent;
@@ -49,8 +50,13 @@ public class TPunish extends JavaPlugin {
 		return LOGGER.getSubLogger(name);
 	}
 
-	public static TPunish getInstance() {
+	public static TPunish get() {
 		return INSTANCE;
+	}
+
+	public Semver getVersion() {
+		return this.getManifest()
+				.getVersion();
 	}
 
 	private CompletableFuture<PlayerChatEvent> handleChat(CompletableFuture<PlayerChatEvent> future) {

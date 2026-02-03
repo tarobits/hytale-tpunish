@@ -10,9 +10,11 @@ import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import dev.tarobits.punishments.TPunish;
 import dev.tarobits.punishments.gui.ManagementGui;
 import dev.tarobits.punishments.provider.ConfigProvider;
 import dev.tarobits.punishments.utils.Permissions;
+import dev.tarobits.punishments.utils.VersionUtils;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 
 import javax.annotation.Nonnull;
@@ -23,6 +25,8 @@ public class TPConfigCommand extends CommandBase {
 		this.requirePermission(Permissions.CONFIG.getPermission());
 		this.setUnavailableInSingleplayer(true);
 		this.addSubCommand(new TPConfigReloadCommand());
+		this.addSubCommand(new TPConfigVersionCommand());
+		this.addSubCommand(new TPConfigCheckVersionCommand());
 		this.addAliases("tpc");
 	}
 
@@ -63,6 +67,43 @@ public class TPConfigCommand extends CommandBase {
 			ConfigProvider.get()
 					.loadConfig();
 			ctx.sendMessage(Message.translation("tarobits.punishments.config.success.reload"));
+		}
+	}
+
+	public static class TPConfigVersionCommand extends CommandBase {
+		public TPConfigVersionCommand() {
+			super("version", "tarobits.punishments.command.tpconfig.version");
+			this.requirePermission(Permissions.CONFIG.getPermission());
+			this.setUnavailableInSingleplayer(true);
+		}
+
+		@Override
+		protected void executeSync(@NonNullDecl CommandContext ctx) {
+			ctx.sendMessage(Message.translation("tarobits.punishments.version")
+					                .param(
+							                "version", TPunish.get()
+									                .getVersion()
+									                .toString()
+					                ));
+		}
+	}
+
+	public static class TPConfigCheckVersionCommand extends CommandBase {
+		public TPConfigCheckVersionCommand() {
+			super("checkversion", "tarobits.punishments.command.tpconfig.checkversion");
+			this.requirePermission(Permissions.CONFIG.getPermission());
+			this.setUnavailableInSingleplayer(true);
+		}
+
+		@Override
+		protected void executeSync(@NonNullDecl CommandContext ctx) {
+			Message msg = VersionUtils.checkVersions(TPunish.get()
+					                                         .getVersion());
+			if (msg == null) {
+				ctx.sendMessage(Message.translation("tarobits.punishments.no_update"));
+				return;
+			}
+			ctx.sendMessage(msg);
 		}
 	}
 }
