@@ -2,6 +2,7 @@ package dev.tarobits.punishments.utils;
 
 import com.hypixel.hytale.server.core.auth.ProfileServiceClient;
 import com.hypixel.hytale.server.core.auth.ServerAuthManager;
+import dev.tarobits.punishments.exceptions.DeveloperErrorException;
 
 import java.util.UUID;
 
@@ -22,6 +23,9 @@ public class PlayerUtils {
 
 		ProfileServiceClient profileServiceClient = authManager.getProfileServiceClient();
 		var profile = profileServiceClient.getProfileByUuid(actor, sessionToken);
-		return profile != null ? profile.getUsername() : "Failed!";
+		if (profile == null) {
+			throw new DeveloperErrorException("Could not find player by uuid: " + actor);
+		}
+		return profile.getUsername();
 	}
 }
