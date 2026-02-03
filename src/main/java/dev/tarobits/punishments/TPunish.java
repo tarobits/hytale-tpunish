@@ -2,10 +2,8 @@ package dev.tarobits.punishments;
 
 import com.hypixel.hytale.common.semver.Semver;
 import com.hypixel.hytale.logger.HytaleLogger;
-import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.event.events.BootEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerChatEvent;
-import com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent;
 import com.hypixel.hytale.server.core.event.events.player.PlayerSetupConnectEvent;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
@@ -14,7 +12,6 @@ import dev.tarobits.punishments.commands.*;
 import dev.tarobits.punishments.provider.ConfigProvider;
 import dev.tarobits.punishments.provider.LogProvider;
 import dev.tarobits.punishments.provider.PunishmentProvider;
-import dev.tarobits.punishments.utils.Permissions;
 import dev.tarobits.punishments.utils.VersionChecker;
 import dev.tarobits.punishments.utils.config.ConfigSchema;
 import dev.tarobits.punishments.utils.punishment.PunishmentType;
@@ -23,6 +20,8 @@ import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * This class serves as the entrypoint for your plugin. Use the setup method to register into game registries or add
@@ -33,15 +32,26 @@ public class TPunish extends JavaPlugin {
 	private static TPunish INSTANCE;
 	private static ConfigProvider configProvider;
 	private static PunishmentProvider punishmentProvider;
-	private Message versionMessage;
+	private static VersionChecker versionChecker;
+	private final ScheduledExecutorService threadPool;
 
 	private Boolean commandsRegistered = false;
 
 	public TPunish(@Nonnull JavaPluginInit init) {
 		super(init);
+
+		this.threadPool = Executors.newScheduledThreadPool(
+				4, r -> {
+					Thread thread = new Thread(r);
+					thread.setName("TPunish-Thread-" + thread.threadId());
+					return thread;
+				}
+		);
+
+		versionChecker = new VersionChecker(this.getVersion());
 		INSTANCE = this;
 		LOGGER.atInfo()
-				.log("TPunish (Version " + this.getManifest()
+				.log("TPunish (Version " + this
 						.getVersion()
 						.toString() + ")");
 	}
@@ -102,11 +112,10 @@ public class TPunish extends JavaPlugin {
 							if (!this.commandsRegistered) {
 								this.registerCommands();
 							}
-							if (this.versionMessage == null && (boolean) configProvider.getFromSchema(
+							if (configProvider.getFromSchema(
 											ConfigSchema.DO_UPDATE_CHECKS)
-									.getValue()) {
-								this.versionMessage = VersionChecker.checkVersions(this.getManifest()
-										                                                 .getVersion());
+									.getAsBoolean()) {
+								versionChecker.run();
 							}
 						}
 				);
@@ -122,22 +131,17 @@ public class TPunish extends JavaPlugin {
 							}
 						}
 				);
-		// When player connects and has config permission send update notification if necessary
-		this.getEventRegistry()
-				.register(
-						PlayerConnectEvent.class, (event) -> {
-							if (Permissions.playerHas(
-									event.getPlayerRef()
-											.getUuid(), Permissions.CONFIG
-							) && this.versionMessage != null) {
-								event.getPlayerRef()
-										.sendMessage(this.versionMessage);
-							}
-						}
-				);
 		// When player chats check if mute is active
 		this.getEventRegistry()
 				.registerAsyncGlobal(PlayerChatEvent.class, this::handleChat);
+	}
+
+	protected void scheduleVersionChecker() {
+		if (configProvider.getFromSchema(ConfigSchema.DO_UPDATE_CHECKS)
+				.getAsBoolean() && configProvider.getFromSchema(ConfigSchema.UPDATE_CHECK_FREQUENCY)
+				.getAsInteger() != 0) {
+			versionChecker.schedule(threadPool);
+		}
 	}
 
 	protected void initializeProviders() {
@@ -168,5 +172,10 @@ public class TPunish extends JavaPlugin {
 
 		initializeProviders();
 		registerEvents();
+		if (configProvider.getFromSchema(ConfigSchema.DO_UPDATE_CHECKS)
+				.getAsBoolean() && configProvider.getFromSchema(ConfigSchema.UPDATE_CHECK_FREQUENCY)
+				.getAsInteger() != 0) {
+			scheduleVersionChecker();
+		}
 	}
 }

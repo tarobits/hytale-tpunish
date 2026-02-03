@@ -5,7 +5,10 @@ import com.google.gson.JsonParser;
 import com.hypixel.hytale.common.semver.Semver;
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.Message;
+import com.hypixel.hytale.server.core.universe.PlayerRef;
+import com.hypixel.hytale.server.core.universe.Universe;
 import dev.tarobits.punishments.TPunish;
+import dev.tarobits.punishments.exceptions.DeveloperErrorException;
 import dev.tarobits.punishments.exceptions.UserException;
 import dev.tarobits.punishments.provider.ConfigProvider;
 import dev.tarobits.punishments.utils.config.ConfigSchema;
@@ -15,21 +18,28 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
-public class VersionChecker {
+public class VersionChecker implements Runnable {
+	private static final HytaleLogger logger = TPunish.getLogger(VersionChecker.class.getSimpleName());
+	private static final ConfigProvider configProvider = ConfigProvider.get();
+	private final Semver currentVersion;
+
+	public VersionChecker(Semver currentVersion) {
+		this.currentVersion = currentVersion;
+	}
 
 	public static Message checkVersions(Semver current) {
 		try {
 			Semver newest = getNewestVersion();
 
-			HytaleLogger logger = TPunish.getLogger(VersionChecker.class.getSimpleName());
-
 			if (newest.compareTo(current) > 0) {
 
 				logger.atInfo()
-						.log("Found new version!\nRelease channel:" + ((boolean) ConfigProvider.get()
+						.log("Found new version!\nRelease channel:" + (configProvider
 								.getFromSchema(ConfigSchema.DEVELOPMENT_RELEASE)
-								.getValue() ? "Development" : "Stable") + "\nCurrent version: " + current + "\nNewest version: " + newest);
+								.getAsBoolean() ? "Development" : "Stable") + "\nCurrent version: " + current + "\nNewest version: " + newest);
 				return getUpdateMessage(newest, current);
 			} else if (newest.compareTo(current) < 0) {
 				logger.atWarning()
@@ -41,33 +51,15 @@ public class VersionChecker {
 		return null;
 	}
 
-	private static Message getUpdateMessage(
-			Semver newest,
-			Semver current
-	) {
-		return Message.translation("tarobits.punishments.updatemessage")
-				.param(
-						"newVersion", Message.raw(newest.toString())
-								.color(Color.GREEN)
-								.bold(true)
-				)
-				.param(
-						"oldVersion", Message.raw(current.toString())
-								.color(Color.RED)
-								.bold(true)
-				);
-	}
-
 	private static Semver getNewestVersion() throws UserException {
 		try {
 			String res = "";
 			HttpClient client = HttpClient.newHttpClient();
-			ConfigProvider provider = ConfigProvider.get();
-			if ((boolean) provider.getFromSchema(ConfigSchema.DO_METRICS)
-					.getValue()) {
+			if (configProvider.getFromSchema(ConfigSchema.DO_METRICS)
+					.getAsBoolean()) {
 
-				String data = "releaseChannel=" + ((boolean) provider.getFromSchema(ConfigSchema.DEVELOPMENT_RELEASE)
-						.getValue() ? "beta" : "stable") + "&version=" + TPunish.get()
+				String data = "releaseChannel=" + (configProvider.getFromSchema(ConfigSchema.DEVELOPMENT_RELEASE)
+						.getAsBoolean() ? "beta" : "stable") + "&version=" + TPunish.get()
 						.getVersion()
 						.toString();
 				URI uri = URI.create("https://pluginver.tarobits.workers.dev");
@@ -85,9 +77,9 @@ public class VersionChecker {
 
 				res = response.body();
 			} else {
-				URI uri = URI.create("https://pluginver.tarobits.workers.dev" + ((boolean) provider.getFromSchema(
+				URI uri = URI.create("https://pluginver.tarobits.workers.dev" + (configProvider.getFromSchema(
 								ConfigSchema.DEVELOPMENT_RELEASE)
-						.getValue() ? "/?releaseChannel=beta" : ""));
+						.getAsBoolean() ? "/?releaseChannel=beta" : ""));
 				HttpRequest request = HttpRequest.newBuilder()
 						.uri(uri)
 						.GET()
@@ -110,5 +102,55 @@ public class VersionChecker {
 		} catch (Exception _) {
 			throw new UserException("Couldn't get version!");
 		}
+	}
+
+	@Override
+	public void run() {
+		if (!configProvider.getFromSchema(ConfigSchema.DO_UPDATE_CHECKS)
+				.getAsBoolean() || configProvider.getFromSchema(ConfigSchema.UPDATE_CHECK_FREQUENCY)
+				.getAsInteger() == 0) {
+			return;
+		}
+		logger.atInfo()
+				.log("Running automatic update check");
+
+		Message updateNotif = checkVersions(currentVersion);
+		if (updateNotif == null) {
+			logger.atInfo()
+					.log("No updates found");
+			return;
+		}
+		for (PlayerRef plr : Universe.get()
+				.getPlayers()) {
+			if (Permissions.playerHas(plr.getUuid(), Permissions.CONFIG)) {
+				plr.sendMessage(updateNotif);
+			}
+		}
+	}
+
+	private static Message getUpdateMessage(
+			Semver newest,
+			Semver current
+	) {
+		return Message.translation("tarobits.punishments.updatemessage")
+				.param(
+						"newVersion", Message.raw(newest.toString())
+								.color(Color.GREEN)
+								.bold(true)
+				)
+				.param(
+						"oldVersion", Message.raw(current.toString())
+								.color(Color.RED)
+								.bold(true)
+				);
+	}
+
+	public void schedule(ScheduledExecutorService scheduledExecutorService) {
+		Integer frequency = configProvider.getFromSchema(ConfigSchema.UPDATE_CHECK_FREQUENCY)
+				.getAsInteger();
+		if (frequency == 0) {
+			throw new DeveloperErrorException("Frequency is 0!");
+		}
+		scheduledExecutorService.scheduleAtFixedRate(this, 0, frequency, TimeUnit.HOURS);
 	}
 }
