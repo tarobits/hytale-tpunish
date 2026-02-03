@@ -12,7 +12,7 @@ import java.util.List;
 
 public enum ConfigSchema {
 	DO_UPDATE_CHECKS("doUpdateChecks", true, ConfigEntryType.BOOLEAN, 2),
-	UPDATE_CHECK_FREQUENCY("updateCheckFrequency", TimeFormat.fromDurationString("2h"), ConfigEntryType.FREQUENCY, 2),
+	UPDATE_CHECK_FREQUENCY("updateCheckFrequency", 2, ConfigEntryType.INTEGER, 2),
 	DO_LOGGING("doLogging", true, ConfigEntryType.BOOLEAN, 2),
 	DO_METRICS("doMetrics", true, ConfigEntryType.BOOLEAN, 1),
 	DEVELOPMENT_RELEASE("developmentRelease", false, ConfigEntryType.BOOLEAN, 1),

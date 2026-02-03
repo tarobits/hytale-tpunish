@@ -9,7 +9,6 @@ import dev.tarobits.punishments.exceptions.DeveloperErrorException;
 import dev.tarobits.punishments.exceptions.InvalidActionException;
 import dev.tarobits.punishments.exceptions.UserException;
 import dev.tarobits.punishments.utils.StringUtils;
-import dev.tarobits.punishments.utils.TimeFormat;
 import dev.tarobits.punishments.utils.domainobject.DomainObject;
 import dev.tarobits.punishments.utils.domainobject.DomainObjectType;
 import dev.tarobits.punishments.utils.domainobject.Owner;
@@ -80,6 +79,36 @@ public class ConfigEntry implements DomainObject<ConfigEntry> {
 		return defaultValue;
 	}
 
+	public Boolean getAsBoolean() {
+		if (this.type != ConfigEntryType.BOOLEAN) {
+			throw new DeveloperErrorException("Cannot convert " + this.type.name() + " to Boolean!");
+		}
+		return (Boolean) this.value;
+	}
+
+	public Integer getAsInteger() {
+		if (this.type != ConfigEntryType.INTEGER) {
+			throw new DeveloperErrorException("Cannot convert " + this.type.name() + " to Integer!");
+		}
+		return (Integer) this.value;
+	}
+
+	public BigDecimal getAsBigDecimal() {
+		if (this.type != ConfigEntryType.DECIMAL) {
+			throw new DeveloperErrorException("Cannot convert " + this.type.name() + " to BigDecimal!");
+		}
+		return (BigDecimal) this.value;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<PresetConfig> getAsPresetConfigs() {
+		if (this.type != ConfigEntryType.PRESETS) {
+			throw new DeveloperErrorException("Cannot convert " + this.type.name() + " to PresetConfigs!");
+		}
+		return (List<PresetConfig>) this.value;
+	}
+
+	@Deprecated
 	public Object getValue() {
 		return value;
 	}
@@ -102,9 +131,8 @@ public class ConfigEntry implements DomainObject<ConfigEntry> {
 	public Boolean validate(Object newValue) {
 		return switch (this.type) {
 			case BOOLEAN -> newValue instanceof Boolean _;
-			case DECIMAL -> newValue instanceof BigDecimal _;
-			case INTEGER -> newValue instanceof Integer _;
-			case FREQUENCY -> newValue instanceof TimeFormat _;
+			case DECIMAL -> newValue instanceof BigDecimal i && BigDecimal.ZERO.compareTo(i) > 0;
+			case INTEGER -> newValue instanceof Integer i && i >= 0;
 			case PRESETS -> newValue instanceof List<?> list && list.stream()
 					.allMatch(PresetConfig.class::isInstance);
 		};
@@ -161,13 +189,6 @@ public class ConfigEntry implements DomainObject<ConfigEntry> {
 			case BOOLEAN -> el.getAsBoolean();
 			case INTEGER -> el.getAsInt();
 			case DECIMAL -> el.getAsBigDecimal();
-			case FREQUENCY -> {
-				if (el.getAsString()
-						.equals("never")) {
-					yield new TimeFormat();
-				}
-				yield TimeFormat.fromDurationString(el.getAsString());
-			}
 			case PRESETS -> {
 				List<PresetConfig> presetList = new ArrayList<>();
 				for (JsonElement jsonElement : el.getAsJsonArray()) {
@@ -178,16 +199,14 @@ public class ConfigEntry implements DomainObject<ConfigEntry> {
 		});
 	}
 
-	@SuppressWarnings("unchecked")
 	public void parseValueToJson(JsonObject obj) {
 		switch (type) {
-			case BOOLEAN -> obj.addProperty(this.key, (Boolean) this.value);
-			case INTEGER -> obj.addProperty(this.key, (Integer) this.value);
-			case DECIMAL -> obj.addProperty(this.key, (BigDecimal) this.value);
-			case FREQUENCY -> obj.addProperty(this.key, ((TimeFormat) this.value).toFullDurationString());
+			case BOOLEAN -> obj.addProperty(this.key, this.getAsBoolean());
+			case INTEGER -> obj.addProperty(this.key, this.getAsInteger());
+			case DECIMAL -> obj.addProperty(this.key, this.getAsBigDecimal());
 			case PRESETS -> {
 				JsonArray presetList = new JsonArray();
-				for (PresetConfig presetConfig : (List<PresetConfig>) this.value) {
+				for (PresetConfig presetConfig : this.getAsPresetConfigs()) {
 					presetList.add(presetConfig.toJson());
 				}
 				obj.add(this.key, presetList);

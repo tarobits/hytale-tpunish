@@ -54,9 +54,9 @@ public class AddPunishmentGui extends InteractiveCustomUIPage<GuiUtil.ListPunish
 	) {
 		super(playerRef, lifetime, GuiUtil.ListPunishmentsData.CODEC);
 		this.target = target;
-		this.presetConfigs = new ArrayList<>((List<PresetConfig>) ConfigProvider.get()
+		this.presetConfigs = new ArrayList<>(ConfigProvider.get()
 				.getFromSchema(ConfigSchema.PRESETS)
-				.getValue());
+				                                     .getAsPresetConfigs());
 		this.historyStats = historyStats;
 	}
 

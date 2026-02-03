@@ -50,8 +50,8 @@ public class EditPresetsGui extends InteractiveCustomUIPage<GuiUtil.ListPunishme
 	) {
 		super(playerRef, lifetime, GuiUtil.ListPunishmentsData.CODEC);
 		configProvider = ConfigProvider.get();
-		this.presetConfigs = new ArrayList<>((List<PresetConfig>) configProvider.getFromSchema(ConfigSchema.PRESETS)
-				.getValue());
+		this.presetConfigs = new ArrayList<>(configProvider.getFromSchema(ConfigSchema.PRESETS)
+				                                     .getAsPresetConfigs());
 	}
 
 	protected void resetHeader(
