@@ -68,6 +68,8 @@ public class TPunish extends JavaPlugin {
 
 	protected void registerCommands() {
 		this.getCommandRegistry()
+				.registerCommand(new TPConfigCommand());
+		this.getCommandRegistry()
 				.registerCommand(new BanCommand());
 		this.getCommandRegistry()
 				.registerCommand(new UnbanCommand());
