@@ -29,19 +29,24 @@ public class BanCommand extends CommandBase {
 	private final RequiredArg<TimeFormat> timeArg;
 
 	public BanCommand() {
-		super("ban", "Ban players");
+		super("ban", "tarobits.punishments.command.ban");
 		this.setUnavailableInSingleplayer(true);
 		this.requirePermission(Permissions.BAN_COMMAND.getPermission());
 		this.setAllowsExtraArguments(true);
 		this.playerArg = this.withRequiredArg(
-				"player", "server.commands.ban.player.desc",
+				"tarobits.punishments.command.ban.args.player.display",
+				"tarobits.punishments.command.ban.args.player.desc",
 				ArgTypes.GAME_PROFILE_LOOKUP
 		);
 		this.timeArg = this.withRequiredArg(
-				"duration", "Duration for which the player should be banned.",
+				"tarobits.punishments.command.ban.args.duration.display",
+				"tarobits.punishments.command.ban.args.duration.desc",
 				new DurationArgType()
 		);
-		this.withRequiredArg("reason", "Reason why the player is being banned.", new ReasonArgType());
+		this.withRequiredArg(
+				"tarobits.punishments.command.ban.args.reason.display",
+				"tarobits.punishments.command.ban.args.reason.desc", new ReasonArgType()
+		);
 	}
 
 	@Override

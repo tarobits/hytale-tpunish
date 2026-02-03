@@ -19,10 +19,13 @@ public class UnbanCommand extends CommandBase {
     private final RequiredArg<ProfileServiceClient.PublicGameProfile> playerArg;
 
     public UnbanCommand() {
-        super("unban", "Unban players");
+	    super("unban", "tarobits.punishments.command.unban");
         this.requirePermission(Permissions.UNBAN.getPermission());
         this.setUnavailableInSingleplayer(true);
-        this.playerArg = this.withRequiredArg("player", "Player to unban", ArgTypes.GAME_PROFILE_LOOKUP);
+	    this.playerArg = this.withRequiredArg(
+			    "tarobits.punishments.command.unban.args.player.display",
+			    "tarobits.punishments.command.unban.args.player.desc", ArgTypes.GAME_PROFILE_LOOKUP
+	    );
     }
 
     @Override

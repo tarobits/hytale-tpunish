@@ -29,19 +29,24 @@ public class MuteCommand extends CommandBase {
 	private final RequiredArg<TimeFormat> timeArg;
 
 	public MuteCommand() {
-		super("mute", "Mute players.");
+		super("mute", "tarobits.punishments.command.mute");
 		this.setUnavailableInSingleplayer(true);
 		this.requirePermission(Permissions.MUTE_COMMAND.getPermission());
 		this.setAllowsExtraArguments(true);
 		this.playerArg = this.withRequiredArg(
-				"player", "server.commands.ban.player.desc",
+				"tarobits.punishments.command.mute.args.player.display",
+				"tarobits.punishments.command.mute.args.player.desc",
 				ArgTypes.GAME_PROFILE_LOOKUP
 		);
 		this.timeArg = this.withRequiredArg(
-				"duration", "Duration for which the player should be banned.",
+				"tarobits.punishments.command.mute.args.duration.display",
+				"tarobits.punishments.command.mute.args.duration.desc",
 				new DurationArgType()
 		);
-		this.withRequiredArg("reason", "Reason why the player is being banned.", new ReasonArgType());
+		this.withRequiredArg(
+				"tarobits.punishments.command.mute.args.reason.display",
+				"tarobits.punishments.command.mute.args.reason.desc", new ReasonArgType()
+		);
 	}
 
 	@Override

@@ -19,10 +19,13 @@ public class UnmuteCommand extends CommandBase {
 	private final RequiredArg<ProfileServiceClient.PublicGameProfile> playerArg;
 
 	public UnmuteCommand() {
-		super("unmute", "Unmute players");
+		super("unmute", "tarobits.punishments.command.unmute");
 		this.requirePermission(Permissions.UNMUTE.getPermission());
 		this.setUnavailableInSingleplayer(true);
-		this.playerArg = this.withRequiredArg("player", "Player to unmute", ArgTypes.GAME_PROFILE_LOOKUP);
+		this.playerArg = this.withRequiredArg(
+				"tarobits.punishments.command.unmute.args.player.display",
+				"tarobits.punishments.command.unmute.args.player.desc", ArgTypes.GAME_PROFILE_LOOKUP
+		);
 	}
 
 	@Override

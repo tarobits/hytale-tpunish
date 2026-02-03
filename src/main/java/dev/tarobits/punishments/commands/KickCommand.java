@@ -24,12 +24,18 @@ public class KickCommand extends CommandBase {
 	private final RequiredArg<PlayerRef> playerArg;
 
 	public KickCommand() {
-		super("kick", "Kick players");
+		super("kick", "tarobits.punishments.command.kick");
 		this.setUnavailableInSingleplayer(true);
 		this.setAllowsExtraArguments(true);
 		this.requirePermission(Permissions.KICK_COMMAND.getPermission());
-		this.playerArg = this.withRequiredArg("player", "Player to kick", ArgTypes.PLAYER_REF);
-		this.withRequiredArg("reason", "Reason to kick the player", new ReasonArgType());
+		this.playerArg = this.withRequiredArg(
+				"tarobits.punishments.command.kick.args.player.display",
+				"tarobits.punishments.command.kick.args.player.desc", ArgTypes.PLAYER_REF
+		);
+		this.withRequiredArg(
+				"tarobits.punishments.command.kick.args.reason.display",
+				"tarobits.punishments.command.kick.args.reason.desc", new ReasonArgType()
+		);
 	}
 
 	@Override

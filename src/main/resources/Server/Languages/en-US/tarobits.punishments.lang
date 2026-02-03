@@ -1,6 +1,54 @@
 # === Update Message ===
 updatemessage = A new version is available for TPunish. \nNew version: {newVersion}\nYour version: {oldVersion}
 
+# === Commands ===
+command.tpconfig = Open the config GUI
+command.tpconfig.reload = Reload config.json
+command.punish = Open the punishment GUI for <player>
+command.kick = Kick <player> for <reason>
+command.mute = Mute <player> for <duration> for <reason>
+command.ban = Ban <player> for <duration> for <reason>
+command.warn = Warn <player> for <reason>
+command.unban = Unban <player>
+command.unmute = Unmute <player>
+
+# == Args ==
+command.punish.args.player.display = player
+command.punish.args.player.desc = Player to punish
+
+command.kick.args.player.display = player
+command.kick.args.player.desc = Player to kick
+command.kick.args.reason.display = reason
+command.kick.args.reason.desc = Reason to kick the player
+
+command.warn.args.player.display = player
+command.warn.args.player.desc = Player to warn
+command.warn.args.reason.display = reason
+command.warn.args.reason.desc = Reason to warn the player
+
+command.ban.args.player.display = player
+command.ban.args.player.desc = Player to ban
+command.ban.args.duration.display = duration
+command.ban.args.duration.desc = Duration to ban the player for
+command.ban.args.reason.display = reason
+command.ban.args.reason.desc = Reason to ban the player
+
+command.mute.args.player.display = player
+command.mute.args.player.desc = Player to mute
+command.mute.args.duration.display = duration
+command.mute.args.duration.desc = Duration to mute the player for
+command.mute.args.reason.display = reason
+command.mute.args.reason.desc = Reason to mute the player
+
+command.unban.args.player.display = player
+command.unban.args.player.desc = Player to unban
+
+command.unmute.args.player.display = player
+command.unmute.args.player.desc = Player to unmute
+
+# === Config ===
+config.success.reload = Successfully reloaded config!
+
 # === GUI ===
 
 # === Punish Gui ===

@@ -26,12 +26,18 @@ public class WarnCommand extends CommandBase {
 	private final RequiredArg<ProfileServiceClient.PublicGameProfile> playerArg;
 
 	public WarnCommand() {
-		super("warn", "Warn players");
+		super("warn", "tarobits.punishments.command.warn");
 		this.setUnavailableInSingleplayer(true);
 		this.requirePermission(Permissions.WARN_COMMAND.getPermission());
 		this.setAllowsExtraArguments(true);
-		this.playerArg = this.withRequiredArg("player", "Player to warn", ArgTypes.GAME_PROFILE_LOOKUP);
-		this.withRequiredArg("reason", "The reason to warn this player", new ReasonArgType());
+		this.playerArg = this.withRequiredArg(
+				"tarobits.punishments.command.warn.args.player.display",
+				"tarobits.punishments.command.warn.args.player.desc", ArgTypes.GAME_PROFILE_LOOKUP
+		);
+		this.withRequiredArg(
+				"tarobits.punishments.command.warn.args.reason.display",
+				"tarobits.punishments.command.warn.args.reason.desc", new ReasonArgType()
+		);
 	}
 
 	@Override
