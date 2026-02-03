@@ -9,6 +9,9 @@ This plugin is an advanced punishment management plugin for Hytale.
 
 ## Table of contents
 - [Quick Start](#quick-start)
+- [Configuration](#configuration)
+  - [Preset value](#preset-value)
+  - [Duration string](#duration-string) 
 - [Features](#features)
   - [Planned features](#planned)
 - [Permissions](#permissions)
@@ -23,24 +26,46 @@ This plugin is an advanced punishment management plugin for Hytale.
 
 ## Configuration
 
-```json
-{
-  "ShowUpdateNotifications": true,
-  "Presets":[
-    {
-      "Name": "[NAME THAT IS DISPLAYED]",
-      "Type": "[ban|mute|kick|warn]",
-      "SubType": "[temp|perm] only needed for ban and mute",
-      "Duration": "[DURATION STRING] only needed for subtype temp",
-      "Reason": "[REASON WHY THE ACTION IS BEING PERFORMED]"
-    }
-  ]
-}
-```
+| Key | Value | Function | Default |
+| :--: | :--: | :--: | :--: |
+| showUpdateNotifications | boolean (true/false) | Enable checking of a new version (On startup checks current version by getting the GitHub Manifest) | true |
+| doLogging | boolean (true/false) | Enable logging of actions | true |
+| presets | array of [Presets](#preset-value) | Presets for the punishments | predefined punishments |
+
+### Preset value
+
+| Key | Value | Function | Required |
+| :--: | :--: | :--: | :--: |
+| name | string | Name that is displayed to the moderators | always |
+| type | enum(ban,mute,kick,warn) | Type of the punishment | always |
+| sub_type | enum(temp,perm) or omitted | SubType of the punishment | only when type is ban or mute |
+| duration | [Duration string](#duration-string) | The duration of the punishment | only when sub_type is temp |
+| reason | string | Reason displayed to the player when this punishment is given to them | always |
+
+### Duration string
+
+**Format:** (int)(y,m,d,h,min)*?
+**Examples:** 
+- 12y2m3d4h6min
+- 5m
+
+| Key | Function |
+| :--: | :--: |
+| y | years |
+| m | months |
+| d | days |
+| h | hours |
+| min | minutes |
+
+> [!WARNING]
+> m is for months not minutes
+
 
 ## Features
 
 - Punishment UI
+- Player details
+  - Past punishments
 - Punishment presets
 - Many different punishment types
   - Bans
@@ -51,10 +76,18 @@ This plugin is an advanced punishment management plugin for Hytale.
 ### Planned
 
 - Localization
-- Reduction of punishments
-- Custom chat / kick messages
-- Appeal process
-- Punishment history log
+- Reduction and extension of punishments
+- Customization of [Duration string parameters](#duration-string)
+- Customization of display (Including but not limited to:)
+  -  Custom message format (disconnection, chat message, etc.)
+  -  Email format
+- In-game appeal process (with optional email support)
+- In-game configuration
+- Logging of actions performed
+- Broadcasted or silent punishments (Currently all punishments are silent)
+- Player details
+  - Chat log
+- Database support (primarily for big servers with multiple sub-servers)
 
 ## Permissions
 
@@ -76,36 +109,30 @@ This plugin is an advanced punishment management plugin for Hytale.
 
 ## Command Syntax
 
+> [!NOTE]
+> All parameters shown are required
+
 `/punish` => Opens the GUI
 
 `/punish config` => Opens the config GUI
 
-`/ban <player> <duration> <reason>` => Ban a player
+`/ban [player] [duration] [reason]` => Ban a player
 
-`/mute <player> <duration> <reason>` => Mute a player
+`/mute [player] [duration] [reason]` => Mute a player
 
-`/kick <player> <reason>` => Kick a player
+`/kick [player] [reason]` => Kick a player
 
-`/warn <player> <reason>` => Warn a player
+`/warn [player] [reason]` => Warn a player
 
-`/unban <player>` => Unban a player
+`/unban [player]` => Unban a player
 
-`/unmute <player>` => Unmute a player
+`/unmute [player]` => Unmute a player
 
-`<player>` => If the player is online the start of the username is enough. If the player is offline you must type the full username
+`[player]` => If the player is online the start of the username is enough. If the player is offline you must type the full username
 
-`<duration>` => A duration string consisting of the following variables with no spaces
-```
-y => year
-m => month
-d => day
-h => hour
-min => minute
+`[duration]` => [Duration string](#duration-string) or perm (for a permanent action)
 
-perm => permanent ban
-```
-
-`<reason>` => The reason why the action is being performed
+`[reason]` => The reason why the action is being performed
 
 ## End notes
 
