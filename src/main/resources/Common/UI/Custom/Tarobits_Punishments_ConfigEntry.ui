@@ -1,0 +1,95 @@
+$C = "Common.ui";
+
+Group {
+    LayoutMode: Left;
+    Anchor: (Bottom: 5);
+    Background: PatchStyle(TexturePath: "Common/Buttons/Tertiary.png", Border: 20);
+    Padding: 10;
+    Group {
+        LayoutMode: Top;
+        FlexWeight: 1;
+        Label {
+            Style: (
+                FontSize: 20,
+                RenderBold: true,
+                TextColor: #ffffff,
+                HorizontalAlignment: Center
+            );
+            Anchor: (Bottom: 5);
+            Text: %tarobits.punishments.gui.editconfig.entry.key;
+        }
+        Label #Key {
+            Style: (
+                FontSize: 20,
+                RenderBold: true,
+                TextColor: #ffffff,
+                HorizontalAlignment: Center
+            );
+            Text: "Text unset! FIX!";
+        }
+    }
+    Group {
+        LayoutMode: Top;
+        FlexWeight: 1;
+        Label {
+            Style: (
+                FontSize: 20,
+                RenderBold: true,
+                TextColor: #ffffff,
+                HorizontalAlignment: Center
+            );
+            Anchor: (Bottom: 5);
+            Text: %tarobits.punishments.gui.editconfig.entry.defaultvalue;
+        }
+        Label #DefaultValue {
+            Style: (
+                FontSize: 20,
+                RenderBold: true,
+                TextColor: #ffffff,
+                HorizontalAlignment: Center
+            );
+            Text: "Text unset! FIX!";
+        }
+    }
+    Group {
+        LayoutMode: Top;
+        FlexWeight: 1;
+        Label {
+            Style: (
+                FontSize: 20,
+                RenderBold: true,
+                TextColor: #ffffff,
+                HorizontalAlignment: Center
+            );
+            Anchor: (Bottom: 5);
+            Text: %tarobits.punishments.gui.editconfig.entry.value;
+        }
+        Label #CurrentValue {
+            Style: (
+                FontSize: 20,
+                RenderBold: true,
+                TextColor: #ffffff,
+                HorizontalAlignment: Center
+            );
+            Text: "Text unset! FIX!";
+        }
+    }
+    Group {
+        LayoutMode: Top;
+        FlexWeight: 1;
+        Label {
+            Style: (
+                FontSize: 20,
+                RenderBold: true,
+                TextColor: #ffffff,
+                HorizontalAlignment: Center
+            );
+            Anchor: (Bottom: 5);
+            Text: %tarobits.punishments.gui.editconfig.entry.edit;
+        }
+        Group #EditBox {
+            LayoutMode: Top;
+        }
+    }
+}
+

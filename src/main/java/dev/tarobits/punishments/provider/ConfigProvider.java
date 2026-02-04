@@ -54,8 +54,15 @@ public class ConfigProvider extends AbstractProvider<ConfigEntry> {
 		return this.getFromKey(schema.getKey());
 	}
 
-	public Collection<ConfigEntry> getAll() {
-		return this.entries.values();
+	public List<ConfigEntry> getAllSorted() {
+		List<ConfigEntry> sorted = new ArrayList<>(this.entries.values());
+		for (ConfigEntry entry : this.entries.values()) {
+			sorted.set(
+					ConfigSchema.getByKey(entry.getKey())
+							.ordinal(), entry
+			);
+		}
+		return sorted;
 	}
 
 	@Override

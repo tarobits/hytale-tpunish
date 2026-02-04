@@ -68,6 +68,14 @@ gui.punishments.buttons.newcustom = New Custom Punishment
 gui.punishments.buttons.unban = Unban
 gui.punishments.buttons.unmute = Unmute
 
+# === Edit Config ===
+gui.editconfig.title = Edit Config
+gui.editconfig.entry.key = Key
+gui.editconfig.entry.description = Description
+gui.editconfig.entry.defaultvalue = Default Value
+gui.editconfig.entry.value = Value
+gui.editconfig.entry.edit = Edit
+
 # === Edit Presets Gui ===
 gui.editpresets.title = Edit Presets
 
@@ -75,6 +83,7 @@ gui.editpresets.title = Edit Presets
 gui.management.title = Management Gui
 gui.management.settings = Settings
 gui.management.editpresets = Edit Presets
+gui.management.editsettings = Edit Config
 
 # === Details Gui ===
 gui.details.logs = Logs
@@ -119,6 +128,7 @@ gui.entry.buttons.details = Details
 gui.entry.buttons.remove = Remove
 
 # === Misc Gui ===
+gui.savebutton = Save
 gui.backbutton = < Back
 gui.addgui.title = Add Punishment
 gui.error.title = Error
@@ -142,6 +152,7 @@ edit.actions.unmute = unmuted
 
 # === Errors ===
 error.noperm = You have no permission to perform this action!
+error.generic = Something went wrong. Please try again.\nIf this occurs often please open an issue on the GitHub Repository.
 
 # === Bans ===
 ban.reason = You have been Banned!\nType: {type}\nDuration: {duration}\nUntil: {until}\nReason: {reason}

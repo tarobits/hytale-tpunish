@@ -32,6 +32,7 @@ import java.util.UUID;
 public class ConfigEntry implements DomainObject<ConfigEntry> {
 	private final UUID id;
 	private final String key;
+	private final String description;
 	private final Object defaultValue;
 	private final ConfigEntryType type;
 	private final Integer versionAdded;
@@ -39,6 +40,7 @@ public class ConfigEntry implements DomainObject<ConfigEntry> {
 
 	public ConfigEntry(
 			@Nonnull String key,
+			@Nonnull String description,
 			@Nonnull Object defaultValue,
 			@Nonnull ConfigEntryType type,
 			@Nonnull Integer versionAdded
@@ -46,6 +48,7 @@ public class ConfigEntry implements DomainObject<ConfigEntry> {
 		this.id = ConfigIdProvider.get()
 				.getUUIDForKey(key);
 		this.key = key;
+		this.description = description;
 		this.defaultValue = defaultValue;
 		this.value = defaultValue;
 		this.type = type;
@@ -55,6 +58,7 @@ public class ConfigEntry implements DomainObject<ConfigEntry> {
 
 	public ConfigEntry(
 			@Nonnull String key,
+			@Nonnull String description,
 			@Nonnull Object defaultValue,
 			@Nonnull Object value,
 			@Nonnull ConfigEntryType type,
@@ -63,6 +67,7 @@ public class ConfigEntry implements DomainObject<ConfigEntry> {
 		this.id = ConfigIdProvider.get()
 				.getUUIDForKey(key);
 		this.key = key;
+		this.description = description;
 		this.defaultValue = defaultValue;
 		this.value = value;
 		this.type = type;
@@ -75,6 +80,10 @@ public class ConfigEntry implements DomainObject<ConfigEntry> {
 
 	public String getKey() {
 		return key;
+	}
+
+	public String getDescription() {
+		return description;
 	}
 
 	public Object getDefaultValue() {
@@ -110,8 +119,25 @@ public class ConfigEntry implements DomainObject<ConfigEntry> {
 		return (List<PresetConfig>) this.value;
 	}
 
+	public String displayValue() {
+		if (this.type == ConfigEntryType.PRESETS) {
+			throw new DeveloperErrorException("Cannot display PresetConfigs!");
+		}
+		return this.value.toString();
+	}
+
+	@Deprecated
 	public Object getValue() {
 		return value;
+	}
+
+	public void parseValueFromString(String value) throws InvalidActionException {
+		setValue(switch (this.type) {
+			case BOOLEAN -> Boolean.parseBoolean(value);
+			case INTEGER -> Integer.parseInt(value);
+			case DECIMAL -> new BigDecimal(value);
+			default -> throw new InvalidActionException("This value cannot be set!");
+		});
 	}
 
 	public void setValue(Object value) throws InvalidActionException {

@@ -11,13 +11,24 @@ import java.util.Collection;
 import java.util.List;
 
 public enum ConfigSchema {
-	DO_UPDATE_CHECKS("doUpdateChecks", true, ConfigEntryType.BOOLEAN, 2),
-	UPDATE_CHECK_FREQUENCY("updateCheckFrequency", 2, ConfigEntryType.INTEGER, 2),
-	DO_LOGGING("doLogging", true, ConfigEntryType.BOOLEAN, 2),
-	DO_METRICS("doMetrics", true, ConfigEntryType.BOOLEAN, 1),
-	DEVELOPMENT_RELEASE("developmentRelease", false, ConfigEntryType.BOOLEAN, 1),
+	DO_UPDATE_CHECKS("doUpdateChecks", "Enable automatic update checks", true, ConfigEntryType.BOOLEAN, 2),
+	UPDATE_CHECK_FREQUENCY(
+			"updateCheckFrequency",
+	                       "How often update checks are performed (in hours)\nSet to 0 to disable", 2,
+	                       ConfigEntryType.INTEGER, 2
+	),
+	DO_LOGGING("doLogging", "Enable logging of actions", true, ConfigEntryType.BOOLEAN, 2),
+	DO_METRICS(
+			"doMetrics",
+	           "Enable anonymized metric collection while fetching updates (pluginVersion, releaseChannel)", true,
+	           ConfigEntryType.BOOLEAN, 1
+	),
+	DEVELOPMENT_RELEASE(
+			"developmentRelease", "Change update notifications to development channel", false,
+	                    ConfigEntryType.BOOLEAN, 1
+	),
 	PRESETS(
-			"presets", new Object() {
+			"presets", "Presets for the punishments", new Object() {
 		List<PresetConfig> evaluate() {
 			try {
 				return List.of(
@@ -45,12 +56,13 @@ public enum ConfigSchema {
 
 	ConfigSchema(
 			String key,
+			String description,
 			Object defaultValue,
 			ConfigEntryType type,
 			Integer versionAdded
 	) {
 		this.key = key;
-		this.entry = new ConfigEntry(key, defaultValue, type, versionAdded);
+		this.entry = new ConfigEntry(key, description, defaultValue, type, versionAdded);
 	}
 
 	public static Boolean doesEntryExist(String key) {

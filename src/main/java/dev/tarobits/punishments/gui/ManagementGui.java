@@ -47,6 +47,9 @@ public class ManagementGui extends InteractiveCustomUIPage<ManagementGui.Managem
         }
         if (data.action.equals("EditPresets")) {
             player.getPageManager()
+                    .openCustomPage(ref, store, new EditPresetsGui(playerRef, CustomPageLifetime.CanDismiss));
+        } else if (data.action.equals("EditConfig")) {
+            player.getPageManager()
                     .openCustomPage(ref, store, new EditConfigGui(playerRef, CustomPageLifetime.CanDismiss));
         }
     }
@@ -63,6 +66,11 @@ public class ManagementGui extends InteractiveCustomUIPage<ManagementGui.Managem
         uiEventBuilder.addEventBinding(
                 CustomUIEventBindingType.Activating, "#EditPresetsButton",
                 EventData.of(ManagementGuiData.ACTION_KEY, "EditPresets")
+        );
+
+        uiEventBuilder.addEventBinding(
+                CustomUIEventBindingType.Activating, "#EditSettingsButton",
+                EventData.of(ManagementGuiData.ACTION_KEY, "EditConfig")
         );
     }
 

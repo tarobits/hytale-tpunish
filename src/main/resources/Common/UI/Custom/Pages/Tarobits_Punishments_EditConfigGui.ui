@@ -1,0 +1,62 @@
+$C = "../Common.ui";
+
+$C.@PageOverlay {}
+
+$C.@Container {
+  Anchor: (Width: 1400, Height: 900);
+
+#Title {
+    Group {
+        TextButton #BackButton {
+            Anchor: (
+                Left: 10,
+                Top: 2,
+                Bottom: 2,
+                Width: 70,
+                Height: 30
+            );
+            Style: TextButtonStyle(
+                Default: (
+                    LabelStyle: (FontSize: 12, TextColor: #a0a0a0, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center),
+                    Background: (Color: #505050a0)
+                ),
+                Hovered: (
+                    LabelStyle: (FontSize: 12, TextColor: #a0a0a0, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center),
+                    Background: (Color: #909090a0)
+                ),
+                Pressed: (
+                    LabelStyle: (FontSize: 12, TextColor: #606060, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center),
+                    Background: (Color: #c0c0c0a0)
+                ),
+                Sounds: $C.@ButtonSounds
+            );
+            Padding: (
+                Left: 6,
+                Top: 2
+            );
+            Text: %tarobits.punishments.gui.backbutton;
+        }
+        $C.@Title {
+            @Text = %tarobits.punishments.gui.editconfig.title;
+        }
+    }
+}
+
+#Content {
+    LayoutMode: Top;
+    Label {
+        Style: (
+            FontSize: 50,
+            RenderBold: true,
+            HorizontalAlignment: Center
+        );
+        Anchor: (Bottom: 10);
+        Text: %tarobits.punishments.gui.editconfig.title;
+    }
+    Group #Entries {
+        LayoutMode: TopScrolling;
+        FlexWeight: 1;
+        ScrollbarStyle: $C.@TranslucentScrollbarStyle;
+    }
+}
+}

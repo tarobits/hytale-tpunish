@@ -1,0 +1,13 @@
+$C = "Common.ui";
+
+Group {
+    LayoutMode: Left;
+    $C.@CheckBox #ValueBox {
+        FlexWeight: 1;
+    }
+    $C.@TextButton #SaveButton {
+        @Anchor = (Left: 5);
+        FlexWeight: 1;
+        Text: %tarobits.punishments.gui.savebutton;
+    }
+}
