@@ -1,4 +1,4 @@
-package dev.tarobits.punishments.utils.domainobject;
+package dev.tarobits.punishments.domain;
 
 import dev.tarobits.punishments.exceptions.DeveloperErrorException;
 import dev.tarobits.punishments.provider.ConfigProvider;

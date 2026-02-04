@@ -47,7 +47,7 @@ public class ManagementGui extends InteractiveCustomUIPage<ManagementGui.Managem
         }
         if (data.action.equals("EditPresets")) {
             player.getPageManager()
-                    .openCustomPage(ref, store, new EditPresetsGui(playerRef, CustomPageLifetime.CanDismiss));
+                    .openCustomPage(ref, store, new EditConfigGui(playerRef, CustomPageLifetime.CanDismiss));
         }
     }
 

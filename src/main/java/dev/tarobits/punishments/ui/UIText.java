@@ -1,4 +1,4 @@
-package dev.tarobits.punishments.utils.ui;
+package dev.tarobits.punishments.ui;
 
 import com.hypixel.hytale.server.core.ui.Value;
 

@@ -1,13 +1,16 @@
-package dev.tarobits.punishments.utils.config;
+package dev.tarobits.punishments.config;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.hypixel.hytale.logger.HytaleLogger;
 import dev.tarobits.punishments.TPunish;
 import dev.tarobits.punishments.provider.ConfigProvider;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.checkerframework.checker.nullness.compatqual.NonNullDecl;
 
-import java.util.logging.Level;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class ConfigMigrations {
 	private static final HytaleLogger LOGGER = TPunish.getLogger("ConfigMigrations");
@@ -17,18 +20,53 @@ public class ConfigMigrations {
 				.log(msg);
 	}
 
+	private static Map<Integer, Map<String, String>> createList() {
+		Map<Integer, Map<String, String>> list = new Object2ObjectOpenHashMap<>();
+		// Version 0 -> 1
+		Map<String, String> version0to1 = new Object2ObjectOpenHashMap<>();
+		version0to1.put("DoPunishmentLogs", "doPunishmentLogs");
+		version0to1.put("ShowUpdateNotifications", "showUpdateNotifications");
+		version0to1.put("Presets", "presets");
+		list.put(1, version0to1);
+		// Version 1 -> 2
+		Map<String, String> version1to2 = new Object2ObjectOpenHashMap<>();
+		version1to2.put("showUpdateNotifications", "doUpdateChecks");
+		version1to2.put("doPunishmentLogs", "doLogging");
+		list.put(2, version1to2);
+		return list;
+	}
+
+	public static String migrateKey(
+			Integer currentVersion,
+			String key
+	) {
+		Map<Integer, Map<String, String>> migrationList = createList();
+		String newKey = key;
+		while (currentVersion < ConfigProvider.getConfigVersion()) {
+			Map<String, String> versionMigrations = migrationList.computeIfAbsent(
+					currentVersion, _ -> new Object2ObjectOpenHashMap<>());
+			if (versionMigrations.isEmpty()) {
+				currentVersion++;
+				continue;
+			}
+			newKey = versionMigrations.getOrDefault(newKey, newKey);
+			currentVersion++;
+		}
+		return newKey;
+	}
+
 	public static JsonObject performMigrations(
 			JsonObject currentConfig,
 			Integer currentVersion
 	) {
 		log("-=-=-= Running config migrations =-=-=-");
-		JsonObject result = new JsonObject();
+		JsonObject result = currentConfig.deepCopy();
 		while (currentVersion < ConfigProvider.getConfigVersion()) {
-			migrate(currentVersion, currentConfig, result);
+			migrate(currentVersion, result);
 			currentVersion++;
 		}
 
-		normalizeConfig(currentConfig, result);
+		normalizeConfig(result);
 
 		log("-=-=-= Config migrations END =-=-=-");
 		return result;
@@ -36,15 +74,14 @@ public class ConfigMigrations {
 
 	private static void migrate(
 			Integer currentVersion,
-			JsonObject currentConfig,
 			JsonObject result
 	) {
 		switch (currentVersion) {
 			case 0:
-				zeroToOne(currentConfig, result);
+				zeroToOne(result);
 				break;
 			case 1:
-				oneToTwo(currentConfig, result);
+				oneToTwo(result);
 				break;
 			// Add more migrations here
 		}
@@ -52,31 +89,33 @@ public class ConfigMigrations {
 
 	// Clean config and add missing settings
 	private static void normalizeConfig(
-			JsonObject currentConfig,
 			JsonObject result
 	) {
 		for (ConfigSchema s : ConfigSchema.values()) {
 			if (!result.has(s.getKey())) {
 				ConfigEntry entry = s.getEntry();
-				try {
-					entry.parseValueFromJson(currentConfig.get(s.getKey()));
-				} catch (Exception _) {
-					LOGGER.at(Level.FINE)
-							.log("Failed to find config key " + s.getKey() + " using default.");
-				}
 				entry.parseValueToJson(result);
+			}
+		}
+		List<String> keys = new ArrayList<>(result.keySet());
+		for (String key : keys) {
+			if (key.equals("_meta")) {
+				continue;
+			}
+			if (!ConfigSchema.doesEntryExist(key)) {
+				result.remove(key);
 			}
 		}
 	}
 
 	private static void oneToTwo(
-			JsonObject currentConfig,
 			JsonObject result
 	) {
 		log("Running migration to config version 2");
 
 		try {
-			result.addProperty("doUpdateChecks", currentConfig.get("showUpdateNotifications")
+			result.addProperty(
+					"doUpdateChecks", result.get("showUpdateNotifications")
 					.getAsBoolean()
 			);
 		} catch (Exception _) {
@@ -84,31 +123,31 @@ public class ConfigMigrations {
 		}
 
 		try {
-			result.addProperty("doLogging", currentConfig.get("doPunishmentLogs")
+			result.addProperty(
+					"doLogging", result.get("doPunishmentLogs")
 					.getAsBoolean()
 			);
 		} catch (Exception _) {
-			result.addProperty("doPunishmentLogs", true);
+			result.addProperty("doLogging", true);
 		}
 	}
 
 	private static void zeroToOne(
-			JsonObject currentConfig,
 			JsonObject result
 	) {
 		log("Running migration to config version 1");
 		try {
 			result.addProperty(
-					"doPunishmentNotifications", currentConfig.get("DoPunishmentNotifications")
+					"doPunishmentLogs", result.get("DoPunishmentLogs")
 							.getAsBoolean()
 			);
 		} catch (Exception _) {
-			result.addProperty("doPunishmentNotifications", true);
+			result.addProperty("doPunishmentLogs", true);
 		}
 
 		try {
 			result.addProperty(
-					"showUpdateNotifications", currentConfig.get("ShowUpdateNotifications")
+					"showUpdateNotifications", result.get("ShowUpdateNotifications")
 							.getAsBoolean()
 			);
 		} catch (Exception _) {
@@ -117,7 +156,7 @@ public class ConfigMigrations {
 
 		try {
 			JsonArray newPresets = new JsonArray();
-			currentConfig.get("Presets")
+			result.get("Presets")
 					.getAsJsonArray()
 					.forEach((e) -> {
 						JsonObject obj = e.getAsJsonObject();

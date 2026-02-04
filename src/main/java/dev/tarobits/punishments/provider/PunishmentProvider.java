@@ -3,10 +3,10 @@ package dev.tarobits.punishments.provider;
 import com.hypixel.hytale.server.core.Message;
 import dev.tarobits.punishments.exceptions.DeveloperErrorException;
 import dev.tarobits.punishments.exceptions.InvalidActionException;
+import dev.tarobits.punishments.model.punishment.Punishment;
+import dev.tarobits.punishments.model.punishment.PunishmentStatus;
+import dev.tarobits.punishments.model.punishment.PunishmentType;
 import dev.tarobits.punishments.utils.ProviderState;
-import dev.tarobits.punishments.utils.punishment.Punishment;
-import dev.tarobits.punishments.utils.punishment.PunishmentStatus;
-import dev.tarobits.punishments.utils.punishment.PunishmentType;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import javax.annotation.Nullable;

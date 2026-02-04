@@ -1,9 +1,9 @@
 package dev.tarobits.punishments.provider;
 
+import dev.tarobits.punishments.domain.DomainObjectProvider;
+import dev.tarobits.punishments.model.player.PlayerDomainObject;
 import dev.tarobits.punishments.utils.Permissions;
-import dev.tarobits.punishments.utils.PlayerDomainObject;
 import dev.tarobits.punishments.utils.PlayerUtils;
-import dev.tarobits.punishments.utils.domainobject.DomainObjectProvider;
 
 import java.util.ArrayList;
 import java.util.List;

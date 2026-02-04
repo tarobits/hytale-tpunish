@@ -1,29 +1,29 @@
-package dev.tarobits.punishments.utils.config;
+package dev.tarobits.punishments.config;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.ui.Value;
+import dev.tarobits.punishments.domain.DomainObject;
+import dev.tarobits.punishments.domain.DomainObjectType;
+import dev.tarobits.punishments.domain.Owner;
+import dev.tarobits.punishments.domain.OwnerRole;
 import dev.tarobits.punishments.exceptions.DeveloperErrorException;
 import dev.tarobits.punishments.exceptions.InvalidActionException;
 import dev.tarobits.punishments.exceptions.UserException;
+import dev.tarobits.punishments.model.log.ExtraInfoType;
+import dev.tarobits.punishments.model.log.LogActionEnum;
+import dev.tarobits.punishments.model.log.LogEntry;
+import dev.tarobits.punishments.model.log.LogUtils;
+import dev.tarobits.punishments.provider.ConfigIdProvider;
+import dev.tarobits.punishments.ui.HeaderBuilder;
+import dev.tarobits.punishments.ui.UIText;
 import dev.tarobits.punishments.utils.StringUtils;
-import dev.tarobits.punishments.utils.domainobject.DomainObject;
-import dev.tarobits.punishments.utils.domainobject.DomainObjectType;
-import dev.tarobits.punishments.utils.domainobject.Owner;
-import dev.tarobits.punishments.utils.domainobject.OwnerRole;
-import dev.tarobits.punishments.utils.log.ExtraInfoType;
-import dev.tarobits.punishments.utils.log.LogActionEnum;
-import dev.tarobits.punishments.utils.log.LogEntry;
-import dev.tarobits.punishments.utils.log.LogUtils;
-import dev.tarobits.punishments.utils.ui.HeaderBuilder;
-import dev.tarobits.punishments.utils.ui.UIText;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +43,8 @@ public class ConfigEntry implements DomainObject<ConfigEntry> {
 			@Nonnull ConfigEntryType type,
 			@Nonnull Integer versionAdded
 	) {
-		this.id = UUID.nameUUIDFromBytes(key.getBytes(StandardCharsets.UTF_8));
+		this.id = ConfigIdProvider.get()
+				.getUUIDForKey(key);
 		this.key = key;
 		this.defaultValue = defaultValue;
 		this.value = defaultValue;
@@ -59,7 +60,8 @@ public class ConfigEntry implements DomainObject<ConfigEntry> {
 			@Nonnull ConfigEntryType type,
 			@Nonnull Integer versionAdded
 	) {
-		this.id = UUID.nameUUIDFromBytes(key.getBytes(StandardCharsets.UTF_8));
+		this.id = ConfigIdProvider.get()
+				.getUUIDForKey(key);
 		this.key = key;
 		this.defaultValue = defaultValue;
 		this.value = value;
@@ -108,7 +110,6 @@ public class ConfigEntry implements DomainObject<ConfigEntry> {
 		return (List<PresetConfig>) this.value;
 	}
 
-	@Deprecated
 	public Object getValue() {
 		return value;
 	}
@@ -180,8 +181,11 @@ public class ConfigEntry implements DomainObject<ConfigEntry> {
 
 	@Override
 	public List<HeaderBuilder.HeaderGroup> getHeader() {
-		// ToDo: Add header
 		throw new DeveloperErrorException("Not implemented yet!");
+	}
+
+	public ConfigSchema getConfigSchema() {
+		return ConfigSchema.getByKey(this.key);
 	}
 
 	public void parseValueFromJson(JsonElement el) throws UserException {

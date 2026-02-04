@@ -3,8 +3,8 @@ package dev.tarobits.punishments.utils;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.permissions.PermissionsModule;
 import dev.tarobits.punishments.exceptions.DeveloperErrorException;
-import dev.tarobits.punishments.utils.punishment.PunishmentSubtype;
-import dev.tarobits.punishments.utils.punishment.PunishmentType;
+import dev.tarobits.punishments.model.punishment.PunishmentSubtype;
+import dev.tarobits.punishments.model.punishment.PunishmentType;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

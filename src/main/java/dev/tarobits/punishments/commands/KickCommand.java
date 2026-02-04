@@ -7,12 +7,12 @@ import com.hypixel.hytale.server.core.command.system.arguments.types.ArgTypes;
 import com.hypixel.hytale.server.core.command.system.basecommands.CommandBase;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import dev.tarobits.punishments.exceptions.UserException;
+import dev.tarobits.punishments.model.punishment.Punishment;
 import dev.tarobits.punishments.provider.PunishmentProvider;
 import dev.tarobits.punishments.utils.Permissions;
 import dev.tarobits.punishments.utils.args.ArgUtils;
 import dev.tarobits.punishments.utils.args.CustomArgumentType;
 import dev.tarobits.punishments.utils.args.ReasonArgType;
-import dev.tarobits.punishments.utils.punishment.Punishment;
 
 import javax.annotation.Nonnull;
 import java.util.List;

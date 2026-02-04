@@ -1,10 +1,10 @@
-package dev.tarobits.punishments.utils.config;
+package dev.tarobits.punishments.config;
 
 import dev.tarobits.punishments.exceptions.DeveloperErrorException;
 import dev.tarobits.punishments.exceptions.UserException;
+import dev.tarobits.punishments.model.punishment.PunishmentSubtype;
+import dev.tarobits.punishments.model.punishment.PunishmentType;
 import dev.tarobits.punishments.utils.TimeFormat;
-import dev.tarobits.punishments.utils.punishment.PunishmentSubtype;
-import dev.tarobits.punishments.utils.punishment.PunishmentType;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,6 +51,15 @@ public enum ConfigSchema {
 	) {
 		this.key = key;
 		this.entry = new ConfigEntry(key, defaultValue, type, versionAdded);
+	}
+
+	public static Boolean doesEntryExist(String key) {
+		for (ConfigSchema s : values()) {
+			if (s.key.equals(key)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static ConfigEntry getEntry(String key) {

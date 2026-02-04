@@ -1,16 +1,17 @@
-package dev.tarobits.punishments.utils;
+package dev.tarobits.punishments.model.player;
 
 import com.google.gson.JsonObject;
 import com.hypixel.hytale.server.core.Message;
+import dev.tarobits.punishments.domain.DomainObject;
+import dev.tarobits.punishments.domain.DomainObjectType;
+import dev.tarobits.punishments.domain.Owner;
+import dev.tarobits.punishments.domain.OwnerRole;
 import dev.tarobits.punishments.exceptions.DeveloperErrorException;
 import dev.tarobits.punishments.exceptions.InvalidActionException;
-import dev.tarobits.punishments.utils.domainobject.DomainObject;
-import dev.tarobits.punishments.utils.domainobject.DomainObjectType;
-import dev.tarobits.punishments.utils.domainobject.Owner;
-import dev.tarobits.punishments.utils.domainobject.OwnerRole;
-import dev.tarobits.punishments.utils.log.LogEntry;
-import dev.tarobits.punishments.utils.ui.HeaderBuilder;
-import dev.tarobits.punishments.utils.ui.UIText;
+import dev.tarobits.punishments.model.log.LogEntry;
+import dev.tarobits.punishments.ui.HeaderBuilder;
+import dev.tarobits.punishments.ui.UIText;
+import dev.tarobits.punishments.utils.Permissions;
 
 import java.util.ArrayList;
 import java.util.List;

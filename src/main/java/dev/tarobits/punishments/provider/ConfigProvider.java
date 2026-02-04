@@ -6,12 +6,12 @@ import com.google.gson.JsonParser;
 import com.google.gson.Strictness;
 import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonWriter;
+import dev.tarobits.punishments.config.ConfigEntry;
+import dev.tarobits.punishments.config.ConfigMigrations;
+import dev.tarobits.punishments.config.ConfigSchema;
 import dev.tarobits.punishments.exceptions.DeveloperErrorException;
 import dev.tarobits.punishments.exceptions.InvalidActionException;
 import dev.tarobits.punishments.utils.ProviderState;
-import dev.tarobits.punishments.utils.config.ConfigEntry;
-import dev.tarobits.punishments.utils.config.ConfigMigrations;
-import dev.tarobits.punishments.utils.config.ConfigSchema;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 import java.util.logging.Level;
 
 public class ConfigProvider extends AbstractProvider<ConfigEntry> {
@@ -51,6 +52,10 @@ public class ConfigProvider extends AbstractProvider<ConfigEntry> {
 
 	public ConfigEntry getFromSchema(ConfigSchema schema) {
 		return this.getFromKey(schema.getKey());
+	}
+
+	public Collection<ConfigEntry> getAll() {
+		return this.entries.values();
 	}
 
 	@Override
@@ -182,5 +187,21 @@ public class ConfigProvider extends AbstractProvider<ConfigEntry> {
 						.getId(), old
 		);
 		this.syncSave();
+	}
+
+	public Boolean editEntry(
+			ConfigSchema schema,
+			Function<ConfigEntry, Boolean> modifier
+	) {
+		if (!this.isReady()) {
+			throw new DeveloperErrorException("Config provider is not ready!");
+		}
+
+		if (modifier.apply(this.entries.get(schema.getEntry()
+				                                    .getId()))) {
+			this.syncSave();
+			return true;
+		}
+		return false;
 	}
 }

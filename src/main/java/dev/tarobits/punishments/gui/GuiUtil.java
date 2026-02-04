@@ -16,17 +16,17 @@ import com.hypixel.hytale.server.core.ui.builder.UICommandBuilder;
 import com.hypixel.hytale.server.core.ui.builder.UIEventBuilder;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import dev.tarobits.punishments.config.PresetConfig;
 import dev.tarobits.punishments.exceptions.DeveloperErrorException;
 import dev.tarobits.punishments.exceptions.UserException;
+import dev.tarobits.punishments.model.punishment.Punishment;
+import dev.tarobits.punishments.model.punishment.PunishmentSubtype;
+import dev.tarobits.punishments.model.punishment.PunishmentType;
+import dev.tarobits.punishments.ui.HistoryStat;
+import dev.tarobits.punishments.ui.PunishmentEntryBuilder;
+import dev.tarobits.punishments.ui.UIText;
 import dev.tarobits.punishments.utils.Permissions;
 import dev.tarobits.punishments.utils.PlayerUtils;
-import dev.tarobits.punishments.utils.config.PresetConfig;
-import dev.tarobits.punishments.utils.punishment.Punishment;
-import dev.tarobits.punishments.utils.punishment.PunishmentSubtype;
-import dev.tarobits.punishments.utils.punishment.PunishmentType;
-import dev.tarobits.punishments.utils.ui.HistoryStat;
-import dev.tarobits.punishments.utils.ui.PunishmentEntryBuilder;
-import dev.tarobits.punishments.utils.ui.UIText;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -374,12 +374,14 @@ public class GuiUtil {
 			@Nonnull Ref<EntityStore> ref,
 			@Nonnull Store<EntityStore> store,
 			@Nullable ProfileServiceClient.PublicGameProfile target,
-			@Nonnull String errorMessageId
+			@Nullable String errorMessageId
 	) {
 		player.getPageManager()
 				.openCustomPage(
-						ref, store,
-						new ErrorGui(playerRef, CustomPageLifetime.CanDismiss, target, errorMessageId, player)
+						ref, store, new ErrorGui(
+								playerRef, CustomPageLifetime.CanDismiss, target,
+								errorMessageId == null ? "tarobits.punishments.error.generic" : errorMessageId, player
+						)
 				);
 	}
 

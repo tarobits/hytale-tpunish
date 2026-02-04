@@ -9,12 +9,12 @@ import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import dev.tarobits.punishments.commands.*;
+import dev.tarobits.punishments.config.ConfigSchema;
+import dev.tarobits.punishments.model.punishment.PunishmentType;
 import dev.tarobits.punishments.provider.ConfigProvider;
 import dev.tarobits.punishments.provider.LogProvider;
 import dev.tarobits.punishments.provider.PunishmentProvider;
 import dev.tarobits.punishments.utils.VersionChecker;
-import dev.tarobits.punishments.utils.config.ConfigSchema;
-import dev.tarobits.punishments.utils.punishment.PunishmentType;
 
 import javax.annotation.Nonnull;
 import java.io.File;

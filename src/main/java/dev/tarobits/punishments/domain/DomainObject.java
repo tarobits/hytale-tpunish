@@ -1,11 +1,11 @@
-package dev.tarobits.punishments.utils.domainobject;
+package dev.tarobits.punishments.domain;
 
 import com.google.gson.JsonObject;
 import com.hypixel.hytale.server.core.Message;
 import dev.tarobits.punishments.exceptions.InvalidActionException;
-import dev.tarobits.punishments.utils.log.LogEntry;
-import dev.tarobits.punishments.utils.ui.HeaderBuilder;
-import dev.tarobits.punishments.utils.ui.UIText;
+import dev.tarobits.punishments.model.log.LogEntry;
+import dev.tarobits.punishments.ui.HeaderBuilder;
+import dev.tarobits.punishments.ui.UIText;
 
 import java.util.List;
 import java.util.Map;

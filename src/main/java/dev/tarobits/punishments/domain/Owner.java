@@ -1,4 +1,4 @@
-package dev.tarobits.punishments.utils.domainobject;
+package dev.tarobits.punishments.domain;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;

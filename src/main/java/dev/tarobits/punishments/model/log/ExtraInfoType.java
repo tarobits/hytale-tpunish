@@ -1,4 +1,4 @@
-package dev.tarobits.punishments.utils.log;
+package dev.tarobits.punishments.model.log;
 
 public enum ExtraInfoType {
 	NEW_VALUE,

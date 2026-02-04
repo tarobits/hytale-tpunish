@@ -1,4 +1,4 @@
-package dev.tarobits.punishments.utils.punishment;
+package dev.tarobits.punishments.model.punishment;
 
 import com.google.gson.JsonObject;
 import com.hypixel.hytale.server.core.Message;
@@ -7,22 +7,22 @@ import com.hypixel.hytale.server.core.ui.Value;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import dev.tarobits.punishments.TPunish;
+import dev.tarobits.punishments.domain.DomainObject;
+import dev.tarobits.punishments.domain.DomainObjectType;
+import dev.tarobits.punishments.domain.Owner;
+import dev.tarobits.punishments.domain.OwnerRole;
 import dev.tarobits.punishments.exceptions.DeveloperErrorException;
 import dev.tarobits.punishments.exceptions.InvalidActionException;
 import dev.tarobits.punishments.exceptions.NoPermissionException;
+import dev.tarobits.punishments.model.log.ExtraInfoType;
+import dev.tarobits.punishments.model.log.LogActionEnum;
+import dev.tarobits.punishments.model.log.LogEntry;
+import dev.tarobits.punishments.model.log.LogUtils;
 import dev.tarobits.punishments.provider.LogProvider;
 import dev.tarobits.punishments.provider.PunishmentProvider;
+import dev.tarobits.punishments.ui.HeaderBuilder;
+import dev.tarobits.punishments.ui.UIText;
 import dev.tarobits.punishments.utils.*;
-import dev.tarobits.punishments.utils.domainobject.DomainObject;
-import dev.tarobits.punishments.utils.domainobject.DomainObjectType;
-import dev.tarobits.punishments.utils.domainobject.Owner;
-import dev.tarobits.punishments.utils.domainobject.OwnerRole;
-import dev.tarobits.punishments.utils.log.ExtraInfoType;
-import dev.tarobits.punishments.utils.log.LogActionEnum;
-import dev.tarobits.punishments.utils.log.LogEntry;
-import dev.tarobits.punishments.utils.log.LogUtils;
-import dev.tarobits.punishments.utils.ui.HeaderBuilder;
-import dev.tarobits.punishments.utils.ui.UIText;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

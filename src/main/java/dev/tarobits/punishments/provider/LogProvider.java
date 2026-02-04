@@ -1,7 +1,7 @@
 package dev.tarobits.punishments.provider;
 
-import dev.tarobits.punishments.utils.domainobject.DomainObjectType;
-import dev.tarobits.punishments.utils.log.LogEntry;
+import dev.tarobits.punishments.domain.DomainObjectType;
+import dev.tarobits.punishments.model.log.LogEntry;
 
 import javax.annotation.Nonnull;
 import java.util.Comparator;

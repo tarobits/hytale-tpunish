@@ -1,8 +1,8 @@
-package dev.tarobits.punishments.utils.log;
+package dev.tarobits.punishments.model.log;
 
 import com.hypixel.hytale.server.core.Message;
-import dev.tarobits.punishments.utils.domainobject.DomainObject;
-import dev.tarobits.punishments.utils.ui.UIText;
+import dev.tarobits.punishments.domain.DomainObject;
+import dev.tarobits.punishments.ui.UIText;
 
 public interface LogActionEnum<T extends DomainObject<?>> {
 	Message getLogActionText(

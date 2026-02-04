@@ -7,9 +7,9 @@ import com.hypixel.hytale.server.core.command.system.arguments.system.RequiredAr
 import com.hypixel.hytale.server.core.command.system.arguments.types.ArgTypes;
 import com.hypixel.hytale.server.core.command.system.basecommands.CommandBase;
 import dev.tarobits.punishments.exceptions.InvalidActionException;
+import dev.tarobits.punishments.model.punishment.PunishmentType;
 import dev.tarobits.punishments.provider.PunishmentProvider;
 import dev.tarobits.punishments.utils.Permissions;
-import dev.tarobits.punishments.utils.punishment.PunishmentType;
 
 import javax.annotation.Nonnull;
 import java.util.UUID;

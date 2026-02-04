@@ -1,6 +1,6 @@
-package dev.tarobits.punishments.utils.ui;
+package dev.tarobits.punishments.ui;
 
-import dev.tarobits.punishments.utils.punishment.Punishment;
+import dev.tarobits.punishments.model.punishment.Punishment;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

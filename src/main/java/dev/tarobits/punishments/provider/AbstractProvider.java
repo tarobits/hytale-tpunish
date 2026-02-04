@@ -7,13 +7,13 @@ import com.google.gson.stream.JsonWriter;
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.util.io.BlockingDiskFile;
 import dev.tarobits.punishments.TPunish;
+import dev.tarobits.punishments.domain.DomainObject;
+import dev.tarobits.punishments.domain.DomainObjectProvider;
+import dev.tarobits.punishments.domain.DomainObjectType;
+import dev.tarobits.punishments.domain.OwnerRole;
 import dev.tarobits.punishments.exceptions.InvalidActionException;
 import dev.tarobits.punishments.storage.StorageUtils;
 import dev.tarobits.punishments.utils.ProviderState;
-import dev.tarobits.punishments.utils.domainobject.DomainObject;
-import dev.tarobits.punishments.utils.domainobject.DomainObjectProvider;
-import dev.tarobits.punishments.utils.domainobject.DomainObjectType;
-import dev.tarobits.punishments.utils.domainobject.OwnerRole;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.io.BufferedReader;

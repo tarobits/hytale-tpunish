@@ -1,10 +1,10 @@
-package dev.tarobits.punishments.utils.ui;
+package dev.tarobits.punishments.ui;
 
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.ui.Value;
-import dev.tarobits.punishments.utils.punishment.Punishment;
-import dev.tarobits.punishments.utils.punishment.PunishmentSubtype;
-import dev.tarobits.punishments.utils.punishment.PunishmentType;
+import dev.tarobits.punishments.model.punishment.Punishment;
+import dev.tarobits.punishments.model.punishment.PunishmentSubtype;
+import dev.tarobits.punishments.model.punishment.PunishmentType;
 
 import javax.annotation.Nullable;
 

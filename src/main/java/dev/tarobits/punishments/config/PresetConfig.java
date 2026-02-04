@@ -1,11 +1,11 @@
-package dev.tarobits.punishments.utils.config;
+package dev.tarobits.punishments.config;
 
 import com.google.gson.JsonObject;
 import dev.tarobits.punishments.exceptions.InvalidActionException;
 import dev.tarobits.punishments.exceptions.UserException;
+import dev.tarobits.punishments.model.punishment.PunishmentSubtype;
+import dev.tarobits.punishments.model.punishment.PunishmentType;
 import dev.tarobits.punishments.utils.TimeFormat;
-import dev.tarobits.punishments.utils.punishment.PunishmentSubtype;
-import dev.tarobits.punishments.utils.punishment.PunishmentType;
 
 import javax.annotation.Nonnull;
 

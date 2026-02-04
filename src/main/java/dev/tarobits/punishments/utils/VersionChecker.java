@@ -8,10 +8,10 @@ import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.Universe;
 import dev.tarobits.punishments.TPunish;
+import dev.tarobits.punishments.config.ConfigSchema;
 import dev.tarobits.punishments.exceptions.DeveloperErrorException;
 import dev.tarobits.punishments.exceptions.UserException;
 import dev.tarobits.punishments.provider.ConfigProvider;
-import dev.tarobits.punishments.utils.config.ConfigSchema;
 
 import java.awt.*;
 import java.net.URI;

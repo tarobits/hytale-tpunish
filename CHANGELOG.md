@@ -1,5 +1,16 @@
 # Changelog
 
+## Version 0.3.0-pre3
+
+> [!NOTE]
+> Pre-release version! Could contain major bugs
+
+### Fixed
+
+- `sub_type` and `duration` now reflect optionality as described in the README
+- Remove debug logging from argument parsing
+- `update_check_frequency` now no longer needs to be a value above zero for the initial update check to occur.
+
 ## Version 0.3.0-pre2
 
 > [!NOTE]
