@@ -127,6 +127,7 @@ gui.error.home = Home
 # === Editor ===
 edit.error.nonull = Subtype may not be null!
 edit.error.mustnull = Subtype must be null!
+edit.error.duration = Duration cannot be 0 or null when punishmentSubType is temporary!
 edit.error.onlyactive = You may only edit active punishments!
 edit.error.notfound = Couldn't find the punishment!
 edit.error.alreadypardon = This punishment is already pardoned!

@@ -40,6 +40,9 @@ public class PresetConfig {
 		} else {
 			this.subType = subType;
 		}
+		if (subType == PunishmentSubtype.TEMPORARY && this.duration.isZero()) {
+			throw new InvalidActionException("tarobits.punishments.edit.error.duration");
+		}
 	}
 
 	public static PresetConfig fromJson(JsonObject obj) throws UserException {
@@ -47,10 +50,17 @@ public class PresetConfig {
 				.getAsString();
 		PunishmentType type = PunishmentType.fromJson(obj.get(TYPE_KEY)
 				                                              .getAsString());
-		PunishmentSubtype subType = PunishmentSubtype.fromJson(obj.get(SUB_TYPE_KEY)
-				                                                       .getAsString());
-		TimeFormat duration = TimeFormat.fromDurationString(obj.get(DURATION_KEY)
-				                                                    .getAsString());
+
+		PunishmentSubtype subType = PunishmentSubtype.NULL;
+		if (obj.has(SUB_TYPE_KEY)) {
+			subType = PunishmentSubtype.fromJson(obj.get(SUB_TYPE_KEY)
+					                                     .getAsString());
+		}
+		TimeFormat duration = new TimeFormat();
+		if (obj.has(DURATION_KEY)) {
+			duration = TimeFormat.fromDurationString(obj.get(DURATION_KEY)
+					                                         .getAsString());
+		}
 		String reason = obj.get(REASON_KEY)
 				.getAsString();
 		return new PresetConfig(name, type, subType, duration, reason);
@@ -68,6 +78,14 @@ public class PresetConfig {
 		return this.subType;
 	}
 
+	private Boolean isSubTypeRequired() {
+		return this.subType == PunishmentSubtype.NULL;
+	}
+
+	private Boolean isDurationRequired() {
+		return !this.duration.isZero();
+	}
+
 	public TimeFormat getDuration() {
 		return this.duration;
 	}
@@ -80,8 +98,12 @@ public class PresetConfig {
 		JsonObject obj = new JsonObject();
 		obj.addProperty(NAME_KEY, this.name);
 		obj.addProperty(TYPE_KEY, this.type.toJson());
-		obj.addProperty(SUB_TYPE_KEY, this.subType.toJson());
-		obj.addProperty(DURATION_KEY, this.duration.toFullDurationString());
+		if (this.isSubTypeRequired()) {
+			obj.addProperty(SUB_TYPE_KEY, this.subType.toJson());
+		}
+		if (this.isDurationRequired()) {
+			obj.addProperty(DURATION_KEY, this.duration.toFullDurationString());
+		}
 		obj.addProperty(REASON_KEY, this.reason);
 		return obj;
 	}
