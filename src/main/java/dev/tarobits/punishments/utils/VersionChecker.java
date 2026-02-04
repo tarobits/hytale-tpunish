@@ -107,8 +107,7 @@ public class VersionChecker implements Runnable {
 	@Override
 	public void run() {
 		if (!configProvider.getFromSchema(ConfigSchema.DO_UPDATE_CHECKS)
-				.getAsBoolean() || configProvider.getFromSchema(ConfigSchema.UPDATE_CHECK_FREQUENCY)
-				.getAsInteger() == 0) {
+				.getAsBoolean()) {
 			return;
 		}
 		logger.atInfo()
