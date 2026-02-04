@@ -1,8 +1,8 @@
-@BaseHeaderGroupTitleStyle = {
+@BaseHeaderGroupTitleStyle = (
     RenderBold: true,
     FontSize: 20,
     HorizontalAlignment: Center
-}
+);
 
 @BaseHeaderKeyStyle = (
     RenderBold: true,
