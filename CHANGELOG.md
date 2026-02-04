@@ -1,9 +1,10 @@
 # Changelog
 
-## Version 0.3.0-pre3
+## Version 0.3.0
 
-> [!NOTE]
-> Pre-release version! Could contain major bugs
+### Added
+
+- In-game config GUI
 
 ### Fixed
 
