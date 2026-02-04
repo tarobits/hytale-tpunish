@@ -1,6 +1,5 @@
 package dev.tarobits.punishments.utils.args;
 
-import com.hypixel.hytale.logger.HytaleLogger;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import javax.annotation.Nonnull;
@@ -24,9 +23,6 @@ public class ArgUtils {
 			if (individual[i] == null) {
 				continue;
 			}
-			HytaleLogger.forEnclosingClass()
-					.atInfo()
-					.log(individual[i]);
 			argumentList.add(getArgument(individual[i], possibleTypes));
 		}
 
