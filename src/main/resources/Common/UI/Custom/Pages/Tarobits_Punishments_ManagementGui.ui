@@ -59,6 +59,9 @@ $C.@Container {
             $C.@SecondaryTextButton #EditPresetsButton {
                 Text: %tarobits.punishments.gui.management.editpresets;
             }
+            $C.@SecondaryTextButton #EditSettingsButton {
+                Text: %tarobits.punishments.gui.management.editsettings;
+            }
         }
     }
   }

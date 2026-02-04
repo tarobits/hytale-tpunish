@@ -1,0 +1,21 @@
+@StatusBase = (
+    VerticalAlignment: Center,
+    HorizontalAlignment: Center,
+    FontSize: 18,
+    RenderBold: true
+);
+
+@Active = (
+    ...@StatusBase,
+    TextColor: #c04040
+);
+
+@Pardoned = (
+    ...@StatusBase,
+    TextColor: #4040c0
+);
+
+@Expired = (
+    ...@StatusBase,
+    TextColor: #40c040
+);

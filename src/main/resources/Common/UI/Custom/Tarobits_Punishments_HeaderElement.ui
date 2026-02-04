@@ -1,0 +1,24 @@
+Group {
+    LayoutMode: Left;
+    Anchor: (Bottom: 5);
+    Label #Key {
+        Anchor: (Right: 5);
+        Style: (
+            RenderBold: true,
+            TextColor: #ffffff,
+            FontSize: 16
+        );
+        Text: "Text unset! FIX!";
+    }
+    Group {
+        FlexWeight: 1;
+    }
+    Label #Val {
+        Style: (
+            RenderBold: true,
+            TextColor: #ffffff,
+            FontSize: 16
+        );
+        Text: "Text unset! FIX!";
+    }
+}

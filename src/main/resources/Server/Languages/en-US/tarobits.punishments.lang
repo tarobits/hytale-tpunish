@@ -1,5 +1,57 @@
-# === Update Message ===
+# === Version ===
 updatemessage = A new version is available for TPunish. \nNew version: {newVersion}\nYour version: {oldVersion}
+no_update = You are on the newest version of TPunish.
+version = TPunish version: {version}
+
+# === Commands ===
+command.tpconfig = Open the config GUI
+command.tpconfig.reload = Reload config.json
+command.tpconfig.version = Display current version
+command.tpconfig.checkversion = Check for update
+command.punish = Open the punishment GUI for <player>
+command.kick = Kick <player> for <reason>
+command.mute = Mute <player> for <duration> for <reason>
+command.ban = Ban <player> for <duration> for <reason>
+command.warn = Warn <player> for <reason>
+command.unban = Unban <player>
+command.unmute = Unmute <player>
+
+# == Args ==
+command.punish.args.player.display = player
+command.punish.args.player.desc = Player to punish
+
+command.kick.args.player.display = player
+command.kick.args.player.desc = Player to kick
+command.kick.args.reason.display = reason
+command.kick.args.reason.desc = Reason to kick the player
+
+command.warn.args.player.display = player
+command.warn.args.player.desc = Player to warn
+command.warn.args.reason.display = reason
+command.warn.args.reason.desc = Reason to warn the player
+
+command.ban.args.player.display = player
+command.ban.args.player.desc = Player to ban
+command.ban.args.duration.display = duration
+command.ban.args.duration.desc = Duration to ban the player for
+command.ban.args.reason.display = reason
+command.ban.args.reason.desc = Reason to ban the player
+
+command.mute.args.player.display = player
+command.mute.args.player.desc = Player to mute
+command.mute.args.duration.display = duration
+command.mute.args.duration.desc = Duration to mute the player for
+command.mute.args.reason.display = reason
+command.mute.args.reason.desc = Reason to mute the player
+
+command.unban.args.player.display = player
+command.unban.args.player.desc = Player to unban
+
+command.unmute.args.player.display = player
+command.unmute.args.player.desc = Player to unmute
+
+# === Config ===
+config.success.reload = Successfully reloaded config!
 
 # === GUI ===
 
@@ -16,6 +68,14 @@ gui.punishments.buttons.newcustom = New Custom Punishment
 gui.punishments.buttons.unban = Unban
 gui.punishments.buttons.unmute = Unmute
 
+# === Edit Config ===
+gui.editconfig.title = Edit Config
+gui.editconfig.entry.key = Key
+gui.editconfig.entry.description = Description
+gui.editconfig.entry.defaultvalue = Default Value
+gui.editconfig.entry.value = Value
+gui.editconfig.entry.edit = Edit
+
 # === Edit Presets Gui ===
 gui.editpresets.title = Edit Presets
 
@@ -23,6 +83,16 @@ gui.editpresets.title = Edit Presets
 gui.management.title = Management Gui
 gui.management.settings = Settings
 gui.management.editpresets = Edit Presets
+gui.management.editsettings = Edit Config
+
+# === Details Gui ===
+gui.details.logs = Logs
+gui.details.actions = Actions
+gui.details.buttons.pardon = Pardon
+gui.details.buttons.reinstate = Reinstate
+gui.details.buttons.extend = Extend
+gui.details.buttons.reduce = Reduce
+gui.details.buttons.viewappeal = View Appeal
 
 # === Header ===
 gui.header.status = Status
@@ -31,10 +101,10 @@ gui.header.indefinitely = indefinitely
 gui.header.until = until
 
 gui.header.ban = Ban:
-gui.header.ban.notbanned = Not banned
+gui.header.ban.notban = Not banned
 
 gui.header.mute = Mute:
-gui.header.mute.notmuted = Not muted
+gui.header.mute.notmute = Not muted
 
 gui.header.historystats = History Stats
 gui.header.historystats.bans = Bans:
@@ -58,6 +128,7 @@ gui.entry.buttons.details = Details
 gui.entry.buttons.remove = Remove
 
 # === Misc Gui ===
+gui.savebutton = Save
 gui.backbutton = < Back
 gui.addgui.title = Add Punishment
 gui.error.title = Error
@@ -66,8 +137,13 @@ gui.error.home = Home
 # === Editor ===
 edit.error.nonull = Subtype may not be null!
 edit.error.mustnull = Subtype must be null!
+edit.error.duration = Duration cannot be 0 or null when punishmentSubType is temporary!
 edit.error.onlyactive = You may only edit active punishments!
 edit.error.notfound = Couldn't find the punishment!
+edit.error.alreadypardon = This punishment is already pardoned!
+edit.error.notpardonable = This punishment cannot be pardoned!
+edit.error.notextendable = This punishment cannot be extended!
+edit.error.notreduceable = This punishment cannot be reduced!
 edit.success = Successfully {action} '{player}'!
 edit.actions.unban = unbanned
 edit.actions.unmute = unmuted
@@ -76,6 +152,7 @@ edit.actions.unmute = unmuted
 
 # === Errors ===
 error.noperm = You have no permission to perform this action!
+error.generic = Something went wrong. Please try again.\nIf this occurs often please open an issue on the GitHub Repository.
 
 # === Bans ===
 ban.reason = You have been Banned!\nType: {type}\nDuration: {duration}\nUntil: {until}\nReason: {reason}
@@ -83,6 +160,9 @@ ban.error.isnt = Player '{name}' is not banned.
 ban.error.already = Player '{name}' is already banned.
 ban.success.temp = Successfully banned '{name}' for {duration} with the reason {reason}!
 ban.success.perm = Successfully banned '{name}' permanently with the reason {reason}!
+
+ban.log.action.create = {actor} banned {target}
+ban.log.action.pardon = {actor} unbanned {target}
 
 # === Mutes ===
 mute.reason = You are muted.\nType: {type}\nDuration: {duration}\nUntil: {until}\nReason: {reason}
@@ -92,10 +172,15 @@ mute.unmute = You've been unmuted.
 mute.success.temp = Successfully muted '{name}' for {duration} with the reason {reason}!
 mute.success.perm = Successfully muted '{name}' permanently with the reason {reason}!
 
+mute.log.action.create = {actor} muted {target}
+mute.log.action.pardon = {actor} unmuted {target}
+
 # === Kicks ===
 kick.reason = You've been kicked with the reason {reason}!
 kick.error.noplayer = The player '{name}' is not online.
 kick.success = Successfully kicked '{name}' with the reason {reason}!
+
+kick.log.action.create = {actor} kicked {target}
 
 # === Warns ===
 warn.reason = You've been warned with the reason {reason}!
@@ -103,3 +188,5 @@ warn.unwarn = A warning has been removed from your account. Check /punishments
 warn.error.nowarn = The warning for user '{name}' with the id {id} does not exist.
 warn.success.warn = Successfully warned '{name}' with the reason {reason}!
 warn.success.unwarn = Successfully removed the warning with the id {id} from '{name}'!
+
+warn.log.action.create = {actor} warned {target}
