@@ -39,6 +39,7 @@ public class TPunish extends JavaPlugin {
 
 	public TPunish(@Nonnull JavaPluginInit init) {
 		super(init);
+		INSTANCE = this;
 
 		this.threadPool = Executors.newScheduledThreadPool(
 				4, r -> {
@@ -49,7 +50,6 @@ public class TPunish extends JavaPlugin {
 		);
 
 		versionChecker = new VersionChecker(this.getVersion());
-		INSTANCE = this;
 		LOGGER.atInfo()
 				.log("TPunish (Version " + this
 						.getVersion()
